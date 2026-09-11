@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  :root {
+    --font-sans: 'Plus Jakarta Sans', sans-serif;
+    --font-serif: 'Fraunces', serif;
+    --background: #FBF9F5;
+    --foreground: #243324;
+    --card: #FFFFFF;
+    --card-foreground: #243324;
+    --popover: #FFFFFF;
+    --popover-foreground: #243324;
+    --primary: #243324;
+    --primary-foreground: #FBF9F5;
+    --secondary: #F4EFE6;
+    --secondary-foreground: #243324;
+    --muted: #EFEBE4;
+    --muted-foreground: #5C695C;
+    --accent: #E8DCC4;
+    --accent-foreground: #1F2B1D;
+    --border: rgba(36, 51, 36, 0.12);
+    --radius: 0.75rem;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+  }
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(36, 51, 36, 0.15);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(36, 51, 36, 0.28);
+}
+
+/* Leaflet Overrides for sgdataviz editorial theme */
+.leaflet-container {
+  width: 100% !important;
+  height: 100% !important;
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  background-color: #F8F5F0 !important;
+}
+
+.leaflet-popup-content-wrapper {
+  background: rgba(251, 249, 245, 0.98) !important;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(36, 51, 36, 0.12) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 10px 25px -5px rgba(36, 51, 36, 0.12), 0 8px 10px -6px rgba(36, 51, 36, 0.08) !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  line-height: 1.4 !important;
+}
+
+.leaflet-popup-content a {
+  text-decoration: none !important;
+}
+
+.leaflet-popup-tip {
+  background: rgba(251, 249, 245, 0.98) !important;
+  border: 1px solid rgba(36, 51, 36, 0.12) !important;
+  box-shadow: none !important;
+}
+
+/* Marker Glow & Beacon Animations */
+@keyframes beaconPulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+}
+
+.beacon-ring {
+  animation: beaconPulse 2.2s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+}

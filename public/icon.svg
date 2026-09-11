@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="100%" height="100%">
+  <defs>
+    <!-- Sharp transition gradient: White upper pin body, Vibrant Red tip -->
+    <linearGradient id="pinBodyGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="68%" stop-color="#FFFFFF" />
+      <stop offset="68.1%" stop-color="#EF4444" />
+      <stop offset="100%" stop-color="#EF4444" />
+    </linearGradient>
+    
+    <!-- Background Squircle Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#243324" />
+      <stop offset="100%" stop-color="#162216" />
+    </linearGradient>
+  </defs>
+
+  <!-- Clean Squircle Base Tile -->
+  <rect width="64" height="64" rx="16" fill="url(#bgGrad)" />
+  <rect x="1" y="1" width="62" height="62" rx="15" fill="none" stroke="#3A4E3A" stroke-width="1.5" />
+
+  <!-- Ground Drop Shadow -->
+  <ellipse cx="32" cy="56" rx="7" ry="2.5" fill="#0A110A" opacity="0.5" />
+
+  <!-- Elegant Location Pin with Red Pointer Tip -->
+  <path d="M 32 53 C 32 53 18.5 35 18.5 23 A 13.5 13.5 0 1 1 45.5 23 C 45.5 35 32 53 32 53 Z" fill="url(#pinBodyGrad)" />
+
+  <!-- Center Pin Head Cutout -->
+  <circle cx="32" cy="23" r="5.5" fill="#1C2A1C" />
+</svg>

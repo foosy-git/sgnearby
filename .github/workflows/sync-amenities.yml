@@ -1,0 +1,42 @@
+name: Sync Singapore Amenities Datasets
+
+on:
+  schedule:
+    # Run at 00:00 on day 1 of every month
+    - cron: '0 0 1 * *'
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+permissions:
+  contents: write
+
+jobs:
+  sync-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Amenities Sync Pipeline
+        run: npm run sync:data
+
+      - name: Commit and Push Changes If Updated
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/data/*.ts
+          if git diff --staged --quiet; then
+            echo "No changes in amenities datasets."
+          else
+            git commit -m "chore(data): automated monthly amenities sync [skip ci]"
+            git push
+          fi
