@@ -3,6 +3,7 @@ import './globals.css';
 import 'leaflet/dist/leaflet.css';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://sgnearby.fsyhub.com'),
   title: 'SG Nearby | See What’s Around Any Singapore Postal Code',
   description:
     'Interactive Singapore map to see what’s nearby any home, condo, or postal code. Explore walking distance to hawker centres, MRT stations, bus stops, supermarkets, schools, and parks.',
