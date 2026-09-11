@@ -44,9 +44,11 @@ import {
 function MapViewController({
   selectedProperty,
   locateTarget,
+  showSchoolRings,
 }: {
   selectedProperty: SelectedProperty;
   locateTarget?: AmenityWithDistance | null;
+  showSchoolRings?: boolean;
 }) {
   const map = useMap();
 
@@ -54,9 +56,12 @@ function MapViewController({
     if (locateTarget) {
       map.flyTo([locateTarget.lat, locateTarget.lng], 16, { duration: 0.8 });
     } else {
-      map.flyTo([selectedProperty.lat, selectedProperty.lng], 15, { duration: 0.8 });
+      const isMobile = map.getSize().x < 768;
+      // At zoom 13.7 on mobile, the 4,000m diameter (2km radius) ring fits within the viewport with margin
+      const targetZoom = showSchoolRings ? (isMobile ? 13.7 : 14.2) : 15;
+      map.flyTo([selectedProperty.lat, selectedProperty.lng], targetZoom, { duration: 0.8 });
     }
-  }, [selectedProperty, locateTarget, map]);
+  }, [selectedProperty, locateTarget, showSchoolRings, map]);
 
   return null;
 }
@@ -94,7 +99,7 @@ function RecenterMapButton({
     <div
       ref={containerRef}
       style={{ pointerEvents: 'auto' }}
-      className="custom-map-overlay absolute top-4 right-14 z-[1000] animate-in fade-in duration-200"
+      className="custom-map-overlay absolute top-3 right-3 sm:top-4 sm:right-14 z-[1000] animate-in fade-in duration-200"
     >
       <button
         type="button"
@@ -360,6 +365,7 @@ interface Props {
   onMarkerClick: (amenity: AmenityWithDistance) => void;
   onRecenter?: () => void;
   onViewResalePrices?: () => void;
+  onToggleSchoolRings?: () => void;
 }
 
 export default function PropertyMap({
@@ -376,6 +382,7 @@ export default function PropertyMap({
   onMarkerClick,
   onRecenter,
   onViewResalePrices,
+  onToggleSchoolRings,
 }: Props) {
   const propertyPinIcon = useMemo(
     () => createPropertyPinIcon(selectedProperty.name),
@@ -475,6 +482,7 @@ export default function PropertyMap({
         <MapViewController
           selectedProperty={selectedProperty}
           locateTarget={locateTarget}
+          showSchoolRings={showSchoolRings}
         />
         <MapSizeInvalidator />
         <MapClickHandler onMapClick={onSelectCoordinate} />
@@ -557,31 +565,31 @@ export default function PropertyMap({
         )}
 
 
-        {/* Dedicated MOE Primary School 1km & 2km Priority Rings */}
+        {/* Dedicated MOE Primary School 1km & 2km Priority Rings (Clean outlines, zero fill) */}
         {showSchoolRings && (
           <>
-            {/* 1km Ring (Strict Priority Zone) - Colored Blue to differentiate from Walking Radius */}
+            {/* 1km Ring (Strict Priority Zone) - Clean High-Contrast Blue */}
             <Circle
               center={[selectedProperty.lat, selectedProperty.lng]}
               radius={1000}
               pathOptions={{
                 color: '#2563EB',
-                fillColor: '#3B82F6',
-                fillOpacity: 0.08,
+                fill: false,
                 weight: 2,
-                dashArray: '5, 5',
+                dashArray: '6, 6',
+                opacity: 0.85,
               }}
             />
-            {/* 2km Ring (Secondary Priority Zone) */}
+            {/* 2km Ring (Secondary Priority Zone) - Vivid High-Contrast Orange */}
             <Circle
               center={[selectedProperty.lat, selectedProperty.lng]}
               radius={2000}
               pathOptions={{
-                color: '#D97706',
-                fillColor: '#FBBF24',
-                fillOpacity: 0.03,
-                weight: 1.5,
-                dashArray: '4, 6',
+                color: '#EA580C',
+                fill: false,
+                weight: 2,
+                dashArray: '6, 6',
+                opacity: 0.85,
               }}
             />
           </>
@@ -608,7 +616,7 @@ export default function PropertyMap({
                 click: () => onMarkerClick(amenity),
               }}
             >
-              <Popup>
+              <Popup autoPan={false}>
                 <div className="p-3 space-y-2 min-w-[220px]">
                   {/* Category & Distance Header */}
                   <div className="flex items-center justify-between gap-2">
@@ -771,7 +779,7 @@ export default function PropertyMap({
       {/* Top Map Action Toolbar: Basemap Style Dropdown & Category Filter Dropdown */}
       <div
         ref={toolbarRef}
-        className="custom-map-overlay absolute top-4 left-14 sm:left-16 z-[1000] flex items-center gap-2"
+        className="custom-map-overlay absolute top-3 left-12 sm:top-4 sm:left-16 z-[1000] flex items-center gap-1.5 sm:gap-2"
         style={{ pointerEvents: 'auto' }}
       >
         {/* Basemap Style Dropdown */}
@@ -942,10 +950,36 @@ export default function PropertyMap({
             )}
           </div>
         )}
+
+        {/* 1km & 2km School Priority Rings Toggle Button */}
+        {onToggleSchoolRings && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleSchoolRings();
+            }}
+            className={`bg-white/95 backdrop-blur-md px-2.5 sm:px-3 py-2 rounded-xl shadow-md border transition-all flex items-center gap-1.5 text-xs font-semibold cursor-pointer ${
+              showSchoolRings
+                ? 'border-blue-600/40 bg-blue-50/90 text-blue-950'
+                : 'border-[#243324]/15 text-[#5C695C] hover:bg-[#F4EFE6]'
+            }`}
+            title="Toggle 1km & 2km MOE Primary School Priority Rings"
+          >
+            <span className="text-xs">🏫</span>
+            <span className="hidden sm:inline">School Rings</span>
+            <span className="sm:hidden">1k &amp; 2k</span>
+            <span
+              className={`w-2 h-2 rounded-full transition-colors ${
+                showSchoolRings ? 'bg-blue-600' : 'bg-slate-300'
+              }`}
+            />
+          </button>
+        )}
       </div>
 
       {/* Floating Interactive Guide Pill (Bottom Left) */}
-      <div className="absolute bottom-4 left-4 z-[1000] bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-xl shadow-md border border-[#243324]/10 text-xs text-[#243324] flex items-center gap-2">
+      <div className="absolute bottom-28 lg:bottom-4 left-3 sm:left-4 z-[1000] bg-white/95 backdrop-blur-md px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl shadow-md border border-[#243324]/10 text-[11px] sm:text-xs text-[#243324] flex items-center gap-2 pointer-events-none">
         <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
         <span className="font-medium">
           Click <span className="font-bold underline">anywhere</span> on map to drop a pin

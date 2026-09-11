@@ -4,6 +4,8 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import Navbar from '@/components/Navbar';
 import MapWrapper from '@/components/map/MapWrapper';
 import AmenitySidebar from '@/components/sidebar/AmenitySidebar';
+import MobileBottomSheet, { SheetSnapState } from '@/components/mobile/MobileBottomSheet';
+import MobilePoiPeekCard from '@/components/mobile/MobilePoiPeekCard';
 import GoogleMapsSyncModal from '@/components/GoogleMapsSyncModal';
 import LocationComparisonModal from '@/components/comparison/LocationComparisonModal';
 import HdbResaleModal from '@/components/hdb/HdbResaleModal';
@@ -49,7 +51,13 @@ export default function Home() {
   const [locateTarget, setLocateTarget] = useState<AmenityWithDistance | null>(null);
   const [highlightedAmenityId, setHighlightedAmenityId] = useState<string | undefined>(undefined);
 
-  // Mobile sidebar open state
+  // Mobile POI peek card state (when a marker is tapped on mobile)
+  const [selectedPoi, setSelectedPoi] = useState<AmenityWithDistance | null>(null);
+
+  // Mobile multi-snap bottom sheet state: 'peek' (105px) | 'half' (48dvh) | 'full' (90dvh)
+  const [mobileSheetState, setMobileSheetState] = useState<SheetSnapState>('peek');
+
+  // Desktop sidebar open state
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
 
   // Comparison modal state
@@ -134,7 +142,6 @@ export default function Home() {
     }
   }, []);
 
-
   // Save Google Places API key
   const handleSaveGoogleKey = useCallback((key: string) => {
     setGoogleApiKey(key);
@@ -202,10 +209,8 @@ export default function Home() {
       return ALL_AMENITIES;
     }
 
-    // Always prioritize verified official Singapore infrastructure (Hawker centres, MRT, schools, sports)
     const result: Amenity[] = [...ALL_AMENITIES];
     for (const live of livePlaces) {
-      // Only add live place if not a duplicate of verified base amenities
       const isDuplicate = ALL_AMENITIES.some((base) => {
         if (base.category !== live.category) return false;
         const nameMatch =
@@ -224,7 +229,7 @@ export default function Home() {
     return result;
   }, [livePlaces]);
 
-  // Process amenities within the active walking radius (and up to 2km for schools) for map & sidebar display
+  // Process amenities within active walking radius
   const amenitiesWithDistance = useMemo(() => {
     return processAmenitiesWithDistance(
       combinedAmenities,
@@ -234,7 +239,7 @@ export default function Home() {
     );
   }, [combinedAmenities, selectedProperty.lat, selectedProperty.lng, walkingRadius]);
 
-  // Compute live convenience & walkability score across standard urban walkability range (2km)
+  // Compute live convenience & walkability score
   const convenienceScore = useMemo(() => {
     const scoringAmenities = processAmenitiesWithDistance(
       combinedAmenities,
@@ -249,8 +254,8 @@ export default function Home() {
   const handleMapCoordinateSelect = useCallback(async (lat: number, lng: number) => {
     setLocateTarget(null);
     setHighlightedAmenityId(undefined);
+    setSelectedPoi(null);
 
-    // Initial placeholder location
     const fallbackName = `Selected Pin (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
     const newLocation: SelectedProperty = {
       id: `custom-pin-${Date.now()}`,
@@ -262,7 +267,6 @@ export default function Home() {
     };
     setSelectedProperty(newLocation);
 
-    // Attempt reverse geocoding via Nominatim to retrieve real Singapore street address
     try {
       const osmReverseUrl = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`;
       const controller = new AbortController();
@@ -293,9 +297,7 @@ export default function Home() {
           });
         }
       }
-    } catch {
-      // Quiet fallback if offline or timed out
-    }
+    } catch {}
   }, []);
 
   // Handle selecting a property from search or featured hotspots
@@ -303,20 +305,24 @@ export default function Home() {
     setSelectedProperty(prop);
     setLocateTarget(null);
     setHighlightedAmenityId(undefined);
+    setSelectedPoi(null);
   }, []);
 
-  // Handle clicking an amenity in the sidebar list to fly to & highlight on map
+  // Handle clicking an amenity in sidebar / bottom sheet to fly to & highlight on map
   const handleLocateAmenity = useCallback((amenity: AmenityWithDistance) => {
     setLocateTarget(amenity);
     setHighlightedAmenityId(amenity.id);
+    setSelectedPoi(amenity);
+    setMobileSheetState((prev) => (prev === 'full' ? 'half' : prev));
   }, []);
 
   // Handle clicking an amenity marker on the map
   const handleMarkerClick = useCallback((amenity: AmenityWithDistance) => {
     setHighlightedAmenityId(amenity.id);
+    setSelectedPoi(amenity);
   }, []);
 
-  // Toggle individual category filter (used by floating map toolbar and sidebar)
+  // Toggle individual category filter
   const handleToggleCategory = useCallback((catId: AmenityCategory) => {
     setSelectedCategories((prev) => {
       const isSupermarketToggle = catId === 'supermarket';
@@ -335,15 +341,16 @@ export default function Home() {
     });
   }, []);
 
-  // Handle recentering map back to the selected location pin
+  // Handle recentering map back to selected location pin
   const handleRecenter = useCallback(() => {
     setLocateTarget(null);
     setHighlightedAmenityId(undefined);
+    setSelectedPoi(null);
   }, []);
 
   return (
-    <div className="h-screen w-screen flex flex-col overflow-hidden bg-[#FBF9F5] text-[#243324]">
-      {/* Sticky Top Navigation with Featured Hotspots & Geolocation */}
+    <div className="h-screen h-[100dvh] w-screen flex flex-col overflow-hidden bg-[#FBF9F5] text-[#243324]">
+      {/* Top Navigation: Full desktop bar on >= lg, streamlined + quick-filter rail on < lg */}
       <Navbar
         selectedProperty={selectedProperty}
         onSelectLocation={handleSelectLocation}
@@ -354,12 +361,20 @@ export default function Home() {
         onOpenResale={() => {
           setActiveSidebarTab('resale');
           setIsSidebarOpen(true);
+          setMobileSheetState('half');
         }}
         isLiveSyncActive={Boolean(googleApiKey)}
         isSidebarOpen={isSidebarOpen}
+        walkingRadius={walkingRadius}
+        setWalkingRadius={setWalkingRadius}
+        showSchoolRings={showSchoolRings}
+        setShowSchoolRings={setShowSchoolRings}
+        selectedCategories={selectedCategories}
+        onToggleCategory={handleToggleCategory}
+        amenities={amenitiesWithDistance}
       />
 
-      {/* Main Workspace: Interactive Map & Collapsible Amenities Sidebar */}
+      {/* Main Workspace: Interactive Map & Collapsible Desktop Sidebar / Mobile Sheet */}
       <div className="flex-1 relative flex overflow-hidden w-full h-[calc(100vh-4rem)] sm:h-[calc(100vh-4rem)] min-h-0">
         {/* Map Viewport */}
         <main className="flex-1 relative h-full w-full min-h-0 min-w-0">
@@ -369,6 +384,7 @@ export default function Home() {
               amenities={amenitiesWithDistance}
               walkingRadius={walkingRadius}
               showSchoolRings={showSchoolRings}
+              onToggleSchoolRings={() => setShowSchoolRings(!showSchoolRings)}
               selectedCategories={selectedCategories}
               onToggleCategory={handleToggleCategory}
               onSelectCoordinate={handleMapCoordinateSelect}
@@ -379,23 +395,24 @@ export default function Home() {
               onViewResalePrices={() => {
                 setActiveSidebarTab('resale');
                 setIsSidebarOpen(true);
+                setMobileSheetState('half');
               }}
             />
           </div>
 
           {/* Floating Live Sync Status Indicator */}
           {isFetchingLive && (
-            <div className="absolute top-4 left-16 z-[1000] bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-lg border border-emerald-600/30 flex items-center gap-2 text-xs font-semibold text-emerald-900 animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="absolute top-4 left-14 sm:left-16 z-[1000] bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-lg border border-emerald-600/30 flex items-center gap-2 text-xs font-semibold text-emerald-900 animate-in fade-in slide-in-from-top-2 duration-200">
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
               <span>Fetching live Google Places...</span>
             </div>
           )}
 
-          {/* Floating Reopen Button when Sidebar is collapsed */}
+          {/* Desktop-only Reopen Button when Sidebar is collapsed */}
           {!isSidebarOpen && (
             <button
               onClick={() => setIsSidebarOpen(true)}
-              className="absolute top-4 right-4 z-[1000] bg-[#243324] text-[#FBF9F5] px-3.5 py-2.5 rounded-xl shadow-2xl border border-white/20 flex items-center gap-2 text-xs font-semibold hover:bg-emerald-950 transition-all hover:scale-105 animate-in fade-in duration-200"
+              className="hidden lg:flex absolute top-4 right-4 z-[1000] bg-[#243324] text-[#FBF9F5] px-3.5 py-2.5 rounded-xl shadow-2xl border border-white/20 items-center gap-2 text-xs font-semibold hover:bg-emerald-950 transition-all hover:scale-105 animate-in fade-in duration-200"
               title="Open Neighborhood Explorer"
             >
               <Compass className="w-4 h-4 text-emerald-400" />
@@ -405,9 +422,17 @@ export default function Home() {
               </span>
             </button>
           )}
+
+          {/* Mobile POI Peek Card (Tapped Marker Action Sheet on < lg) */}
+          <MobilePoiPeekCard
+            poi={selectedPoi}
+            selectedProperty={selectedProperty}
+            onClose={() => setSelectedPoi(null)}
+            onExpandSheet={() => setMobileSheetState('half')}
+          />
         </main>
 
-        {/* Right Drawer / Sidebar */}
+        {/* Desktop-Only Right Sidebar (Hidden on < lg) */}
         <AmenitySidebar
           selectedProperty={selectedProperty}
           amenities={amenitiesWithDistance}
@@ -425,6 +450,24 @@ export default function Home() {
           activeSidebarTab={activeSidebarTab}
           setActiveSidebarTab={setActiveSidebarTab}
           onOpenResaleModal={() => setIsResaleModalOpen(true)}
+        />
+
+        {/* Mobile Multi-Snap Bottom Sheet (Hidden on >= lg) */}
+        <MobileBottomSheet
+          selectedProperty={selectedProperty}
+          amenities={amenitiesWithDistance}
+          walkingRadius={walkingRadius}
+          setWalkingRadius={setWalkingRadius}
+          showSchoolRings={showSchoolRings}
+          setShowSchoolRings={setShowSchoolRings}
+          selectedCategories={selectedCategories}
+          setSelectedCategories={setSelectedCategories}
+          onLocateAmenity={handleLocateAmenity}
+          highlightedAmenityId={highlightedAmenityId}
+          convenienceScore={convenienceScore}
+          onOpenResaleModal={() => setIsResaleModalOpen(true)}
+          sheetState={mobileSheetState}
+          setSheetState={setMobileSheetState}
         />
       </div>
 
@@ -456,4 +499,3 @@ export default function Home() {
     </div>
   );
 }
-

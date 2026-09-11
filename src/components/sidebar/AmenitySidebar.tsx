@@ -411,7 +411,7 @@ export default function AmenitySidebar({
   return (
     <aside
       style={{ width: `${sidebarWidth}px` }}
-      className="fixed lg:relative top-16 lg:top-0 right-0 z-40 h-[calc(100vh-4rem)] lg:h-full max-w-full bg-[#FBF9F5] border-l border-[#243324]/10 shadow-2xl lg:shadow-none flex flex-col transition-all duration-150 ease-out select-auto shrink-0"
+      className="hidden lg:flex relative top-0 right-0 z-40 h-full bg-[#FBF9F5] border-l border-[#243324]/10 shadow-none flex-col transition-all duration-150 ease-out select-auto shrink-0"
     >
       {/* Resizable Left Edge Drag Handle (Desktop only) */}
       <div
