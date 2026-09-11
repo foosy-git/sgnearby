@@ -48,9 +48,10 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            mkdir -p ~/apps/sgnearby
-            if [ ! -d "~/apps/sgnearby/.git" ]; then
-              git clone https://github.com/foosy-git/sgnearby.git ~/apps/sgnearby
+            mkdir -p $HOME/apps/sgnearby
+            cd $HOME/apps/sgnearby
+            if [ ! -d .git ]; then
+              git clone https://github.com/foosy-git/sgnearby.git .
             fi
 
       - name: Copy build to VM
