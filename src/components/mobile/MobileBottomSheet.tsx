@@ -304,7 +304,7 @@ export default function MobileBottomSheet({
         return 'h-[48dvh]';
       case 'full':
       default:
-        return 'h-[90dvh]';
+        return 'h-[calc(100dvh-120px)]';
     }
   }, [sheetState]);
 
@@ -333,64 +333,137 @@ export default function MobileBottomSheet({
         <div className="w-12 h-1.5 rounded-full bg-[#243324]/25 hover:bg-[#243324]/40 active:scale-95 transition-all" />
       </div>
 
-      {/* Persistent Sheet Header (Visible in Peek Mode) */}
+      {/* Persistent Sheet Header */}
       <div
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         onClick={cycleSheetState}
-        className="px-4 py-1.5 flex items-center justify-between cursor-pointer shrink-0 select-none"
+        className={`px-4 cursor-pointer shrink-0 select-none transition-all ${
+          sheetState === 'full'
+            ? 'pt-1.5 pb-3 border-b border-[#243324]/10 bg-[#FBF9F5]'
+            : 'py-1.5'
+        }`}
       >
-        <div className="min-w-0 flex-1 mr-2">
-          <div className="flex items-center gap-2">
-            <span className="font-serif font-bold text-sm text-[#243324] truncate">
-              {selectedProperty.name}
-            </span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-[#243324] text-white shrink-0">
-              {amenities.length} nearby
-            </span>
-          </div>
-          <div className="text-[11px] text-[#5C695C] truncate flex items-center gap-1.5 mt-0.5">
-            <span>Score: <strong className="text-emerald-800 font-bold">{convenienceScore.overall}/100</strong></span>
-            <span>•</span>
-            <span>Within {walkingRadius}m ({walkingRadius / 80}m walk)</span>
-          </div>
-        </div>
-
-        {/* Right Actions: Share & Toggle Button */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          <div className="relative">
-            <button
-              type="button"
-              onClick={handleShare}
-              className="p-1.5 rounded-xl bg-white border border-[#243324]/10 text-[#5C695C] active:scale-95 transition-all"
-              title="Share Location"
-            >
-              <Share2 className="w-3.5 h-3.5" />
-            </button>
-            {copiedToast && (
-              <div className="absolute right-0 bottom-full mb-1.5 px-2 py-0.5 bg-[#243324] text-white text-[10px] font-bold rounded-lg whitespace-nowrap shadow-md">
-                Link Copied!
+        {sheetState === 'full' ? (
+          <div>
+            {/* Top row: Property Type & Postal Badges + Share & Collapse Actions */}
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-[#243324] text-[#FBF9F5]">
+                  {selectedProperty.propertyType || 'Location'}
+                </span>
+                {selectedProperty.postalCode && (
+                  <span className="px-1.5 py-0.5 rounded-md text-[10px] font-semibold bg-[#243324]/10 text-[#243324]">
+                    S({selectedProperty.postalCode})
+                  </span>
+                )}
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-800 text-white shrink-0">
+                  {amenities.length} nearby
+                </span>
               </div>
-            )}
-          </div>
 
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              cycleSheetState();
-            }}
-            className="py-1.5 px-2.5 rounded-xl bg-[#F4EFE6] text-[#243324] text-xs font-bold flex items-center gap-1 border border-[#243324]/10 active:scale-95 transition-all"
-          >
-            <span>{sheetState === 'peek' ? 'Expand' : sheetState === 'half' ? 'Full' : 'Collapse'}</span>
-            {sheetState === 'full' ? (
-              <ChevronDown className="w-3.5 h-3.5 text-emerald-800" />
-            ) : (
-              <ChevronUp className="w-3.5 h-3.5 text-emerald-800" />
+              {/* Right Actions: Share & Collapse */}
+              <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={handleShare}
+                    className="p-1.5 rounded-xl bg-white border border-[#243324]/10 text-[#5C695C] hover:text-[#243324] active:scale-95 transition-all shadow-2xs cursor-pointer"
+                    title="Share Location"
+                  >
+                    <Share2 className="w-3.5 h-3.5" />
+                  </button>
+                  {copiedToast && (
+                    <div className="absolute right-0 bottom-full mb-1.5 px-2 py-0.5 bg-[#243324] text-white text-[10px] font-bold rounded-lg whitespace-nowrap shadow-md">
+                      Link Copied!
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    cycleSheetState();
+                  }}
+                  className="py-1.5 px-2.5 rounded-xl bg-[#243324]/10 hover:bg-[#243324]/15 text-[#243324] text-xs font-bold flex items-center gap-1 border border-[#243324]/10 active:scale-95 transition-all cursor-pointer"
+                >
+                  <span>Collapse</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-emerald-800" />
+                </button>
+              </div>
+            </div>
+
+            {/* Location Title - Prominent, Un-truncated with clean spacing */}
+            <h2 className="font-serif font-bold text-base sm:text-lg text-[#243324] mt-2 leading-snug break-words">
+              {selectedProperty.name}
+            </h2>
+
+            {/* Address if different from name */}
+            {selectedProperty.address && selectedProperty.address !== selectedProperty.name && (
+              <p className="text-[11px] text-[#5C695C] mt-0.5 break-words line-clamp-1">
+                {selectedProperty.address}
+              </p>
             )}
-          </button>
-        </div>
+
+            {/* Score & Walking Radius Subtitle */}
+            <div className="text-[11px] text-[#5C695C] flex items-center gap-1.5 mt-1.5">
+              <span>Score: <strong className="text-emerald-800 font-bold">{convenienceScore.overall}/100</strong></span>
+              <span>•</span>
+              <span>Within {walkingRadius}m ({walkingRadius / 80}m walk)</span>
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between">
+            <div className="min-w-0 flex-1 mr-2">
+              <div className="flex items-center gap-2">
+                <span className="font-serif font-bold text-sm text-[#243324] truncate">
+                  {selectedProperty.name}
+                </span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-[#243324] text-white shrink-0">
+                  {amenities.length} nearby
+                </span>
+              </div>
+              <div className="text-[11px] text-[#5C695C] truncate flex items-center gap-1.5 mt-0.5">
+                <span>Score: <strong className="text-emerald-800 font-bold">{convenienceScore.overall}/100</strong></span>
+                <span>•</span>
+                <span>Within {walkingRadius}m ({walkingRadius / 80}m walk)</span>
+              </div>
+            </div>
+
+            {/* Right Actions: Share & Toggle Button */}
+            <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={handleShare}
+                  className="p-1.5 rounded-xl bg-white border border-[#243324]/10 text-[#5C695C] active:scale-95 transition-all"
+                  title="Share Location"
+                >
+                  <Share2 className="w-3.5 h-3.5" />
+                </button>
+                {copiedToast && (
+                  <div className="absolute right-0 bottom-full mb-1.5 px-2 py-0.5 bg-[#243324] text-white text-[10px] font-bold rounded-lg whitespace-nowrap shadow-md">
+                    Link Copied!
+                  </div>
+                )}
+              </div>
+
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  cycleSheetState();
+                }}
+                className="py-1.5 px-2.5 rounded-xl bg-[#F4EFE6] text-[#243324] text-xs font-bold flex items-center gap-1 border border-[#243324]/10 active:scale-95 transition-all"
+              >
+                <span>{sheetState === 'peek' ? 'Expand' : 'Full'}</span>
+                <ChevronUp className="w-3.5 h-3.5 text-emerald-800" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Segmented Sub-Tabs (Visible when sheet is in 'half' or 'full' state) */}
