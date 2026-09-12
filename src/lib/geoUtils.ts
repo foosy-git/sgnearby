@@ -1,4 +1,5 @@
 import { Amenity, AmenityWithDistance, ConvenienceScore } from '@/data/types';
+import { isTwoTrackSchool } from '@/data/schools';
 
 /**
  * Calculates haversine distance between two coordinates in meters
@@ -64,7 +65,8 @@ export function processAmenitiesWithDistance(
   amenities: Amenity[],
   centerLat: number,
   centerLng: number,
-  maxDistanceMeters?: number
+  maxDistanceMeters?: number,
+  showSchoolRings: boolean = true
 ): AmenityWithDistance[] {
   return amenities
     .map((item) => {
@@ -77,13 +79,20 @@ export function processAmenitiesWithDistance(
       const walkingMinutes = calculateWalkingMinutes(distanceMeters);
 
       let schoolPriority: '1km' | '2km' | 'outside' | undefined;
+      let isTwoTrackScheme: boolean | undefined;
+      let twoTrackTrack: 'within-2km' | 'beyond-2km' | undefined;
+      let schoolPriorityNote: string | undefined;
+
       if (item.category === 'school' && (item.details?.schoolLevel === 'Primary' || !item.details?.schoolLevel)) {
         if (distanceMeters <= 1000) {
           schoolPriority = '1km';
+          schoolPriorityNote = 'Within 1km';
         } else if (distanceMeters <= 2000) {
           schoolPriority = '2km';
+          schoolPriorityNote = '1km - 2km';
         } else {
           schoolPriority = 'outside';
+          schoolPriorityNote = 'Outside 2km';
         }
       }
 
@@ -92,13 +101,20 @@ export function processAmenitiesWithDistance(
         distanceMeters,
         walkingMinutes,
         schoolPriority,
+        isTwoTrackScheme,
+        twoTrackTrack,
+        schoolPriorityNote,
       };
     })
     .filter((item) => {
       if (maxDistanceMeters === undefined) return true;
-      // If it's a school, keep within 2km so school analysis is always thorough
+      // When school rings are enabled, include schools up to 2km for Phase 2C priority analysis
+      // When school rings are disabled, schools outside the selected walking radius disappear
       if (item.category === 'school') {
-        return item.distanceMeters <= Math.max(maxDistanceMeters, 2000);
+        if (showSchoolRings) {
+          return item.distanceMeters <= Math.max(maxDistanceMeters, 2000);
+        }
+        return item.distanceMeters <= maxDistanceMeters;
       }
       return item.distanceMeters <= maxDistanceMeters;
     })

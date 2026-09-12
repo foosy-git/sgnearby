@@ -18,7 +18,7 @@ import {
   SelectedProperty,
   AmenityCategory,
 } from '@/data/types';
-import { MRT_LINES } from '@/data/mrtStations';
+import { MRT_LINES, isLrtStation } from '@/data/mrtStations';
 import { getGoogleMapsWalkUrl, formatDistance } from '@/lib/geoUtils';
 import {
   Navigation,
@@ -32,23 +32,29 @@ import {
   Bus,
   Utensils,
   Building2,
+  Building,
   ShoppingCart,
   GraduationCap,
   Trees,
   SlidersHorizontal,
   Check,
   TrendingUp,
+  Clock,
+  Info,
 } from 'lucide-react';
+import { isPrivateProperty } from '@/lib/onemap';
 
 // Custom Map Controller to smoothly fly/pan when selectedProperty or locateAmenity changes
 function MapViewController({
   selectedProperty,
   locateTarget,
   showSchoolRings,
+  walkingRadius,
 }: {
   selectedProperty: SelectedProperty;
   locateTarget?: AmenityWithDistance | null;
   showSchoolRings?: boolean;
+  walkingRadius?: number;
 }) {
   const map = useMap();
 
@@ -58,10 +64,15 @@ function MapViewController({
     } else {
       const isMobile = map.getSize().x < 768;
       // At zoom 13.7 on mobile, the 4,000m diameter (2km radius) ring fits within the viewport with margin
-      const targetZoom = showSchoolRings ? (isMobile ? 13.7 : 14.2) : 15;
+      let targetZoom = showSchoolRings ? (isMobile ? 13.7 : 14.2) : 15;
+      if (!showSchoolRings && walkingRadius) {
+        if (walkingRadius <= 400) targetZoom = isMobile ? 15.3 : 15.7;
+        else if (walkingRadius <= 800) targetZoom = isMobile ? 14.7 : 15.1;
+        else targetZoom = isMobile ? 14.1 : 14.5;
+      }
       map.flyTo([selectedProperty.lat, selectedProperty.lng], targetZoom, { duration: 0.8 });
     }
-  }, [selectedProperty, locateTarget, showSchoolRings, map]);
+  }, [selectedProperty, locateTarget, showSchoolRings, walkingRadius, map]);
 
   return null;
 }
@@ -71,10 +82,12 @@ function RecenterMapButton({
   targetLat,
   targetLng,
   onRecenter,
+  isSidebarOpen = true,
 }: {
   targetLat: number;
   targetLng: number;
   onRecenter?: () => void;
+  isSidebarOpen?: boolean;
 }) {
   const map = useMap();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -99,12 +112,16 @@ function RecenterMapButton({
     <div
       ref={containerRef}
       style={{ pointerEvents: 'auto' }}
-      className="custom-map-overlay absolute top-3 right-3 sm:top-4 sm:right-14 z-[1000] animate-in fade-in duration-200"
+      className={`custom-map-overlay absolute ${
+        !isSidebarOpen
+          ? 'top-3 right-3 sm:top-4 sm:right-4 lg:top-[4.75rem] lg:right-4'
+          : 'top-3 right-3 sm:top-4 sm:right-4'
+      } z-[1000] transition-all duration-200 animate-in fade-in`}
     >
       <button
         type="button"
         onClick={handleClick}
-        className="bg-white/95 backdrop-blur-md px-3 py-2 rounded-xl shadow-md border border-[#243324]/15 hover:bg-[#F4EFE6] text-[#243324] transition-all flex items-center gap-1.5 text-xs font-semibold hover:scale-105 active:scale-95 cursor-pointer"
+        className="h-10 bg-white/95 backdrop-blur-md px-3 rounded-xl shadow-md border border-[#243324]/15 hover:bg-[#F4EFE6] text-[#243324] transition-all flex items-center gap-1.5 text-xs font-semibold hover:scale-105 active:scale-95 cursor-pointer"
         title="Recenter map on selected home pin"
       >
         <LocateFixed className="w-3.5 h-3.5 text-emerald-700" />
@@ -167,7 +184,7 @@ function MapClickHandler({
 
 
 // Modern, Representative Category Icon Generator for Leaflet DivIcon
-function createAmenityIcon(category: AmenityCategory, isHighlighted: boolean) {
+function createAmenityIcon(category: AmenityCategory, isHighlighted: boolean, isTwoTrack?: boolean) {
   let gradient = 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)';
   let svgContent = '';
 
@@ -177,32 +194,30 @@ function createAmenityIcon(category: AmenityCategory, isHighlighted: boolean) {
       // Modern front-facing metro/subway train with headlights and rails
       svgContent = `
         <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="4" y="3" width="16" height="13" rx="3" fill="white" fill-opacity="0.15"></rect>
-          <path d="M4 10h16"></path>
-          <circle cx="8" cy="13.5" r="1.2" fill="currentColor"></circle>
-          <circle cx="16" cy="13.5" r="1.2" fill="currentColor"></circle>
-          <path d="M7 19l-2.5 2.5"></path>
-          <path d="M17 19l2.5 2.5"></path>
-          <path d="M8 16h8"></path>
+          <rect x="4" y="3" width="16" height="15" rx="3" fill="white" fill-opacity="0.18"></rect>
+          <line x1="4" y1="10" x2="20" y2="10"></line>
+          <circle cx="8" cy="14" r="1.3" fill="white"></circle>
+          <circle cx="16" cy="14" r="1.3" fill="white"></circle>
+          <path d="M6 18l-2 3M18 18l2 3M9 18h6"></path>
         </svg>`;
       break;
 
     case 'bus':
-      gradient = 'linear-gradient(135deg, #0284C7 0%, #0369A1 100%)';
-      // Modern commuter bus with front windshield, headlights and wheels
+      gradient = 'linear-gradient(135deg, #0EA5E9 0%, #0369A1 100%)';
+      // Double-decker / transit bus with destination display and dual windows
       svgContent = `
         <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="4" y="3" width="16" height="14" rx="2.5" fill="white" fill-opacity="0.15"></rect>
-          <path d="M4 10h16"></path>
-          <circle cx="8" cy="13.5" r="1.2" fill="currentColor"></circle>
-          <circle cx="16" cy="13.5" r="1.2" fill="currentColor"></circle>
-          <path d="M6 17v2"></path>
-          <path d="M18 17v2"></path>
+          <rect x="4" y="3" width="16" height="16" rx="2.5" fill="white" fill-opacity="0.15"></rect>
+          <line x1="4" y1="8" x2="20" y2="8"></line>
+          <line x1="4" y1="13" x2="20" y2="13"></line>
+          <circle cx="8" cy="16" r="1.2" fill="white"></circle>
+          <circle cx="16" cy="16" r="1.2" fill="white"></circle>
+          <path d="M6 19v2M18 19v2"></path>
         </svg>`;
       break;
 
     case 'food':
-      gradient = 'linear-gradient(135deg, #FB923C 0%, #EA580C 100%)';
+      gradient = 'linear-gradient(135deg, #F59E0B 0%, #B45309 100%)';
       // Fork and Spoon side-by-side
       svgContent = `
         <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -238,7 +253,9 @@ function createAmenityIcon(category: AmenityCategory, isHighlighted: boolean) {
       break;
 
     case 'school':
-      gradient = 'linear-gradient(135deg, #6366F1 0%, #4338CA 100%)';
+      gradient = isTwoTrack
+        ? 'linear-gradient(135deg, #9333EA 0%, #6B21A8 100%)'
+        : 'linear-gradient(135deg, #6366F1 0%, #4338CA 100%)';
       // Academic graduation mortarboard cap with tassel
       svgContent = `
         <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -279,6 +296,8 @@ function createAmenityIcon(category: AmenityCategory, isHighlighted: boolean) {
 
   const ringStyle = isHighlighted
     ? 'border: 3px solid #064E3B; box-shadow: 0 0 0 7px rgba(16, 185, 129, 0.45), 0 8px 16px rgba(0,0,0,0.3); transform: scale(1.25);'
+    : isTwoTrack
+    ? 'border: 2.5px solid #F3E8FF; box-shadow: 0 0 0 2px #A855F7, 0 4px 10px rgba(0, 0, 0, 0.22);'
     : 'border: 2.5px solid #FFFFFF; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22), 0 2px 4px rgba(0, 0, 0, 0.1);';
 
   const html = `
@@ -305,6 +324,23 @@ function createAmenityIcon(category: AmenityCategory, isHighlighted: boolean) {
     iconAnchor: [16, 16],
     popupAnchor: [0, -16],
   });
+}
+
+// In-memory icon cache to eliminate DOM recreation churn during pan/zoom/filter
+const amenityIconCache = new Map<string, L.DivIcon>();
+
+export function getOrCreateAmenityIcon(
+  category: AmenityCategory,
+  isHighlighted = false,
+  isTwoTrack = false
+): L.DivIcon {
+  const key = `${category}-${isHighlighted ? 1 : 0}-${isTwoTrack ? 1 : 0}`;
+  let icon = amenityIconCache.get(key);
+  if (!icon) {
+    icon = createAmenityIcon(category, isHighlighted, isTwoTrack);
+    amenityIconCache.set(key, icon);
+  }
+  return icon;
 }
 
 // Selected Location Marker: Teardrop Pin with Pulsing Radar Beacon
@@ -355,6 +391,7 @@ interface Props {
   selectedProperty: SelectedProperty;
   amenities: AmenityWithDistance[];
   walkingRadius: number; // meters
+  onSelectWalkingRadius?: (radius: number) => void;
   showSchoolRings: boolean;
   selectedCategory?: 'all' | AmenityCategory;
   selectedCategories?: AmenityCategory[];
@@ -366,12 +403,16 @@ interface Props {
   onRecenter?: () => void;
   onViewResalePrices?: () => void;
   onToggleSchoolRings?: () => void;
+  isPoiActive?: boolean;
+  mobileSheetState?: 'peek' | 'half' | 'full';
+  isSidebarOpen?: boolean;
 }
 
 export default function PropertyMap({
   selectedProperty,
   amenities,
   walkingRadius,
+  onSelectWalkingRadius,
   showSchoolRings,
   selectedCategory,
   selectedCategories,
@@ -383,6 +424,9 @@ export default function PropertyMap({
   onRecenter,
   onViewResalePrices,
   onToggleSchoolRings,
+  isPoiActive,
+  mobileSheetState,
+  isSidebarOpen = true,
 }: Props) {
   const propertyPinIcon = useMemo(
     () => createPropertyPinIcon(selectedProperty.name),
@@ -400,8 +444,7 @@ export default function PropertyMap({
       if (selectedCategories.length === 0) return [];
       return amenities.filter((a) => {
         if (selectedCategories.includes(a.category)) return true;
-        if (a.category === 'supermarket' && selectedCategories.includes('shopping')) return true;
-        if (a.category === 'shopping' && selectedCategories.includes('supermarket')) return true;
+        if (a.category === 'shopping' && (selectedCategories.includes('supermarket') || selectedCategories.includes('mall'))) return true;
         return false;
       });
     }
@@ -415,6 +458,8 @@ export default function PropertyMap({
   const [isLegendOpen, setIsLegendOpen] = React.useState(false);
   const [isMapStyleOpen, setIsMapStyleOpen] = React.useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = React.useState(false);
+  const [isRadiusOpen, setIsRadiusOpen] = React.useState(false);
+  const [isSchoolInfoOpen, setIsSchoolInfoOpen] = React.useState(false);
   const toolbarRef = useRef<HTMLDivElement>(null);
 
   // Close dropdowns when clicking outside
@@ -423,6 +468,8 @@ export default function PropertyMap({
       if (toolbarRef.current && !toolbarRef.current.contains(event.target as Node)) {
         setIsMapStyleOpen(false);
         setIsCategoryOpen(false);
+        setIsRadiusOpen(false);
+        setIsSchoolInfoOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -483,6 +530,7 @@ export default function PropertyMap({
           selectedProperty={selectedProperty}
           locateTarget={locateTarget}
           showSchoolRings={showSchoolRings}
+          walkingRadius={walkingRadius}
         />
         <MapSizeInvalidator />
         <MapClickHandler onMapClick={onSelectCoordinate} />
@@ -492,6 +540,7 @@ export default function PropertyMap({
           targetLat={selectedProperty.lat}
           targetLng={selectedProperty.lng}
           onRecenter={onRecenter}
+          isSidebarOpen={isSidebarOpen}
         />
 
         {/* Selected Property Pin */}
@@ -516,21 +565,37 @@ export default function PropertyMap({
                 {selectedProperty.name}
               </div>
               <p className="text-xs text-[#5C695C] break-words leading-relaxed">{selectedProperty.address}</p>
-              {onViewResalePrices && (
-                <div className="pt-2 mt-1 border-t border-[#243324]/10">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onViewResalePrices();
-                    }}
-                    className="w-full py-1.5 px-2.5 bg-emerald-800 hover:bg-emerald-900 !text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-[0.98]"
-                  >
-                    <TrendingUp className="w-3.5 h-3.5 !text-emerald-200" />
-                    <span className="!text-white font-medium">View Past 3Y Resale Prices</span>
-                  </button>
-                </div>
-              )}
+              {onViewResalePrices && (() => {
+                const isPrivate = isPrivateProperty(selectedProperty);
+                return (
+                  <div className="pt-2 mt-1 border-t border-[#243324]/10">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onViewResalePrices();
+                      }}
+                      className={`w-full py-1.5 px-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-[0.98] ${
+                        isPrivate
+                          ? 'bg-amber-700 hover:bg-amber-800 !text-white'
+                          : 'bg-emerald-800 hover:bg-emerald-900 !text-white'
+                      }`}
+                    >
+                      {isPrivate ? (
+                        <>
+                          <Building2 className="w-3.5 h-3.5 !text-amber-200" />
+                          <span className="!text-white font-medium">View Private Property Prices</span>
+                        </>
+                      ) : (
+                        <>
+                          <Building className="w-3.5 h-3.5 !text-emerald-200" />
+                          <span className="!text-white font-medium">View Past 5Y HDB Resale Prices</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                );
+              })()}
             </div>
           </Popup>
         </Marker>
@@ -595,10 +660,28 @@ export default function PropertyMap({
           </>
         )}
 
+        {/* Highlighted Two-Track School 2km Catchment Ring */}
+        {highlightedAmenity &&
+          highlightedAmenity.category === 'school' &&
+          highlightedAmenity.isTwoTrackScheme && (
+            <Circle
+              center={[highlightedAmenity.lat, highlightedAmenity.lng]}
+              radius={2000}
+              pathOptions={{
+                color: '#9333EA',
+                fillColor: '#A855F7',
+                fillOpacity: 0.08,
+                weight: 2.5,
+                dashArray: '8, 6',
+                opacity: 0.95,
+              }}
+            />
+          )}
+
         {/* Amenity POI Markers */}
         {visibleAmenities.map((amenity) => {
           const isHighlighted = highlightedAmenityId === amenity.id;
-          const icon = createAmenityIcon(amenity.category, isHighlighted);
+          const icon = getOrCreateAmenityIcon(amenity.category, isHighlighted, amenity.isTwoTrackScheme);
           const gmapsUrl = getGoogleMapsWalkUrl(
             selectedProperty.lat,
             selectedProperty.lng,
@@ -624,7 +707,7 @@ export default function PropertyMap({
                       {amenity.category.toUpperCase()}
                     </span>
                     <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                      {formatDistance(amenity.distanceMeters)} (~{amenity.walkingMinutes} min)
+                      ~{formatDistance(amenity.distanceMeters)} (~{amenity.walkingMinutes} min)
                     </span>
                   </div>
 
@@ -655,6 +738,15 @@ export default function PropertyMap({
                         </>
                       ) : (
                         <>
+                          <span
+                            className={`px-1.5 py-0.2 rounded text-[10px] font-bold mr-1 border ${
+                              isLrtStation(amenity)
+                                ? 'bg-teal-50 text-teal-800 border-teal-200'
+                                : 'bg-blue-50 text-blue-800 border-blue-200'
+                            }`}
+                          >
+                            {isLrtStation(amenity) ? 'LRT' : 'MRT'}
+                          </span>
                           {amenity.details.lines.map((line) => {
                             const lineInfo = MRT_LINES[line];
                             return (
@@ -670,7 +762,7 @@ export default function PropertyMap({
                           })}
                           {amenity.details.stationCode && (
                             <span className="text-xs text-slate-500 font-medium ml-1">
-                              {amenity.details.stationCode}
+                              ({amenity.details.stationCode})
                             </span>
                           )}
                         </>
@@ -678,7 +770,7 @@ export default function PropertyMap({
                     </div>
                   )}
 
-                  {amenity.details?.cuisine && (
+                  {amenity.category === 'food' && amenity.details?.cuisine && (
                     <div className="text-xs text-[#5C695C]">{amenity.details.cuisine}</div>
                   )}
 
@@ -741,17 +833,17 @@ export default function PropertyMap({
                     </div>
                   )}
 
-                  {amenity.schoolPriority && (
-                    <div className="mt-1">
-                      {amenity.schoolPriority === '1km' ? (
+                  {amenity.category === 'school' && (amenity.details?.schoolLevel === 'Primary' || !amenity.details?.schoolLevel) && (
+                    <div className="mt-1.5 flex items-center gap-1">
+                      {(amenity.schoolPriority === '1km' || amenity.distanceMeters <= 1000) ? (
                         <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-100 text-blue-800 border border-blue-300">
-                          ★ 1km Priority Zone
+                          Within 1km
                         </span>
-                      ) : (
+                      ) : (amenity.schoolPriority === '2km' || amenity.distanceMeters <= 2000) ? (
                         <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-100 text-amber-800 border border-amber-300">
-                          1km - 2km Range
+                          1km - 2km
                         </span>
-                      )}
+                      ) : null}
                     </div>
                   )}
 
@@ -779,17 +871,18 @@ export default function PropertyMap({
       {/* Top Map Action Toolbar: Basemap Style Dropdown & Category Filter Dropdown */}
       <div
         ref={toolbarRef}
-        className="custom-map-overlay absolute top-3 left-12 sm:top-4 sm:left-16 z-[1000] flex items-center gap-1.5 sm:gap-2"
+        className="custom-map-overlay absolute top-3 left-12 sm:top-4 sm:left-16 z-[1000] flex items-center gap-1.5 sm:gap-2 max-w-[calc(100vw-110px)] sm:max-w-none overflow-visible no-scrollbar py-0.5"
         style={{ pointerEvents: 'auto' }}
       >
         {/* Basemap Style Dropdown */}
-        <div className="relative">
+        <div className="relative shrink-0">
           <button
             type="button"
             onClick={(e) => {
               e.stopPropagation();
               setIsMapStyleOpen((prev) => !prev);
               setIsCategoryOpen(false);
+              setIsRadiusOpen(false);
             }}
             className="bg-white/95 backdrop-blur-md px-3 py-2 rounded-xl shadow-md border border-[#243324]/15 hover:bg-[#F4EFE6] text-[#243324] transition-all flex items-center gap-1.5 text-xs font-semibold cursor-pointer"
             title="Select basemap layer style"
@@ -840,6 +933,89 @@ export default function PropertyMap({
           )}
         </div>
 
+        {/* Walking Radius Dropdown Selector (Hidden on < sm because mobile navbar already has permanent segmented controls) */}
+        {onSelectWalkingRadius && (
+          <div className="relative hidden sm:block shrink-0">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsRadiusOpen((prev) => !prev);
+                setIsMapStyleOpen(false);
+                setIsCategoryOpen(false);
+              }}
+              className={`bg-white/95 backdrop-blur-md px-3 py-2 rounded-xl shadow-md border transition-all flex items-center gap-1.5 text-xs font-semibold cursor-pointer ${
+                isRadiusOpen
+                  ? 'border-emerald-700/40 bg-[#F4EFE6] text-[#243324]'
+                  : 'border-[#243324]/15 hover:bg-[#F4EFE6] text-[#243324]'
+              }`}
+              title="Select walking radius threshold"
+            >
+              <Clock className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+              <span className="hidden sm:inline">
+                {walkingRadius === 400
+                  ? '5 mins (400m)'
+                  : walkingRadius === 800
+                  ? '10 mins (800m)'
+                  : '15 mins (1.2km)'}
+              </span>
+              <span className="sm:hidden">
+                {walkingRadius === 400
+                  ? '5 mins'
+                  : walkingRadius === 800
+                  ? '10 mins'
+                  : '15 mins'}
+              </span>
+              <ChevronDown
+                className={`w-3.5 h-3.5 text-[#5C695C] transition-transform duration-200 ${
+                  isRadiusOpen ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+
+            {isRadiusOpen && (
+              <div className="absolute left-0 mt-1.5 w-52 bg-white/98 backdrop-blur-md rounded-xl shadow-xl border border-[#243324]/15 py-1 z-[1100] animate-in fade-in slide-in-from-top-2 duration-150">
+                <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#5C695C] border-b border-[#243324]/10">
+                  Walking Radius
+                </div>
+                {[
+                  { meters: 400, label: '5 mins', distance: '400m', desc: 'Quick stroll' },
+                  { meters: 800, label: '10 mins', distance: '800m', desc: 'Standard walk' },
+                  { meters: 1200, label: '15 mins', distance: '1.2km', desc: 'Extended range' },
+                ].map((opt) => (
+                  <button
+                    key={opt.meters}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelectWalkingRadius(opt.meters);
+                      setIsRadiusOpen(false);
+                    }}
+                    className={`w-full text-left px-3 py-2 flex items-center justify-between hover:bg-[#F4EFE6] transition-colors cursor-pointer ${
+                      walkingRadius === opt.meters
+                        ? 'bg-emerald-50/80 font-bold text-[#243324]'
+                        : 'text-[#243324]/80'
+                    }`}
+                  >
+                    <div>
+                      <div className="text-xs font-semibold">
+                        {opt.label}{' '}
+                        <span className="text-[11px] font-normal text-[#5C695C]">
+                          ({opt.distance})
+                        </span>
+                      </div>
+                      <div className="text-[10px] text-[#5C695C]">{opt.desc}</div>
+                    </div>
+                    {walkingRadius === opt.meters && (
+                      <Check className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Category Filter Dropdown */}
         {selectedCategories && onToggleCategory && (
           <div className="relative">
@@ -849,6 +1025,7 @@ export default function PropertyMap({
                 e.stopPropagation();
                 setIsCategoryOpen((prev) => !prev);
                 setIsMapStyleOpen(false);
+                setIsRadiusOpen(false);
               }}
               className={`bg-white/95 backdrop-blur-md px-3 py-2 rounded-xl shadow-md border transition-all flex items-center gap-1.5 text-xs font-semibold cursor-pointer ${
                 isCategoryOpen || selectedCategories.length > 0
@@ -953,42 +1130,107 @@ export default function PropertyMap({
 
         {/* 1km & 2km School Priority Rings Toggle Button */}
         {onToggleSchoolRings && (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleSchoolRings();
-            }}
-            className={`bg-white/95 backdrop-blur-md px-2.5 sm:px-3 py-2 rounded-xl shadow-md border transition-all flex items-center gap-1.5 text-xs font-semibold cursor-pointer ${
-              showSchoolRings
-                ? 'border-blue-600/40 bg-blue-50/90 text-blue-950'
-                : 'border-[#243324]/15 text-[#5C695C] hover:bg-[#F4EFE6]'
-            }`}
-            title="Toggle 1km & 2km MOE Primary School Priority Rings"
-          >
-            <span className="text-xs">🏫</span>
-            <span className="hidden sm:inline">School Rings</span>
-            <span className="sm:hidden">1k &amp; 2k</span>
-            <span
-              className={`w-2 h-2 rounded-full transition-colors ${
-                showSchoolRings ? 'bg-blue-600' : 'bg-slate-300'
+          <div className="relative flex items-center shrink-0">
+            <div
+              className={`bg-white/95 backdrop-blur-md px-2.5 sm:px-3 py-2 rounded-xl shadow-md border transition-all flex items-center gap-1.5 text-xs font-semibold ${
+                showSchoolRings
+                  ? 'border-blue-600/40 bg-blue-50/90 text-blue-950'
+                  : 'border-[#243324]/15 text-[#5C695C] hover:bg-[#F4EFE6]'
               }`}
-            />
-          </button>
+            >
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleSchoolRings();
+                }}
+                className="flex items-center gap-1.5 cursor-pointer"
+                title="Toggle 1km & 2km MOE Primary School Priority Rings (Updated for 2027 Two-Track Framework)"
+              >
+                <span className="text-xs">🏫</span>
+                <span className="hidden sm:inline">School Rings</span>
+                <span className="sm:hidden">1k &amp; 2k</span>
+                <span
+                  className={`w-2 h-2 rounded-full transition-colors ${
+                    showSchoolRings ? 'bg-blue-600' : 'bg-slate-300'
+                  }`}
+                />
+              </button>
+
+              {/* Info 'i' Button with Hover & Tap Tooltip */}
+              <div
+                className="relative inline-flex items-center"
+                onMouseEnter={() => setIsSchoolInfoOpen(true)}
+                onMouseLeave={() => setIsSchoolInfoOpen(false)}
+              >
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsSchoolInfoOpen((prev) => !prev);
+                  }}
+                  className="text-blue-700/80 hover:text-blue-950 p-0.5 rounded-full hover:bg-blue-100/70 transition-colors cursor-pointer inline-flex items-center ml-0.5"
+                  aria-label="MOE Primary School Rings Reference Notice"
+                >
+                  <Info className="w-3.5 h-3.5" />
+                </button>
+
+                {/* Hover & Tap Popover Tooltip */}
+                {isSchoolInfoOpen && (
+                  <div
+                    className="absolute right-0 sm:left-1/2 sm:-translate-x-1/2 top-full pt-2 z-[1500]"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="w-64 sm:w-72 p-3 bg-[#243324] text-white text-[11px] font-normal leading-relaxed rounded-xl shadow-2xl border border-white/20 animate-in fade-in zoom-in-95 duration-150">
+                      <div className="flex items-center justify-between gap-1.5 border-b border-white/15 pb-1.5 mb-1.5">
+                        <div className="font-semibold text-amber-300 flex items-center gap-1.5">
+                          <Info className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+                          <span>For reference only</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsSchoolInfoOpen(false);
+                          }}
+                          className="text-white/60 hover:text-white p-0.5 rounded hover:bg-white/10 cursor-pointer text-sm font-bold leading-none"
+                          aria-label="Close notice"
+                        >
+                          &times;
+                        </button>
+                      </div>
+                      <p className="text-white/90 leading-snug">
+                        This is for reference only. Please refer to official MOE data for the most accurate information.
+                      </p>
+                      {/* Pointer arrow pointing up to the info icon */}
+                      <div className="absolute top-1 right-2 sm:left-1/2 sm:-translate-x-1/2 border-4 border-transparent border-b-[#243324]" />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         )}
       </div>
 
-      {/* Floating Interactive Guide Pill (Bottom Left) */}
-      <div className="absolute bottom-28 lg:bottom-4 left-3 sm:left-4 z-[1000] bg-white/95 backdrop-blur-md px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl shadow-md border border-[#243324]/10 text-[11px] sm:text-xs text-[#243324] flex items-center gap-2 pointer-events-none">
-        <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
-        <span className="font-medium">
-          Click <span className="font-bold underline">anywhere</span> on map to drop a pin
-        </span>
-      </div>
-
+      {/* Floating Interactive Guide Pill (Bottom Left) - Suppressed when POI card is active or sheet expanded */}
+      {!isPoiActive && (!mobileSheetState || mobileSheetState === 'peek') && (
+        <div className="absolute bottom-28 lg:bottom-4 left-3 sm:left-4 z-[900] bg-white/95 backdrop-blur-md px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl shadow-md border border-[#243324]/10 text-[11px] sm:text-xs text-[#243324] flex items-center gap-2 pointer-events-none animate-in fade-in duration-150">
+          <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
+          <span className="font-medium">
+            Click <span className="font-bold underline">anywhere</span> on map to drop a pin
+          </span>
+        </div>
+      )}
 
       {/* Floating Collapsible Legend (Bottom Right) */}
-      <div className="custom-map-overlay absolute bottom-4 right-4 z-[1000] hidden sm:block">
+      <div
+        className={`custom-map-overlay absolute z-[1000] hidden sm:block ${
+          mobileSheetState && mobileSheetState !== 'peek'
+            ? 'hidden'
+            : 'bottom-[120px] lg:bottom-4 right-3 sm:right-4'
+        }`}
+      >
         {isLegendOpen ? (
           <div className="bg-white/95 backdrop-blur-md p-3.5 rounded-2xl shadow-lg border border-[#243324]/10 text-xs flex flex-col gap-1.5 min-w-[175px] animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between gap-2 border-b border-[#243324]/10 pb-1.5 mb-0.5">
@@ -1048,18 +1290,31 @@ export default function PropertyMap({
               </div>
             </div>
 
-            {showSchoolRings && (
-              <div className="pt-2 mt-1 border-t border-[#243324]/10 text-[11px] space-y-1">
-                <div className="flex items-center gap-2 text-blue-700 font-semibold">
-                  <span className="w-3 h-0.5 border-t-2 border-dashed border-blue-600" />
-                  <span>1km School Priority</span>
-                </div>
-                <div className="flex items-center gap-2 text-amber-800 font-semibold">
-                  <span className="w-3 h-0.5 border-t-2 border-dashed border-amber-600" />
-                  <span>2km School Priority</span>
-                </div>
+            {/* Walking Radius & School Rings Legend */}
+            <div className="pt-2 mt-1 border-t border-[#243324]/10 text-[11px] space-y-1.5">
+              <div className="flex items-center gap-2 text-emerald-800 font-semibold">
+                <span className="w-3 h-0.5 border-t-2 border-dashed border-emerald-600 shrink-0" />
+                <span>
+                  {walkingRadius / 80} mins ({walkingRadius >= 1000 ? `${(walkingRadius / 1000).toFixed(1)}km` : `${walkingRadius}m`}) Walking Isochrone
+                </span>
               </div>
-            )}
+              {showSchoolRings && (
+                <>
+                  <div className="flex items-center gap-2 text-blue-700 font-semibold">
+                    <span className="w-3 h-0.5 border-t-2 border-dashed border-blue-600 shrink-0" />
+                    <span>Within 1km School Boundary</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-amber-800 font-semibold">
+                    <span className="w-3 h-0.5 border-t-2 border-dashed border-amber-600 shrink-0" />
+                    <span>1km - 2km School Boundary</span>
+                  </div>
+                  <div className="pt-1 mt-1 border-t border-[#243324]/10 text-[10px] text-[#5C695C] flex items-center gap-1">
+                    <Info className="w-3 h-3 text-blue-600 shrink-0" />
+                    <span>For reference only. Refer to official MOE data for most accurate info.</span>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         ) : (
           <button

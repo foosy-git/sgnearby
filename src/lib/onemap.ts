@@ -12,6 +12,167 @@ export interface GeocodeResult {
   propertyType?: 'HDB' | 'Condo' | 'Landed' | 'Commercial' | 'Custom Location';
 }
 
+const CONDO_PATTERNS = [
+  'CONDO',
+  'CONDOMINIUM',
+  'RESIDENCES',
+  'RESIDENCE',
+  'SUITES',
+  'VILLAS',
+  'MANSION',
+  'MANSIONS',
+  'APARTMENT',
+  'APARTMENTS',
+  'FOREST WOODS',
+  'WOODS',
+  'LEEDON',
+  'INTERLACE',
+  'PARC ESTA',
+  'NORMANTON PARK',
+  'TRE VER',
+  'JADESCAPE',
+  'PARC BOTANNIA',
+  'STIRLING RESIDENCES',
+  'AFFINITY AT SERANGOON',
+  'THE FLORENCE',
+  'AVENUE SOUTH',
+  'RIVIERE',
+  'MARINA ONE',
+];
+
+const LANDED_PATTERNS = [
+  'BUNGALOW',
+  'SEMI-DETACHED',
+  'DETACHED',
+  'TERRACE HOUSE',
+  'CORNER TERRACE',
+  'LANDED',
+  'VILLA',
+];
+
+const HDB_TOWNS = [
+  'ANG MO KIO', 'BEDOK', 'BISHAN', 'BUKIT BATOK', 'BUKIT MERAH',
+  'BUKIT PANJANG', 'CHOA CHU KANG', 'CLEMENTI', 'GEYLANG', 'HOUGANG',
+  'JURONG EAST', 'JURONG WEST', 'KALLANG', 'WHAMPOA', 'MARINE PARADE',
+  'PASIR RIS', 'PUNGGOL', 'QUEENSTOWN', 'SEMBAWANG', 'SENGKANG',
+  'SERANGOON', 'TAMPINES', 'TOA PAYOH', 'WOODLANDS', 'YISHUN'
+];
+
+const ROAD_SUFFIXES = [
+  'ROAD', 'RD', 'STREET', 'ST', 'AVENUE', 'AVE', 'DRIVE', 'DR',
+  'LANE', 'LN', 'WAY', 'CRESCENT', 'CRES', 'CLOSE', 'CL', 'WALK',
+  'HILL', 'VIEW', 'SECTOR', 'PLACE', 'PL', 'LOOP', 'LINK', 'RISE',
+  'CENTRAL', 'NORTH', 'SOUTH', 'EAST', 'WEST', 'RING', 'PARADE',
+];
+
+/**
+ * Heuristically infers Singapore property type from building name, address, or block.
+ */
+export function inferPropertyType(
+  buildingName?: string,
+  address?: string,
+  block?: string
+): 'HDB' | 'Condo' | 'Landed' | 'Custom Location' {
+  const bUpper = (buildingName || '').toUpperCase().trim();
+  const aUpper = (address || '').toUpperCase().trim();
+  const combined = `${bUpper} ${aUpper}`.trim();
+  if (!combined) return block ? 'HDB' : 'Custom Location';
+
+  // 1. Check explicit HDB names / indicators first
+  if (
+    combined.includes('PINNACLE @ DUXTON') ||
+    combined.includes('NATURA LOFT') ||
+    combined.includes('SKYVILLE') ||
+    combined.includes('GREENVERGE') ||
+    combined.includes('WATERWAY TERRACES') ||
+    combined.includes('THE PEAK @ TOA PAYOH') ||
+    combined.includes('HDB') ||
+    combined.includes('HOUSING & DEVELOPMENT') ||
+    combined.includes('HOUSING AND DEVELOPMENT') ||
+    combined.includes('BTO') ||
+    combined.includes('DBSS')
+  ) {
+    return 'HDB';
+  }
+
+  // 2. Check Landed keywords
+  if (LANDED_PATTERNS.some((p) => combined.includes(p))) {
+    return 'Landed';
+  }
+
+  // 3. Check Condo keywords
+  if (CONDO_PATTERNS.some((p) => combined.includes(p))) {
+    return 'Condo';
+  }
+
+  // 4. If there is an explicit block number and no condo keyword matched, it is HDB
+  if (block && block !== 'NIL') {
+    return 'HDB';
+  }
+
+  // 5. If combined string matches an HDB town name, default to HDB
+  if (HDB_TOWNS.some((town) => combined.includes(town))) {
+    return 'HDB';
+  }
+
+  // Check if building name is simply a road name
+  const isLikelyRoad = ROAD_SUFFIXES.some(
+    (s) => bUpper.endsWith(` ${s}`) || bUpper === s
+  );
+
+  if (
+    bUpper &&
+    bUpper !== 'NIL' &&
+    !isLikelyRoad &&
+    !bUpper.startsWith('BLK ') &&
+    !bUpper.startsWith('BLOCK ')
+  ) {
+    return 'Condo';
+  }
+
+  if (block) {
+    return 'HDB';
+  }
+
+  return 'Custom Location';
+}
+
+/**
+ * Accurately determines if a property is a private residential property (Condo/Landed)
+ * or non-private (HDB flat). Non-private / HDB properties strictly return false.
+ */
+export function isPrivateProperty(prop?: SelectedProperty | null): boolean {
+  if (!prop) return false;
+  // If propertyType is explicitly HDB, it's NEVER private
+  if (prop.propertyType === 'HDB') return false;
+  // If propertyType is explicitly Condo or Landed, it IS private
+  if (prop.propertyType === 'Condo' || prop.propertyType === 'Landed') return true;
+
+  const combined = `${prop.name || ''} ${prop.address || ''}`.toUpperCase();
+
+  // If it has explicit condo keyword, it is private
+  if (CONDO_PATTERNS.some((p) => combined.includes(p))) {
+    return true;
+  }
+  if (LANDED_PATTERNS.some((p) => combined.includes(p))) {
+    return true;
+  }
+
+  // If it has a block number, it is HDB
+  if (prop.block && prop.block !== 'NIL') {
+    return false;
+  }
+
+  // If name or address references an HDB town, it is HDB
+  if (HDB_TOWNS.some((town) => combined.includes(town))) {
+    return false;
+  }
+
+  // Otherwise infer based on name, address, block
+  const inferred = inferPropertyType(prop.name, prop.address, prop.block);
+  return inferred === 'Condo' || inferred === 'Landed';
+}
+
 /**
  * Searches Singapore locations via OneMap API or Nominatim OpenStreetMap.
  * Also checks local featured properties for instant zero-latency match.
@@ -55,15 +216,23 @@ export async function searchSingaporeLocation(query: string): Promise<GeocodeRes
     if (response.ok) {
       const data = await response.json();
       if (data && data.results && data.results.length > 0) {
-        const onemapResults: GeocodeResult[] = data.results.slice(0, 6).map((r: any) => ({
-          address: r.ADDRESS || `${r.ROAD_NAME} Singapore ${r.POSTAL || ''}`,
-          lat: parseFloat(r.LATITUDE),
-          lng: parseFloat(r.LONGITUDE),
-          buildingName: r.BUILDING !== 'NIL' ? r.BUILDING : r.ROAD_NAME,
-          postalCode: r.POSTAL !== 'NIL' ? r.POSTAL : undefined,
-          block: r.BLK_NO !== 'NIL' ? r.BLK_NO : undefined,
-          roadName: r.ROAD_NAME !== 'NIL' ? r.ROAD_NAME : undefined,
-        }));
+        const onemapResults: GeocodeResult[] = data.results.slice(0, 6).map((r: any) => {
+          const bName = r.BUILDING !== 'NIL' ? r.BUILDING : undefined;
+          const road = r.ROAD_NAME !== 'NIL' ? r.ROAD_NAME : undefined;
+          const blk = r.BLK_NO !== 'NIL' ? r.BLK_NO : undefined;
+          const propType = inferPropertyType(bName || r.SEARCHVAL, r.ADDRESS, blk);
+
+          return {
+            address: r.ADDRESS || `${r.ROAD_NAME} Singapore ${r.POSTAL || ''}`,
+            lat: parseFloat(r.LATITUDE),
+            lng: parseFloat(r.LONGITUDE),
+            buildingName: bName || (blk ? `Blk ${blk} ${road || ''}`.trim() : road),
+            postalCode: r.POSTAL !== 'NIL' ? r.POSTAL : undefined,
+            block: blk,
+            roadName: road,
+            propertyType: propType,
+          };
+        });
 
         // Deduplicate with local matches
         const combined: GeocodeResult[] = [...localMatches];
@@ -101,6 +270,7 @@ export async function searchSingaporeLocation(query: string): Promise<GeocodeRes
         lat: parseFloat(r.lat),
         lng: parseFloat(r.lon),
         buildingName: r.name || r.display_name.split(',')[0],
+        propertyType: inferPropertyType(r.name, r.display_name),
       }));
 
       const combined: GeocodeResult[] = [...localMatches];

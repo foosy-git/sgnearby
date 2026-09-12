@@ -15,6 +15,7 @@ import {
 import { calculateCommuteMatrix } from '@/lib/commuteMatrix';
 import { generatePortalLinks } from '@/lib/portalLinks';
 import { searchSingaporeLocation, GeocodeResult } from '@/lib/onemap';
+import { isLrtStation } from '@/data/mrtStations';
 import {
   X,
   Scale,
@@ -96,6 +97,9 @@ export default function LocationComparisonModal({
     );
     const nearestPark = amenities.find((a) => a.category === 'park');
     const highRiskSchools1kmCount = schools1km.filter((a) => a.details?.ballotingRisk === 'High').length;
+    const twoTrackSchools2km = amenities.filter(
+      (a) => a.category === 'school' && a.isTwoTrackScheme && a.twoTrackTrack === 'within-2km'
+    );
     const commuteList = calculateCommuteMatrix(locationA.lat, locationA.lng, nearestMrt);
     const cbdCommute = commuteList.find((c) => c.hub.id === 'cbd-raffles');
     const oneNorthCommute = commuteList.find((c) => c.hub.id === 'one-north');
@@ -106,6 +110,7 @@ export default function LocationComparisonModal({
       nearestMrt,
       schools1kmCount: schools1km.length,
       highRiskSchools1kmCount,
+      twoTrackSchools2kmCount: twoTrackSchools2km.length,
       nearestHawker,
       nearestSupermarket,
       nearestPark,
@@ -136,6 +141,9 @@ export default function LocationComparisonModal({
     );
     const nearestPark = amenities.find((a) => a.category === 'park');
     const highRiskSchools1kmCount = schools1km.filter((a) => a.details?.ballotingRisk === 'High').length;
+    const twoTrackSchools2km = amenities.filter(
+      (a) => a.category === 'school' && a.isTwoTrackScheme && a.twoTrackTrack === 'within-2km'
+    );
     const commuteList = calculateCommuteMatrix(locationB.lat, locationB.lng, nearestMrt);
     const cbdCommute = commuteList.find((c) => c.hub.id === 'cbd-raffles');
     const oneNorthCommute = commuteList.find((c) => c.hub.id === 'one-north');
@@ -146,6 +154,7 @@ export default function LocationComparisonModal({
       nearestMrt,
       schools1kmCount: schools1km.length,
       highRiskSchools1kmCount,
+      twoTrackSchools2kmCount: twoTrackSchools2km.length,
       nearestHawker,
       nearestSupermarket,
       nearestPark,
@@ -345,7 +354,7 @@ export default function LocationComparisonModal({
                   Proximity &amp; Commute Milestones
                 </div>
                 <div className="text-xs text-[#243324]">
-                  🚆 <strong>Nearest MRT:</strong>{' '}
+                  🚆 <strong>{isLrtStation(metricsA.nearestMrt) ? 'Nearest LRT:' : 'Nearest MRT:'}</strong>{' '}
                   {metricsA.nearestMrt
                     ? `${metricsA.nearestMrt.name} (${formatDistance(metricsA.nearestMrt.distanceMeters)}, ~${metricsA.nearestMrt.walkingMinutes} min)`
                     : 'None within 2km'}
@@ -363,8 +372,13 @@ export default function LocationComparisonModal({
                   </div>
                 )}
                 <div className="text-xs text-[#243324]">
-                  🏫 <strong>MOE Schools in 1km:</strong>{' '}
-                  <span className="font-bold text-indigo-900">{metricsA.schools1kmCount} schools</span>{' '}
+                  🏫 <strong>MOE Schools:</strong>{' '}
+                  <span className="font-bold text-indigo-900">{metricsA.schools1kmCount} in 1km</span>{' '}
+                  {metricsA.twoTrackSchools2kmCount > 0 && (
+                    <span className="text-[10px] text-purple-900 font-bold bg-purple-100 px-1.5 py-0.5 rounded border border-purple-300 ml-1">
+                      🏛️ {metricsA.twoTrackSchools2kmCount} Two-Track (2km)
+                    </span>
+                  )}
                   {metricsA.highRiskSchools1kmCount > 0 && (
                     <span className="text-[10px] text-rose-700 font-bold bg-rose-50 px-1 rounded border border-rose-200 ml-1">
                       🔥 {metricsA.highRiskSchools1kmCount} High 2C Risk
@@ -464,7 +478,7 @@ export default function LocationComparisonModal({
                   Proximity &amp; Commute Milestones
                 </div>
                 <div className="text-xs text-[#243324]">
-                  🚆 <strong>Nearest MRT:</strong>{' '}
+                  🚆 <strong>{isLrtStation(metricsB.nearestMrt) ? 'Nearest LRT:' : 'Nearest MRT:'}</strong>{' '}
                   {metricsB.nearestMrt
                     ? `${metricsB.nearestMrt.name} (${formatDistance(metricsB.nearestMrt.distanceMeters)}, ~${metricsB.nearestMrt.walkingMinutes} min)`
                     : 'None within 2km'}
@@ -482,8 +496,13 @@ export default function LocationComparisonModal({
                   </div>
                 )}
                 <div className="text-xs text-[#243324]">
-                  🏫 <strong>MOE Schools in 1km:</strong>{' '}
-                  <span className="font-bold text-indigo-900">{metricsB.schools1kmCount} schools</span>{' '}
+                  🏫 <strong>MOE Schools:</strong>{' '}
+                  <span className="font-bold text-indigo-900">{metricsB.schools1kmCount} in 1km</span>{' '}
+                  {metricsB.twoTrackSchools2kmCount > 0 && (
+                    <span className="text-[10px] text-purple-900 font-bold bg-purple-100 px-1.5 py-0.5 rounded border border-purple-300 ml-1">
+                      🏛️ {metricsB.twoTrackSchools2kmCount} Two-Track (2km)
+                    </span>
+                  )}
                   {metricsB.highRiskSchools1kmCount > 0 && (
                     <span className="text-[10px] text-rose-700 font-bold bg-rose-50 px-1 rounded border border-rose-200 ml-1">
                       🔥 {metricsB.highRiskSchools1kmCount} High 2C Risk

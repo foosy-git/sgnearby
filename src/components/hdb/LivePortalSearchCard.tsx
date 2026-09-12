@@ -13,14 +13,16 @@ interface Props {
   selectedProperty: SelectedProperty;
   selectedFlatType?: string;
   medianPrice?: number;
+  overrideProjectName?: string;
 }
 
 export default function LivePortalSearchCard({
   selectedProperty,
   selectedFlatType,
+  overrideProjectName,
 }: Props) {
   const [copiedPostal, setCopiedPostal] = useState(false);
-  const portalData = getPortalLinksWithMetadata(selectedProperty, selectedFlatType);
+  const portalData = getPortalLinksWithMetadata(selectedProperty, selectedFlatType, overrideProjectName);
   const portalLinks = portalData.links;
 
   const handleCopyPostal = () => {

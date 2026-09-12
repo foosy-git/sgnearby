@@ -74,6 +74,20 @@ export const ALL_FOOD_PLACES: Amenity[] = [
     }
   },
   {
+    id: 'hawk-amk-408-foodhouse',
+    name: 'AMK 408 Foodhouse (408 Ang Mo Kio Ave 10)',
+    category: 'food',
+    lat: 1.362091,
+    lng: 103.854588,
+    address: '408 Ang Mo Kio Ave 10 #01-805, Teck Ghee Square, Singapore 560408',
+    details: {
+      foodType: 'Coffeeshop / Food Court',
+      hawkerType: 'Food Centre & Coffeeshop',
+      stallsCount: 12,
+      cuisine: 'AMK 408 Seafood Zi Char, Hong Kong Roasted Delights, Traditional Wanton Noodles, Handmade Ban Mian, Fishball Noodles, Kopi & Toast'
+    }
+  },
+  {
     id: 'hawk-nex-food-republic',
     name: 'Food Republic (NEX Serangoon)',
     category: 'food',

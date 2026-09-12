@@ -66,7 +66,8 @@ export const ALL_SCHOOLS: Amenity[] = [
       schoolLevel: 'Primary',
       schoolType: 'Government-aided, SAP',
       schoolGender: 'Co-ed',
-      cuisine: 'Affiliated to Singapore Hokkien Huay Kuan[4]'
+    
+      ballotingRisk: 'High'
     }
   },
   {
@@ -79,7 +80,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'Moderate'
     }
   },
   {
@@ -131,7 +134,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'Low'
     }
   },
   {
@@ -162,15 +167,17 @@ export const ALL_SCHOOLS: Amenity[] = [
   },
   {
     id: 'sch-anglo-chinese-school-12',
-    name: 'Anglo-Chinese School',
+    name: 'Anglo-Chinese School (Primary)',
     category: 'school',
     lat: 1.318371,
     lng: 103.835610,
-    address: 'Singapore (MOE Code: MOE)',
+    address: '50 Barker Road Singapore 309918 (MOE Code: 5002)',
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government-aided',
-      schoolGender: 'Boys'
+      schoolGender: 'Boys',
+    
+      ballotingRisk: 'High'
     }
   },
   {
@@ -183,8 +190,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'Government-aided',
-      schoolGender: 'Boys',
-      cuisine: 'Affiliated to: Methodist Girls\' School'
+      schoolGender: 'Boys'
     }
   },
   {
@@ -197,8 +203,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'IndependentIP',
-      schoolGender: 'Boys',
-      cuisine: 'Offers the International Baccalaureate certificate Affiliated to: Methodist Girls\' School (IP)'
+      schoolGender: 'Boys'
     }
   },
   {
@@ -211,7 +216,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government-aided',
-      schoolGender: 'Boys'
+      schoolGender: 'Boys',
+    
+      ballotingRisk: 'High'
     }
   },
   {
@@ -237,22 +244,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'Government-aided',
-      schoolGender: 'Co-ed',
-      cuisine: 'Affiliated to: Catholic Junior College (Non-IP)[5]'
-    }
-  },
-  {
-    id: 'sch-balestier-hill-primary-school-18',
-    name: 'Balestier Hill Primary School',
-    category: 'school',
-    lat: 1.325600,
-    lng: 103.842200,
-    address: 'Singapore (MOE Code: 1234)',
-    details: {
-      schoolLevel: 'Primary',
-      schoolType: 'Government',
-      schoolGender: 'Co-ed',
-      cuisine: 'Merged with Bendemeer Primary School in 2019[5]'
+      schoolGender: 'Co-ed'
     }
   },
   {
@@ -356,8 +348,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed',
-      cuisine: 'Merged with Balestier Hill Primary School in 2019[5]'
+      schoolGender: 'Co-ed'
     }
   },
   {
@@ -487,7 +478,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'Moderate'
     }
   },
   {
@@ -578,7 +571,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'Moderate'
     }
   },
   {
@@ -592,7 +587,8 @@ export const ALL_SCHOOLS: Amenity[] = [
       schoolLevel: 'Primary',
       schoolType: 'Government',
       schoolGender: 'Co-ed',
-      cuisine: 'Merged with Loyang Primary School in 2019[5]'
+    
+      ballotingRisk: 'Low'
     }
   },
   {
@@ -618,8 +614,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'Government-aidedAutonomousSAPIP',
-      schoolGender: 'Boys',
-      cuisine: 'Affiliated to: Eunoia Junior College (IP) Singapore Chinese Girls\' School (IP), CHIJ Saint Nicholas Girls\' School (IP) C'
+      schoolGender: 'Boys'
     }
   },
   {
@@ -632,8 +627,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'GovernmentAutonomousIP',
-      schoolGender: 'Girls',
-      cuisine: 'Affiliated to: Victoria Junior College (IP) Victoria School (IP)'
+      schoolGender: 'Girls'
     }
   },
   {
@@ -646,8 +640,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed',
-      cuisine: 'Merged with MacPherson Primary School in 2019[5]'
+      schoolGender: 'Co-ed'
     }
   },
   {
@@ -686,7 +679,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government-aided',
-      schoolGender: 'Girls'
+      schoolGender: 'Girls',
+    
+      ballotingRisk: 'High'
     }
   },
   {
@@ -712,8 +707,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'Government-aidedAutonomous',
-      schoolGender: 'Girls',
-      cuisine: 'Affiliated to: Catholic Junior College (Non-IP) CHIJ Katong'
+      schoolGender: 'Girls'
     }
   },
   {
@@ -739,7 +733,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government-aided',
-      schoolGender: 'Girls'
+      schoolGender: 'Girls',
+    
+      ballotingRisk: 'Moderate'
     }
   },
   {
@@ -765,7 +761,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government-aided',
-      schoolGender: 'Girls'
+      schoolGender: 'Girls',
+    
+      ballotingRisk: 'High'
     }
   },
   {
@@ -778,8 +776,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'Government-aidedAutonomous',
-      schoolGender: 'Girls',
-      cuisine: 'Affiliated to: Catholic Junior College (Non-IP) CHIJ Primary (Toa Payoh)'
+      schoolGender: 'Girls'
     }
   },
   {
@@ -792,8 +789,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'Government-aided',
-      schoolGender: 'Girls',
-      cuisine: 'Affiliated to: Catholic Junior College (Non-IP) CHIJ Our Lady of the Nativity & CHIJ Our Lady of Good Counsel'
+      schoolGender: 'Girls'
     }
   },
   {
@@ -806,8 +802,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'Government-aidedAutonomousSAPIP',
-      schoolGender: 'Girls',
-      cuisine: 'Affiliated to: Eunoia Junior College (IP), Singapore Chinese Girls\' School (IP) & Catholic High School (IP) Catholic Jun'
+      schoolGender: 'Girls'
     }
   },
   {
@@ -833,8 +828,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'Government-aided',
-      schoolGender: 'Girls',
-      cuisine: 'Affiliated to: Catholic Junior College (Non-IP) CHIJ (Kellock), CHIJ Our Lady Queen of Peace'
+      schoolGender: 'Girls'
     }
   },
   {
@@ -848,7 +842,8 @@ export const ALL_SCHOOLS: Amenity[] = [
       schoolLevel: 'Primary',
       schoolType: 'Government-aided',
       schoolGender: 'Co-ed',
-      cuisine: 'Affiliated to Singapore Hokkien Huay Kuan[4]'
+    
+      ballotingRisk: 'High'
     }
   },
   {
@@ -874,8 +869,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'Government-aided',
-      schoolGender: 'Co-ed',
-      cuisine: 'Affiliated to: St. Andrews Junior College (Non-IP)'
+      schoolGender: 'Co-ed'
     }
   },
   {
@@ -914,8 +908,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'Government-aidedAutonomousSAP',
-      schoolGender: 'Co-ed',
-      cuisine: 'Affiliated to: Nanyang Junior College (Non-IP) Chung Cheng High School (Yishun) (Non-IP)'
+      schoolGender: 'Co-ed'
     }
   },
   {
@@ -928,8 +921,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'Government-aided',
-      schoolGender: 'Co-ed',
-      cuisine: 'Affiliated to: Nanyang Junior College (Non-IP) Chung Cheng High School (Main) (Non-IP)'
+      schoolGender: 'Co-ed'
     }
   },
   {
@@ -942,7 +934,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'Moderate'
     }
   },
   {
@@ -981,7 +975,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'Low'
     }
   },
   {
@@ -1011,20 +1007,6 @@ export const ALL_SCHOOLS: Amenity[] = [
     }
   },
   {
-    id: 'sch-coral-primary-school-76',
-    name: 'Coral Primary School',
-    category: 'school',
-    lat: 1.368000,
-    lng: 103.948600,
-    address: 'Singapore (MOE Code: 1754)',
-    details: {
-      schoolLevel: 'Primary',
-      schoolType: 'Government',
-      schoolGender: 'Co-ed',
-      cuisine: 'Merged with White Sands Primary School in 2019[5]'
-    }
-  },
-  {
     id: 'sch-corporation-primary-school-77',
     name: 'Corporation Primary School',
     category: 'school',
@@ -1048,20 +1030,6 @@ export const ALL_SCHOOLS: Amenity[] = [
       schoolLevel: 'Secondary',
       schoolType: 'GovernmentAutonomous',
       schoolGender: 'Girls'
-    }
-  },
-  {
-    id: 'sch-da-qiao-primary-school-79',
-    name: 'Da Qiao Primary School',
-    category: 'school',
-    lat: 0.000000,
-    lng: 0.000000,
-    address: 'Singapore (MOE Code: 1168)',
-    details: {
-      schoolLevel: 'Primary',
-      schoolType: 'Government',
-      schoolGender: 'Co-ed',
-      cuisine: 'Merged with Jing Shan Primary School in 2019[5]'
     }
   },
   {
@@ -1113,8 +1081,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government-aided',
-      schoolGender: 'Co-ed',
-      cuisine: 'Lasallian school,[6] founded in 1952.'
+      schoolGender: 'Co-ed'
     }
   },
   {
@@ -1179,8 +1146,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed',
-      cuisine: 'Merged with Damai Primary School in 2019[5]'
+      schoolGender: 'Co-ed'
     }
   },
   {
@@ -1207,20 +1173,6 @@ export const ALL_SCHOOLS: Amenity[] = [
       schoolLevel: 'Secondary',
       schoolType: 'Government',
       schoolGender: 'Co-ed'
-    }
-  },
-  {
-    id: 'sch-east-view-primary-school-91',
-    name: 'East View Primary School',
-    category: 'school',
-    lat: 1.346900,
-    lng: 103.939000,
-    address: 'Singapore (MOE Code: 1237)',
-    details: {
-      schoolLevel: 'Primary',
-      schoolType: 'Government',
-      schoolGender: 'Co-ed',
-      cuisine: 'Now closed, merged with Junyuan in 2019.[5]'
     }
   },
   {
@@ -1259,7 +1211,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'Low'
     }
   },
   {
@@ -1337,8 +1291,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'Government-aidedAutonomous',
-      schoolGender: 'Co-ed',
-      cuisine: 'Affiliated to: Anglo-Chinese Junior College (Non-IP) Fairfield Methodist School'
+      schoolGender: 'Co-ed'
     }
   },
   {
@@ -1481,7 +1434,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'Low'
     }
   },
   {
@@ -1520,8 +1475,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'Government-aided',
-      schoolGender: 'Co-ed',
-      cuisine: 'Affiliated to: Anglo-Chinese Junior College (Non-IP) Geylang Methodist School'
+      schoolGender: 'Co-ed'
     }
   },
   {
@@ -1534,7 +1488,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'High'
     }
   },
   {
@@ -1638,8 +1594,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'Government-aided',
-      schoolGender: 'Co-ed',
-      cuisine: 'Affiliated to: Catholic Junior College (Non-IP)'
+      schoolGender: 'Co-ed'
     }
   },
   {
@@ -1665,7 +1620,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'High'
     }
   },
   {
@@ -1691,8 +1648,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'Government-aided',
-      schoolGender: 'Co-ed',
-      cuisine: 'Affiliated to: Catholic Junior College (Non-IP) Holy Innocents\' Primary School'
+      schoolGender: 'Co-ed'
     }
   },
   {
@@ -1809,8 +1765,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'IndependentSAPIP',
-      schoolGender: 'Boys',
-      cuisine: 'Offers the Hwa Chong Diploma Affiliated to: Nanyang Girls\' High School (IP)'
+      schoolGender: 'Boys'
     }
   },
   {
@@ -1823,7 +1778,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'Low'
     }
   },
   {
@@ -1849,8 +1806,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed',
-      cuisine: 'Merged with Da Qiao Primary School in 2019[5]'
+      schoolGender: 'Co-ed'
     }
   },
   {
@@ -1889,7 +1845,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'Low'
     }
   },
   {
@@ -1980,7 +1938,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'Moderate'
     }
   },
   {
@@ -2006,7 +1966,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government-aided',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'Moderate'
     }
   },
   {
@@ -2020,7 +1982,8 @@ export const ALL_SCHOOLS: Amenity[] = [
       schoolLevel: 'Primary',
       schoolType: 'Government-aided, SAP',
       schoolGender: 'Co-ed',
-      cuisine: 'Affiliated to Singapore Hokkien Huay Kuan[4]'
+    
+      ballotingRisk: 'High'
     }
   },
   {
@@ -2059,7 +2022,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government-aided',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'Moderate'
     }
   },
   {
@@ -2072,8 +2037,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'Government-aided',
-      schoolGender: 'Co-ed',
-      cuisine: 'Affiliated to: St. Andrews Junior College (Non-IP) Kuo Chuan Presbyterian Primary School'
+      schoolGender: 'Co-ed'
     }
   },
   {
@@ -2103,20 +2067,6 @@ export const ALL_SCHOOLS: Amenity[] = [
     }
   },
   {
-    id: 'sch-loyang-primary-school-159',
-    name: 'Loyang Primary School',
-    category: 'school',
-    lat: 1.370900,
-    lng: 103.953800,
-    address: 'Singapore (MOE Code: 1042)',
-    details: {
-      schoolLevel: 'Primary',
-      schoolType: 'Government',
-      schoolGender: 'Co-ed',
-      cuisine: 'Merged with Casuarina Primary School in 2019[5]'
-    }
-  },
-  {
     id: 'sch-loyang-view-secondary-school-160',
     name: 'Loyang View Secondary School',
     category: 'school',
@@ -2130,20 +2080,6 @@ export const ALL_SCHOOLS: Amenity[] = [
     }
   },
   {
-    id: 'sch-macpherson-primary-school-161',
-    name: 'MacPherson Primary School',
-    category: 'school',
-    lat: 0.000000,
-    lng: 0.000000,
-    address: 'Singapore (MOE Code: MOE)',
-    details: {
-      schoolLevel: 'Primary',
-      schoolType: 'Government',
-      schoolGender: 'Co-ed',
-      cuisine: 'Merged with Cedar Primary School in 2019[5]'
-    }
-  },
-  {
     id: 'sch-maha-bodhi-school-162',
     name: 'Maha Bodhi School',
     category: 'school',
@@ -2153,7 +2089,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government-aided, SAP',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'High'
     }
   },
   {
@@ -2166,8 +2104,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'Government-aided',
-      schoolGender: 'Co-ed',
-      cuisine: 'Affiliated to: Mee Toh School, Maha Bodhi School'
+      schoolGender: 'Co-ed'
     }
   },
   {
@@ -2193,8 +2130,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'Government-aidedAutonomousSAP',
-      schoolGender: 'Boys',
-      cuisine: 'Affiliated to: Catholic Junior College (Non-IP) Maris Stella High School'
+      schoolGender: 'Boys'
     }
   },
   {
@@ -2246,7 +2182,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'Low'
     }
   },
   {
@@ -2272,7 +2210,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government-aided',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'High'
     }
   },
   {
@@ -2303,11 +2243,11 @@ export const ALL_SCHOOLS: Amenity[] = [
   },
   {
     id: 'sch-methodist-girls-school-174',
-    name: 'Methodist Girls\' School',
+    name: 'Methodist Girls\' School (Primary)',
     category: 'school',
-    lat: 1.349473,
-    lng: 103.884971,
-    address: 'Singapore (MOE Code: 5027)',
+    lat: 1.332948,
+    lng: 103.783393,
+    address: '11 Blackmore Drive Singapore 599986 (MOE Code: 5027)',
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government-aided',
@@ -2324,8 +2264,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'IndependentIP',
-      schoolGender: 'Girls',
-      cuisine: 'Affiliated to: Anglo-Chinese School (Independent) (IP) Methodist Girls\' School'
+      schoolGender: 'Girls'
     }
   },
   {
@@ -2351,8 +2290,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'Government-aided',
-      schoolGender: 'Boys',
-      cuisine: 'Affiliated to: Catholic Junior College (Non-IP) Montfort Junior School'
+      schoolGender: 'Boys'
     }
   },
   {
@@ -2365,8 +2303,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'Government-aidedSAP',
-      schoolGender: 'Co-ed',
-      cuisine: 'Affiliated to: Singapore Hokkien Huay Kuan'
+      schoolGender: 'Co-ed'
     }
   },
   {
@@ -2380,7 +2317,8 @@ export const ALL_SCHOOLS: Amenity[] = [
       schoolLevel: 'Primary',
       schoolType: 'Government-aided',
       schoolGender: 'Co-ed',
-      cuisine: 'Affiliated to Singapore Hokkien Huay Kuan[4]'
+    
+      ballotingRisk: 'High'
     }
   },
   {
@@ -2406,7 +2344,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government-aided, SAP',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'High'
     }
   },
   {
@@ -2419,8 +2359,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'IndependentSAPIP',
-      schoolGender: 'Girls',
-      cuisine: 'Offers the Hwa Chong Diploma Affiliated to: Hwa Chong Institution (IP) Nanyang Primary School'
+      schoolGender: 'Girls'
     }
   },
   {
@@ -2433,7 +2372,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government-aided, SAP',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'High'
     }
   },
   {
@@ -2524,8 +2465,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'Government-aidedAutonomous',
-      schoolGender: 'Co-ed',
-      cuisine: 'Affiliated to: Ngee Ann Primary School'
+      schoolGender: 'Co-ed'
     }
   },
   {
@@ -2603,7 +2543,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'Moderate'
     }
   },
   {
@@ -2642,8 +2584,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'IndependentSpecialisedIP',
-      schoolGender: 'Co-ed',
-      cuisine: 'Offers the NUS High School Diploma Admit students through DSA and/or Independent Intake'
+      schoolGender: 'Co-ed'
     }
   },
   {
@@ -2656,7 +2597,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'Moderate'
     }
   },
   {
@@ -2786,8 +2729,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'Government-aidedAutonomous',
-      schoolGender: 'Girls',
-      cuisine: 'Affiliated to: Anglo-Chinese Junior College (Non-IP) Paya Lebar Methodist Girls\' School'
+      schoolGender: 'Girls'
     }
   },
   {
@@ -2800,7 +2742,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government-aided, SAP',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'High'
     }
   },
   {
@@ -2813,7 +2757,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government-aided, SAP',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'High'
     }
   },
   {
@@ -2839,7 +2785,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'Low'
     }
   },
   {
@@ -2917,7 +2865,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government-aided, SAP',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'Moderate'
     }
   },
   {
@@ -2930,8 +2880,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'Government-aided',
-      schoolGender: 'Co-ed',
-      cuisine: 'Affiliated to: St. Andrews Junior College (Non-IP)'
+      schoolGender: 'Co-ed'
     }
   },
   {
@@ -2970,7 +2919,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'Moderate'
     }
   },
   {
@@ -3048,7 +2999,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'Low'
     }
   },
   {
@@ -3087,7 +3040,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'High'
     }
   },
   {
@@ -3113,8 +3068,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'IndependentIP',
-      schoolGender: 'Girls',
-      cuisine: 'Offers the Raffles Diploma Affiliated to: Raffles Institution (IP)'
+      schoolGender: 'Girls'
     }
   },
   {
@@ -3127,8 +3081,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'IndependentIP',
-      schoolGender: 'Boys',
-      cuisine: 'Offers the Raffles Diploma Affiliated to: Raffles Girls\' School (IP)'
+      schoolGender: 'Boys'
     }
   },
   {
@@ -3141,7 +3094,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government-aided, SAP',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'High'
     }
   },
   {
@@ -3232,7 +3187,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'High'
     }
   },
   {
@@ -3245,7 +3202,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'High'
     }
   },
   {
@@ -3257,9 +3216,8 @@ export const ALL_SCHOOLS: Amenity[] = [
     address: 'Singapore (MOE Code: MOE)',
     details: {
       schoolLevel: 'Secondary',
-      schoolType: 'IndependentSpecialised',
-      schoolGender: 'Co-ed',
-      cuisine: 'Admit students through DSA and/or Independent Intake Offers GCE O\' Level certificate via the Special/Express course'
+      schoolType: 'Specialised Independent',
+      schoolGender: 'Co-ed'
     }
   },
   {
@@ -3272,8 +3230,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'IndependentSpecialised',
-      schoolGender: 'Co-ed',
-      cuisine: 'Admit students through DSA and/or Independent Intake Offers the International Baccalaureate certificate'
+      schoolGender: 'Co-ed'
     }
   },
   {
@@ -3429,17 +3386,16 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'IndependentIP',
-      schoolGender: 'Girls',
-      cuisine: 'Affiliated to: Eunoia Junior College (IP), CHIJ St Nicholas Girls\' School (IP) & Catholic High School (IP) Singapore Chi'
+      schoolGender: 'Girls'
     }
   },
   {
     id: 'sch-singapore-chinese-girls-school-260',
-    name: 'Singapore Chinese Girls’ School',
+    name: 'Singapore Chinese Girls\' Primary School',
     category: 'school',
     lat: 1.320634,
     lng: 103.828165,
-    address: 'Singapore (MOE Code: 5026)',
+    address: '190 Dunearn Road Singapore 309437 (MOE Code: 5026)',
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government-aided',
@@ -3456,8 +3412,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'IndependentSpecialised',
-      schoolGender: 'Co-ed',
-      cuisine: 'Admit students through DSA and/or Independent Intake'
+      schoolGender: 'Co-ed'
     }
   },
   {
@@ -3470,7 +3425,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'High'
     }
   },
   {
@@ -3548,8 +3505,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'Government-aidedAutonomous',
-      schoolGender: 'Girls',
-      cuisine: 'Affiliated to: Catholic Junior College (Non-IP) Canossa Convent Primary School, St Anthony\'s Canossian Primary School'
+      schoolGender: 'Girls'
     }
   },
   {
@@ -3562,8 +3518,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government-aided',
-      schoolGender: 'Co-ed',
-      cuisine: 'Lasallian school[6]'
+      schoolGender: 'Co-ed'
     }
   },
   {
@@ -3589,8 +3544,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'Government-aided',
-      schoolGender: 'Boys',
-      cuisine: 'Affiliated to: Catholic Junior College (Non-IP) St. Gabriel\'s Primary School'
+      schoolGender: 'Boys'
     }
   },
   {
@@ -3616,8 +3570,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'Government-aidedAutonomous',
-      schoolGender: 'Co-ed',
-      cuisine: 'Affiliated to: St. Andrews Junior College (Non-IP) St. Hilda\'s Primary School'
+      schoolGender: 'Co-ed'
     }
   },
   {
@@ -3630,8 +3583,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'IndependentIP',
-      schoolGender: 'Boys',
-      cuisine: 'Affiliated to: Catholic Junior College (Non-IP) De la Salle School, St. Joseph\'s Institution Junior, St. Stephen\'s Schoo'
+      schoolGender: 'Boys'
     }
   },
   {
@@ -3644,17 +3596,16 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government-aided',
-      schoolGender: 'Boys',
-      cuisine: 'Lasallian school[6]'
+      schoolGender: 'Boys'
     }
   },
   {
     id: 'sch-st-margaret-s-primary-school-276',
-    name: 'St. Margaret\'s Primary School',
+    name: 'St. Margaret\'s School (Primary)',
     category: 'school',
     lat: 1.303759,
     lng: 103.846193,
-    address: 'Singapore (MOE Code: 5013)',
+    address: '99 Wilkie Road Singapore 228091 (MOE Code: 5013)',
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government-aided',
@@ -3697,8 +3648,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government-aided',
-      schoolGender: 'Boys',
-      cuisine: 'Lasallian school[6]'
+      schoolGender: 'Boys'
     }
   },
   {
@@ -3750,7 +3700,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'Low'
     }
   },
   {
@@ -3829,7 +3781,8 @@ export const ALL_SCHOOLS: Amenity[] = [
       schoolLevel: 'Primary',
       schoolType: 'Government-aided, SAP',
       schoolGender: 'Co-ed',
-      cuisine: 'Affiliated to Singapore Hokkien Huay Kuan[4]'
+    
+      ballotingRisk: 'High'
     }
   },
   {
@@ -3985,8 +3938,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Secondary',
       schoolType: 'GovernmentAutonomousIP',
-      schoolGender: 'Boys',
-      cuisine: 'Affiliated to: Victoria Junior College (IP) Cedar Girls\' Secondary School (IP)'
+      schoolGender: 'Boys'
     }
   },
   {
@@ -3999,7 +3951,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'Low'
     }
   },
   {
@@ -4103,8 +4057,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed',
-      cuisine: 'Merged with Coral Primary School in 2019[5]'
+      schoolGender: 'Co-ed'
     }
   },
   {
@@ -4156,7 +4109,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'Low'
     }
   },
   {
@@ -4364,7 +4319,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'Moderate'
     }
   },
   {
@@ -4390,7 +4347,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'Low'
     }
   },
   {
@@ -4455,7 +4414,9 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed'
+      schoolGender: 'Co-ed',
+    
+      ballotingRisk: 'Moderate'
     }
   },
   {
@@ -4494,8 +4455,7 @@ export const ALL_SCHOOLS: Amenity[] = [
     details: {
       schoolLevel: 'Primary',
       schoolType: 'Government',
-      schoolGender: 'Co-ed',
-      cuisine: 'Used to be South Serangoon Gardens Primary School'
+      schoolGender: 'Co-ed'
     }
   },
   {
@@ -4957,3 +4917,45 @@ export const ALL_SCHOOLS: Amenity[] = [
 
 // Primary schools alias for backward compatibility
 export const PRIMARY_SCHOOLS: Amenity[] = ALL_SCHOOLS.filter(s => s.details?.schoolLevel === 'Primary');
+
+/**
+ * Official MOE 2027 Two-Track Scheme Schools (12 Schools)
+ * Designated in neighbourhoods where public housing constitutes <40% of homes within 2km.
+ * Under this scheme:
+ * - 50% of Phase 2C places reserved for applicants living within 2km (with NO 1km distance priority)
+ * - 50% of Phase 2C places reserved for applicants living beyond 2km
+ */
+export const TWO_TRACK_PRIMARY_SCHOOLS = [
+  'Anglo-Chinese School (Junior)',
+  'Anglo-Chinese School (Primary)',
+  'CHIJ (Katong) Primary',
+  "Methodist Girls' School (Primary)",
+  'Nanyang Primary School',
+  'Ngee Ann Primary School',
+  'Pei Hwa Presbyterian Primary School',
+  "Raffles Girls' Primary School",
+  "Singapore Chinese Girls' Primary School",
+  "St. Margaret's School (Primary)",
+  'Tanjong Katong Primary School',
+  'Tao Nan School',
+] as const;
+
+export function isTwoTrackSchool(name: string, level?: string): boolean {
+  if (level && level !== 'Primary') return false;
+  const n = name.toLowerCase().replace(/['’]/g, "'");
+
+  if (n.includes('anglo-chinese school (junior)') || n.includes('anglo-chinese school junior')) return true;
+  if ((n.includes('anglo-chinese school') && n.includes('primary')) || (n === 'anglo-chinese school' && (!level || level === 'Primary'))) return true;
+  if (n.includes('chij (katong) primary') || n.includes('chij katong primary')) return true;
+  if (n.includes('methodist girls') && !n.includes('paya lebar') && (!level || level === 'Primary')) return true;
+  if (n.includes('nanyang primary')) return true;
+  if (n.includes('ngee ann primary')) return true;
+  if (n.includes('pei hwa presbyterian primary') || n.includes('pei hwa primary')) return true;
+  if (n.includes('raffles girls') && (n.includes('primary') || (!level || level === 'Primary'))) return true;
+  if ((n.includes('singapore chinese girls') || n.includes('scgs')) && (n.includes('primary') || (!level || level === 'Primary'))) return true;
+  if (n.includes('margaret') && (n.includes('primary') || (!level || level === 'Primary'))) return true;
+  if (n.includes('tanjong katong primary')) return true;
+  if (n.includes('tao nan')) return true;
+
+  return false;
+}

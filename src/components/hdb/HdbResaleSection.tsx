@@ -25,7 +25,6 @@ import {
   ExternalLink,
   ChevronDown,
   ChevronUp,
-  Maximize2,
   RefreshCw,
   Info,
   SlidersHorizontal,
@@ -37,7 +36,7 @@ import {
 
 interface Props {
   selectedProperty: SelectedProperty;
-  onOpenModal?: () => void;
+  onOpenModal?: (data?: HdbResaleAnalysis | null) => void;
 }
 
 export default function HdbResaleSection({ selectedProperty, onOpenModal }: Props) {
@@ -281,6 +280,14 @@ export default function HdbResaleSection({ selectedProperty, onOpenModal }: Prop
 
   // Extract representative lease commence year for the selected block/street
   const leaseCommenceYear = useMemo(() => {
+    // 1. Check if user searched an exact block (originBlock) or filtered to a single specific block
+    const targetBlock = originBlock || (selectedBlocks.length === 1 && !selectedBlocks[0].startsWith('WALK_') ? selectedBlocks[0] : undefined);
+    if (targetBlock && data?.transactions) {
+      const exactMatch = data.transactions.find(
+        (t) => t.block.toUpperCase() === targetBlock.toUpperCase() && t.leaseCommenceDate && t.leaseCommenceDate > 1950
+      );
+      if (exactMatch) return exactMatch.leaseCommenceDate;
+    }
     if (filteredTransactions.length > 0) {
       const match = filteredTransactions.find((t) => t.leaseCommenceDate && t.leaseCommenceDate > 1950);
       if (match) return match.leaseCommenceDate;
@@ -290,7 +297,7 @@ export default function HdbResaleSection({ selectedProperty, onOpenModal }: Prop
       if (match) return match.leaseCommenceDate;
     }
     return 1995;
-  }, [filteredTransactions, data]);
+  }, [originBlock, selectedBlocks, filteredTransactions, data]);
 
   // Chart data from filtered transactions (grouped by month)
   const chartTrends = useMemo(() => {
@@ -354,7 +361,7 @@ export default function HdbResaleSection({ selectedProperty, onOpenModal }: Prop
           <p className="text-xs leading-relaxed text-amber-800">
             {data?.message ||
               error ||
-              'This selected location is either a private property / condominium, or there are no recorded HDB resale records along this street in the past 3 years.'}
+              'This selected location is either a private property / condominium, or there are no recorded HDB resale records along this street in the past 5 years.'}
           </p>
           <div className="pt-2">
             <a
@@ -363,7 +370,7 @@ export default function HdbResaleSection({ selectedProperty, onOpenModal }: Prop
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-800 hover:text-amber-950 underline"
             >
-              <span>Verify on data.gov.sg dataset d_8b84c4ee58e3cfc0ece0d773c8ca6abc</span>
+              <span>Verify on data.gov.sg</span>
               <ExternalLink className="w-3 h-3" />
             </a>
           </div>
@@ -418,7 +425,7 @@ export default function HdbResaleSection({ selectedProperty, onOpenModal }: Prop
                 Official HDB Resale Data
               </span>
               <span className="text-[11px] font-semibold text-[#5C695C]">
-                Past 3 Years ({data.timeframe.startMonth} to {data.timeframe.endMonth})
+                Past 5 Years ({data.timeframe.startMonth} to {data.timeframe.endMonth})
               </span>
             </div>
             <h3 className="font-serif font-bold text-base text-[#243324] mt-1">
@@ -426,32 +433,6 @@ export default function HdbResaleSection({ selectedProperty, onOpenModal }: Prop
               {data.town && <span className="text-[#5C695C] font-normal text-xs ml-1">({data.town})</span>}
             </h3>
           </div>
-
-          {onOpenModal && (
-            <button
-              onClick={onOpenModal}
-              className="p-1.5 rounded-lg border border-[#243324]/10 hover:bg-[#F4EFE6] text-[#243324] transition-colors"
-              title="Expand to Fullscreen Analysis"
-            >
-              <Maximize2 className="w-3.5 h-3.5" />
-            </button>
-          )}
-        </div>
-
-        {/* Dataset ID Link */}
-        <div className="pt-1 text-[11px] text-[#5C695C] flex items-center justify-between">
-          <span>
-            Dataset: <code className="bg-[#F4EFE6] px-1 rounded text-[10px]">d_8b84c4ee58e3cfc0ece0d773c8ca6abc</code>
-          </span>
-          <a
-            href={HDB_DATASET_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-emerald-700 hover:text-emerald-900 font-semibold inline-flex items-center gap-1"
-          >
-            <span>data.gov.sg</span>
-            <ExternalLink className="w-2.5 h-2.5" />
-          </a>
         </div>
       </div>
 
@@ -681,7 +662,7 @@ export default function HdbResaleSection({ selectedProperty, onOpenModal }: Prop
         {/* Average Price */}
         <div className="p-3 rounded-2xl bg-white/95 border border-[#243324]/10 shadow-xs flex flex-col justify-between">
           <div className="text-[10px] uppercase font-bold tracking-wider text-[#5C695C]">
-            Avg Resale Price (3Y)
+            Avg Resale Price (5Y)
           </div>
           <div className="font-serif font-bold text-lg text-[#243324] mt-1">
             {formatSgd(currentStats.avgPrice)}
@@ -737,13 +718,13 @@ export default function HdbResaleSection({ selectedProperty, onOpenModal }: Prop
         </div>
       </div>
 
-      {/* 3-Year Resale Price Trend Chart */}
+      {/* 5-Year Resale Price Trend Chart */}
       {chartTrends.length > 1 && (
         <div className="bg-white/95 rounded-2xl p-4 border border-[#243324]/10 shadow-xs space-y-2">
           <div className="flex items-center justify-between flex-wrap gap-1.5">
             <span className="text-xs font-bold text-[#243324] flex items-center gap-1.5">
               <TrendingUp className="w-3.5 h-3.5 text-emerald-700" />
-              <span>3-Year Resale Price Trend</span>
+              <span>5-Year Resale Price Trend</span>
             </span>
             <div className="flex items-center gap-1.5 text-[10px]">
               <span className="px-1.5 py-0.5 rounded bg-slate-100 text-[#5C695C] font-semibold border border-slate-200">
@@ -898,7 +879,7 @@ export default function HdbResaleSection({ selectedProperty, onOpenModal }: Prop
         >
           <div>
             <div className="text-xs font-bold text-[#243324] flex items-center gap-1.5 flex-wrap">
-              <span>Past 3 Years Transactions</span>
+              <span>Past 5 Years Transactions</span>
               <span className="px-1.5 py-0.2 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-900 border border-emerald-200">
                 {sortedTransactions.length} recorded {sortedTransactions.length === 1 ? 'sale' : 'sales'}
               </span>
@@ -1024,7 +1005,7 @@ export default function HdbResaleSection({ selectedProperty, onOpenModal }: Prop
                     <>
                       <ChevronDown className="w-4 h-4" />
                       <span>
-                        Show All {sortedTransactions.length} Past 3 Years Transactions
+                        Show All {sortedTransactions.length} Past 5 Years Transactions
                       </span>
                     </>
                   )}

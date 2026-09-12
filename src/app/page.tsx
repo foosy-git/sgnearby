@@ -6,11 +6,13 @@ import MapWrapper from '@/components/map/MapWrapper';
 import AmenitySidebar from '@/components/sidebar/AmenitySidebar';
 import MobileBottomSheet, { SheetSnapState } from '@/components/mobile/MobileBottomSheet';
 import MobilePoiPeekCard from '@/components/mobile/MobilePoiPeekCard';
-import GoogleMapsSyncModal from '@/components/GoogleMapsSyncModal';
 import LocationComparisonModal from '@/components/comparison/LocationComparisonModal';
 import HdbResaleModal from '@/components/hdb/HdbResaleModal';
+import UraResaleModal from '@/components/ura/UraResaleModal';
 import { ALL_AMENITIES } from '@/data/allAmenities';
 import { FEATURED_PROPERTIES } from '@/data/featuredProperties';
+import { inferPropertyType, isPrivateProperty } from '@/lib/onemap';
+import { HdbResaleAnalysis } from '@/lib/hdbResale';
 import {
   SelectedProperty,
   AmenityWithDistance,
@@ -63,17 +65,15 @@ export default function Home() {
   // Comparison modal state
   const [isCompareModalOpen, setIsCompareModalOpen] = useState<boolean>(false);
 
-  // Active sidebar tab: 'amenities' | 'resale'
-  const [activeSidebarTab, setActiveSidebarTab] = useState<'amenities' | 'resale'>('amenities');
+  // Active sidebar tab: 'amenities' | 'hdb' | 'ura' | 'living'
+  const [activeSidebarTab, setActiveSidebarTab] = useState<'amenities' | 'hdb' | 'ura' | 'living'>('amenities');
 
   // HDB Resale fullscreen modal open state
   const [isResaleModalOpen, setIsResaleModalOpen] = useState<boolean>(false);
+  const [modalHdbData, setModalHdbData] = useState<HdbResaleAnalysis | null>(null);
 
-  // Google Maps API Live Sync states
-  const [googleApiKey, setGoogleApiKey] = useState<string>('');
-  const [isGoogleModalOpen, setIsGoogleModalOpen] = useState<boolean>(false);
-  const [livePlaces, setLivePlaces] = useState<Amenity[]>([]);
-  const [isFetchingLive, setIsFetchingLive] = useState<boolean>(false);
+  // URA Private Property fullscreen modal
+  const [isUraResaleModalOpen, setIsUraResaleModalOpen] = useState<boolean>(false);
 
   const isLoaded = useRef(false);
 
@@ -93,15 +93,27 @@ export default function Home() {
           const lat = parseFloat(latParam);
           const lng = parseFloat(lngParam);
           if (!isNaN(lat) && !isNaN(lng)) {
-            setSelectedProperty({
-              id: `url-${Date.now()}`,
-              name: nameParam || 'Shared Location',
-              address: nameParam || `Singapore (${lat.toFixed(4)}, ${lng.toFixed(4)})`,
-              lat,
-              lng,
-              postalCode: postalParam || undefined,
-              propertyType: 'Custom Location',
-            });
+            const matchedFeatured = FEATURED_PROPERTIES.find(
+              (p) =>
+                (nameParam && p.name.toLowerCase() === nameParam.toLowerCase()) ||
+                (postalParam && p.postalCode === postalParam) ||
+                (Math.abs(p.lat - lat) < 0.0005 && Math.abs(p.lng - lng) < 0.0005)
+            );
+
+            if (matchedFeatured) {
+              setSelectedProperty(matchedFeatured);
+            } else {
+              const inferred = inferPropertyType(nameParam || undefined, undefined, undefined);
+              setSelectedProperty({
+                id: `url-${Date.now()}`,
+                name: nameParam || 'Shared Location',
+                address: nameParam || `Singapore (${lat.toFixed(4)}, ${lng.toFixed(4)})`,
+                lat,
+                lng,
+                postalCode: postalParam || undefined,
+                propertyType: inferred,
+              });
+            }
           }
         }
         if (radiusParam) {
@@ -130,78 +142,11 @@ export default function Home() {
     } catch {}
   }, [selectedProperty, walkingRadius]);
 
-  // Load saved Google Places API key from localStorage
-  useEffect(() => {
-    try {
-      const savedKey = localStorage.getItem('sg_google_places_api_key');
-      if (savedKey) {
-        setGoogleApiKey(savedKey);
-      }
-    } catch {
-      // ignore SSR / storage restrictions
-    }
-  }, []);
-
-  // Save Google Places API key
-  const handleSaveGoogleKey = useCallback((key: string) => {
-    setGoogleApiKey(key);
-    try {
-      localStorage.setItem('sg_google_places_api_key', key);
-    } catch {}
-  }, []);
-
-  // Clear Google Places API key
-  const handleClearGoogleKey = useCallback(() => {
-    setGoogleApiKey('');
-    setLivePlaces([]);
-    try {
-      localStorage.removeItem('sg_google_places_api_key');
-    } catch {}
-  }, []);
-
-  // Fetch live places from Google Places API endpoint
-  const fetchLivePlaces = useCallback(
-    async (lat: number, lng: number, radius: number, key?: string) => {
-      const activeKey = key || googleApiKey;
-      if (!activeKey) return;
-
-      setIsFetchingLive(true);
-      try {
-        const res = await fetch('/api/places', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            lat,
-            lng,
-            radius,
-            clientKey: activeKey,
-          }),
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-          if (data.places && Array.isArray(data.places)) {
-            setLivePlaces(data.places);
-          }
-        }
-      } catch (err) {
-        console.warn('Error fetching live Google Places:', err);
-      } finally {
-        setIsFetchingLive(false);
-      }
-    },
-    [googleApiKey]
-  );
-
-  // Trigger live Google Places fetch whenever location, radius or key changes
-  useEffect(() => {
-    if (googleApiKey) {
-      const timer = setTimeout(() => {
-        fetchLivePlaces(selectedProperty.lat, selectedProperty.lng, walkingRadius);
-      }, 300);
-      return () => clearTimeout(timer);
-    }
-  }, [selectedProperty.lat, selectedProperty.lng, walkingRadius, googleApiKey, fetchLivePlaces]);
+  // Live Google Places state (on-demand scanning)
+  const [livePlaces, setLivePlaces] = useState<Amenity[]>([]);
+  const [isSearchingGoogle, setIsSearchingGoogle] = useState(false);
+  const [googleQuotaError, setGoogleQuotaError] = useState<string | null>(null);
+  const [googleSuccessMsg, setGoogleSuccessMsg] = useState<string | null>(null);
 
   // Combine static official SG dataset with live Google Places (with safe category-aware deduplication)
   const combinedAmenities = useMemo(() => {
@@ -218,7 +163,7 @@ export default function Home() {
           live.name.toLowerCase().includes(base.name.toLowerCase().trim()) ||
           base.name.toLowerCase().includes(live.name.toLowerCase().trim());
         const closeProximity =
-          Math.abs(live.lat - base.lat) < 0.00022 && Math.abs(live.lng - base.lng) < 0.00022;
+          Math.abs(live.lat - base.lat) < 0.00025 && Math.abs(live.lng - base.lng) < 0.00025;
         return nameMatch || closeProximity;
       });
 
@@ -229,15 +174,74 @@ export default function Home() {
     return result;
   }, [livePlaces]);
 
+  // On-demand handler to query Google Places for nearby spots within the walking radius
+  const handleSearchLiveGoogle = useCallback(async () => {
+    setIsSearchingGoogle(true);
+    setGoogleQuotaError(null);
+    setGoogleSuccessMsg(null);
+
+    try {
+      const res = await fetch('/api/places', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lat: selectedProperty.lat,
+          lng: selectedProperty.lng,
+          radius: walkingRadius,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        if (data.error === 'QUOTA_EXCEEDED' || res.status === 429) {
+          setGoogleQuotaError(
+            data.message ||
+              'Daily Google Cloud quota limit reached. Your Google Cloud hard quota cap has been triggered to prevent billing charges. Official Singapore open data (OneMap, LTA, MOE, NEA, HDB, URA) remains fully active.'
+          );
+        } else if (data.error === 'NO_API_KEY') {
+          setGoogleQuotaError(
+            'Google Places API key is not configured in .env.local (GOOGLE_PLACES_API_KEY). Please add your key to enable live Google scanning.'
+          );
+        } else {
+          setGoogleQuotaError(data.message || 'Google Places live search could not be completed.');
+        }
+        return;
+      }
+
+      if (data.places && Array.isArray(data.places)) {
+        if (data.places.length === 0) {
+          setGoogleSuccessMsg(`Google Places found no additional new places within ${walkingRadius}m.`);
+          setTimeout(() => setGoogleSuccessMsg(null), 4000);
+          return;
+        }
+
+        setLivePlaces((prev) => {
+          const existingIds = new Set(prev.map((p) => p.id));
+          const newItems = data.places.filter((p: Amenity) => !existingIds.has(p.id));
+          return [...prev, ...newItems];
+        });
+
+        setGoogleSuccessMsg(`Discovered ${data.places.length} live places via Google Places!`);
+        setTimeout(() => setGoogleSuccessMsg(null), 5000);
+      }
+    } catch (err: any) {
+      setGoogleQuotaError('Network error connecting to Google Places API.');
+    } finally {
+      setIsSearchingGoogle(false);
+    }
+  }, [selectedProperty.lat, selectedProperty.lng, walkingRadius]);
+
   // Process amenities within active walking radius
   const amenitiesWithDistance = useMemo(() => {
     return processAmenitiesWithDistance(
       combinedAmenities,
       selectedProperty.lat,
       selectedProperty.lng,
-      walkingRadius
+      walkingRadius,
+      showSchoolRings
     );
-  }, [combinedAmenities, selectedProperty.lat, selectedProperty.lng, walkingRadius]);
+  }, [combinedAmenities, selectedProperty.lat, selectedProperty.lng, walkingRadius, showSchoolRings]);
 
   // Compute live convenience & walkability score
   const convenienceScore = useMemo(() => {
@@ -268,32 +272,26 @@ export default function Home() {
     setSelectedProperty(newLocation);
 
     try {
-      const osmReverseUrl = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`;
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 2500);
+      const timeoutId = setTimeout(() => controller.abort(), 4000);
 
-      const res = await fetch(osmReverseUrl, {
+      const res = await fetch(`/api/reverse-geocode?lat=${lat}&lng=${lng}`, {
         signal: controller.signal,
-        headers: { 'User-Agent': 'SGNearby/1.0' },
       });
       clearTimeout(timeoutId);
 
       if (res.ok) {
         const data = await res.json();
-        if (data && data.display_name) {
-          const road = data.address?.road || data.address?.suburb || '';
-          const postcode = data.address?.postcode || '';
-          const displayName = road ? `${road}${postcode ? ` (S${postcode})` : ''}` : fallbackName;
-
+        if (data && data.displayName) {
           setSelectedProperty({
             id: `custom-pin-${Date.now()}`,
-            name: displayName,
-            address: data.display_name,
+            name: data.displayName,
+            address: data.address,
             lat,
             lng,
-            postalCode: postcode || undefined,
+            postalCode: data.postalCode || undefined,
             propertyType: 'Custom Location',
-            town: data.address?.suburb || data.address?.city || 'Singapore',
+            town: data.town || 'Singapore',
           });
         }
       }
@@ -303,9 +301,17 @@ export default function Home() {
   // Handle selecting a property from search or featured hotspots
   const handleSelectLocation = useCallback((prop: SelectedProperty) => {
     setSelectedProperty(prop);
+    setModalHdbData(null);
     setLocateTarget(null);
     setHighlightedAmenityId(undefined);
     setSelectedPoi(null);
+    // If currently viewing a price analytics tab, auto-switch to the corresponding housing dataset
+    setActiveSidebarTab((prev) => {
+      if (prev === 'hdb' || prev === 'ura') {
+        return isPrivateProperty(prop) ? 'ura' : 'hdb';
+      }
+      return prev;
+    });
   }, []);
 
   // Handle clicking an amenity in sidebar / bottom sheet to fly to & highlight on map
@@ -320,6 +326,8 @@ export default function Home() {
   const handleMarkerClick = useCallback((amenity: AmenityWithDistance) => {
     setHighlightedAmenityId(amenity.id);
     setSelectedPoi(amenity);
+    // On mobile devices, automatically snap bottom sheet to peek so marker and peek card are completely visible
+    setMobileSheetState('peek');
   }, []);
 
   // Toggle individual category filter
@@ -356,14 +364,7 @@ export default function Home() {
         onSelectLocation={handleSelectLocation}
         onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
         amenitiesCount={amenitiesWithDistance.length}
-        onOpenGoogleSync={() => setIsGoogleModalOpen(true)}
         onOpenCompare={() => setIsCompareModalOpen(true)}
-        onOpenResale={() => {
-          setActiveSidebarTab('resale');
-          setIsSidebarOpen(true);
-          setMobileSheetState('half');
-        }}
-        isLiveSyncActive={Boolean(googleApiKey)}
         isSidebarOpen={isSidebarOpen}
         walkingRadius={walkingRadius}
         setWalkingRadius={setWalkingRadius}
@@ -383,6 +384,7 @@ export default function Home() {
               selectedProperty={selectedProperty}
               amenities={amenitiesWithDistance}
               walkingRadius={walkingRadius}
+              onSelectWalkingRadius={setWalkingRadius}
               showSchoolRings={showSchoolRings}
               onToggleSchoolRings={() => setShowSchoolRings(!showSchoolRings)}
               selectedCategories={selectedCategories}
@@ -392,27 +394,23 @@ export default function Home() {
               highlightedAmenityId={highlightedAmenityId}
               onMarkerClick={handleMarkerClick}
               onRecenter={handleRecenter}
+              isPoiActive={!!selectedPoi}
+              mobileSheetState={mobileSheetState}
+              isSidebarOpen={isSidebarOpen}
               onViewResalePrices={() => {
-                setActiveSidebarTab('resale');
+                const targetTab = isPrivateProperty(selectedProperty) ? 'ura' : 'hdb';
+                setActiveSidebarTab(targetTab);
                 setIsSidebarOpen(true);
                 setMobileSheetState('half');
               }}
             />
           </div>
 
-          {/* Floating Live Sync Status Indicator */}
-          {isFetchingLive && (
-            <div className="absolute top-4 left-14 sm:left-16 z-[1000] bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-lg border border-emerald-600/30 flex items-center gap-2 text-xs font-semibold text-emerald-900 animate-in fade-in slide-in-from-top-2 duration-200">
-              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-              <span>Fetching live Google Places...</span>
-            </div>
-          )}
-
           {/* Desktop-only Reopen Button when Sidebar is collapsed */}
           {!isSidebarOpen && (
             <button
               onClick={() => setIsSidebarOpen(true)}
-              className="hidden lg:flex absolute top-4 right-4 z-[1000] bg-[#243324] text-[#FBF9F5] px-3.5 py-2.5 rounded-xl shadow-2xl border border-white/20 items-center gap-2 text-xs font-semibold hover:bg-emerald-950 transition-all hover:scale-105 animate-in fade-in duration-200"
+              className="hidden lg:flex absolute top-4 right-4 z-[1000] h-10 bg-[#243324] text-[#FBF9F5] px-3.5 rounded-xl shadow-xl border border-white/20 items-center gap-2 text-xs font-semibold hover:bg-emerald-950 transition-all hover:scale-105 active:scale-95 animate-in fade-in duration-200 cursor-pointer"
               title="Open Neighborhood Explorer"
             >
               <Compass className="w-4 h-4 text-emerald-400" />
@@ -437,7 +435,6 @@ export default function Home() {
           selectedProperty={selectedProperty}
           amenities={amenitiesWithDistance}
           walkingRadius={walkingRadius}
-          setWalkingRadius={setWalkingRadius}
           showSchoolRings={showSchoolRings}
           setShowSchoolRings={setShowSchoolRings}
           selectedCategories={selectedCategories}
@@ -449,7 +446,16 @@ export default function Home() {
           setIsOpen={setIsSidebarOpen}
           activeSidebarTab={activeSidebarTab}
           setActiveSidebarTab={setActiveSidebarTab}
-          onOpenResaleModal={() => setIsResaleModalOpen(true)}
+          onOpenResaleModal={(passedData?: HdbResaleAnalysis | null) => {
+            if (passedData) setModalHdbData(passedData);
+            setIsResaleModalOpen(true);
+          }}
+          onOpenUraResaleModal={() => setIsUraResaleModalOpen(true)}
+          onSearchLiveGoogle={handleSearchLiveGoogle}
+          isSearchingGoogle={isSearchingGoogle}
+          googleQuotaError={googleQuotaError}
+          onClearGoogleError={() => setGoogleQuotaError(null)}
+          googleSuccessMsg={googleSuccessMsg}
         />
 
         {/* Mobile Multi-Snap Bottom Sheet (Hidden on >= lg) */}
@@ -465,20 +471,28 @@ export default function Home() {
           onLocateAmenity={handleLocateAmenity}
           highlightedAmenityId={highlightedAmenityId}
           convenienceScore={convenienceScore}
-          onOpenResaleModal={() => setIsResaleModalOpen(true)}
+          onOpenResaleModal={(passedData?: HdbResaleAnalysis | null) => {
+            if (passedData) setModalHdbData(passedData);
+            setIsResaleModalOpen(true);
+          }}
+          onOpenUraResaleModal={() => setIsUraResaleModalOpen(true)}
           sheetState={mobileSheetState}
           setSheetState={setMobileSheetState}
+          activeTab={activeSidebarTab}
+          setActiveTab={setActiveSidebarTab}
+          onSearchLiveGoogle={handleSearchLiveGoogle}
+          isSearchingGoogle={isSearchingGoogle}
+          googleQuotaError={googleQuotaError}
+          onClearGoogleError={() => setGoogleQuotaError(null)}
+          googleSuccessMsg={googleSuccessMsg}
         />
       </div>
 
-      {/* Google Maps Live Sync Configuration Modal */}
-      <GoogleMapsSyncModal
-        isOpen={isGoogleModalOpen}
-        onClose={() => setIsGoogleModalOpen(false)}
-        apiKey={googleApiKey}
-        onSaveKey={handleSaveGoogleKey}
-        onClearKey={handleClearGoogleKey}
-        isLiveSyncActive={Boolean(googleApiKey)}
+      {/* Full-Screen URA Private Property Analytics Modal */}
+      <UraResaleModal
+        isOpen={isUraResaleModalOpen}
+        onClose={() => setIsUraResaleModalOpen(false)}
+        selectedProperty={selectedProperty}
       />
 
       {/* Side-by-Side Location Comparison Modal */}
@@ -495,6 +509,7 @@ export default function Home() {
         isOpen={isResaleModalOpen}
         onClose={() => setIsResaleModalOpen(false)}
         selectedProperty={selectedProperty}
+        data={modalHdbData}
       />
     </div>
   );

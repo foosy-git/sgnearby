@@ -41,6 +41,9 @@ export interface AmenityWithDistance extends Amenity {
   distanceMeters: number;
   walkingMinutes: number;
   schoolPriority?: '1km' | '2km' | 'outside';
+  isTwoTrackScheme?: boolean;
+  twoTrackTrack?: 'within-2km' | 'beyond-2km';
+  schoolPriorityNote?: string;
 }
 
 export interface SelectedProperty {

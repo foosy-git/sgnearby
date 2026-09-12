@@ -133,4 +133,16 @@ export const FEATURED_PROPERTIES: SelectedProperty[] = [
     propertyType: 'Condo',
     town: 'Holland Village',
   },
+  {
+    id: 'feat-forest-woods',
+    name: 'Forest Woods',
+    address: '15 Lorong Lew Lian, Singapore 533853',
+    lat: 1.35166,
+    lng: 103.87667,
+    postalCode: '533853',
+    propertyType: 'Condo',
+    town: 'Serangoon / Upper Paya Lebar (District 19)',
+    block: '15',
+    streetName: 'LORONG LEW LIAN',
+  },
 ];

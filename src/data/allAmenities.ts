@@ -4,8 +4,6 @@ import { Amenity } from './types';
 import { MRT_STATIONS } from './mrtStations';
 import { ALL_SCHOOLS, PRIMARY_SCHOOLS } from './schools';
 import { ALL_FOOD_PLACES, HAWKER_CENTRES } from './foodPlaces';
-import { SHOPPING_MALLS } from './shoppingMalls';
-import { SUPERMARKETS } from './supermarkets';
 import { SUPERMARKETS_MALLS } from './supermarketsMalls';
 import { HEALTHCARE_FACILITIES, PARKS_AND_NATURE } from './healthcareParks';
 import { SPORTS_FACILITIES } from './sportsFacilities';
@@ -16,8 +14,7 @@ export const ALL_AMENITIES: Amenity[] = [
   ...MRT_STATIONS,
   ...ALL_SCHOOLS,
   ...ALL_FOOD_PLACES,
-  ...SHOPPING_MALLS,
-  ...SUPERMARKETS,
+  ...SUPERMARKETS_MALLS,
   ...HEALTHCARE_FACILITIES,
   ...PARKS_AND_NATURE,
   ...SPORTS_FACILITIES,
@@ -31,8 +28,6 @@ export {
   PRIMARY_SCHOOLS,
   ALL_FOOD_PLACES,
   HAWKER_CENTRES,
-  SHOPPING_MALLS,
-  SUPERMARKETS,
   SUPERMARKETS_MALLS,
   HEALTHCARE_FACILITIES,
   PARKS_AND_NATURE,

@@ -3,7 +3,7 @@
 import React from 'react';
 import { AmenityWithDistance, SelectedProperty } from '@/data/types';
 import { getGoogleMapsWalkUrl, formatDistance } from '@/lib/geoUtils';
-import { MRT_LINES } from '@/data/mrtStations';
+import { MRT_LINES, isLrtStation, getTransitStationType } from '@/data/mrtStations';
 import { Navigation, ExternalLink, X, ChevronUp } from 'lucide-react';
 
 interface Props {
@@ -31,8 +31,16 @@ export default function MobilePoiPeekCard({
 
   const getCategoryBadge = () => {
     switch (poi.category) {
-      case 'mrt':
+      case 'mrt': {
+        const tType = getTransitStationType(poi);
+        if (tType === 'LRT') {
+          return { label: 'LRT Station', bg: 'bg-teal-100 text-teal-900 border-teal-300' };
+        }
+        if (tType === 'MRT / LRT') {
+          return { label: 'MRT / LRT Interchange', bg: 'bg-indigo-100 text-indigo-900 border-indigo-300' };
+        }
         return { label: 'MRT Station', bg: 'bg-blue-100 text-blue-900 border-blue-300' };
+      }
       case 'bus':
         return { label: 'Bus Stop', bg: 'bg-sky-100 text-sky-900 border-sky-300' };
       case 'food':
@@ -46,10 +54,13 @@ export default function MobilePoiPeekCard({
       case 'shopping':
         return { label: 'Groceries', bg: 'bg-emerald-100 text-emerald-900 border-emerald-300' };
       case 'school':
-        return {
-          label: poi.schoolPriority === '1km' ? '★ 1km School Priority' : 'School',
-          bg: poi.schoolPriority === '1km' ? 'bg-indigo-100 text-indigo-950 border-indigo-300' : 'bg-blue-100 text-blue-900 border-blue-200',
-        };
+        if (poi.schoolPriority === '1km' || poi.distanceMeters <= 1000) {
+          return { label: 'Within 1km', bg: 'bg-blue-100 text-blue-900 border-blue-300' };
+        }
+        if (poi.schoolPriority === '2km' || poi.distanceMeters <= 2000) {
+          return { label: '1km - 2km', bg: 'bg-amber-100 text-amber-900 border-amber-300' };
+        }
+        return { label: 'School', bg: 'bg-indigo-100 text-indigo-900 border-indigo-200' };
       case 'healthcare':
         return { label: 'Healthcare', bg: 'bg-rose-100 text-rose-900 border-rose-300' };
       case 'park':
@@ -64,7 +75,7 @@ export default function MobilePoiPeekCard({
   const badge = getCategoryBadge();
 
   return (
-    <div className="lg:hidden absolute left-3 right-3 bottom-[115px] z-30 bg-[#FBF9F5]/98 backdrop-blur-xl rounded-2xl p-3.5 border border-[#243324]/15 shadow-2xl animate-in fade-in slide-in-from-bottom-3 duration-200">
+    <div className="lg:hidden absolute left-3 right-3 bottom-[115px] z-[1050] bg-[#FBF9F5]/98 backdrop-blur-xl rounded-2xl p-3.5 border border-[#243324]/15 shadow-2xl animate-in fade-in slide-in-from-bottom-3 duration-200">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5 flex-wrap">
@@ -106,26 +117,31 @@ export default function MobilePoiPeekCard({
                   )}
                 </>
               ) : (
-                poi.details.lines.map((line) => {
-                  const lineInfo = MRT_LINES[line];
-                  return (
-                    <span
-                      key={line}
-                      className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${
-                        lineInfo ? lineInfo.bgClass : 'bg-slate-700 text-white'
-                      }`}
-                    >
-                      {line}
-                    </span>
-                  );
-                })
+                <>
+                  <span
+                    className={`px-1.5 py-0.2 rounded text-[10px] font-bold border ${
+                      isLrtStation(poi)
+                        ? 'bg-teal-50 text-teal-800 border-teal-200'
+                        : 'bg-blue-50 text-blue-800 border-blue-200'
+                    }`}
+                  >
+                    {isLrtStation(poi) ? 'LRT' : 'MRT'}
+                  </span>
+                  {poi.details.lines.map((line) => {
+                    const lineInfo = MRT_LINES[line];
+                    return (
+                      <span
+                        key={line}
+                        className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${
+                          lineInfo ? lineInfo.bgClass : 'bg-slate-700 text-white'
+                        }`}
+                      >
+                        {line}
+                      </span>
+                    );
+                  })}
+                </>
               )}
-            </div>
-          )}
-
-          {poi.details?.ballotingRisk === 'High' && (
-            <div className="mt-1 text-[10px] font-bold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200 inline-block">
-              🔥 High 2C Ballot Risk (Singapore Citizen Within 1km)
             </div>
           )}
 
@@ -140,7 +156,7 @@ export default function MobilePoiPeekCard({
         <button
           type="button"
           onClick={onClose}
-          className="p-1.5 rounded-xl text-[#5C695C] hover:text-[#243324] hover:bg-[#243324]/5 active:scale-95 transition-all cursor-pointer"
+          className="p-2 rounded-xl text-[#5C695C] hover:text-[#243324] hover:bg-[#243324]/5 active:scale-95 transition-all cursor-pointer shrink-0"
           title="Close card"
         >
           <X className="w-4 h-4" />
@@ -153,7 +169,7 @@ export default function MobilePoiPeekCard({
           href={gmapsUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 py-2 px-3 rounded-xl bg-emerald-800 text-white text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-xs"
+          className="flex-1 min-h-[44px] py-2 px-3 rounded-xl bg-emerald-800 text-white text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-xs"
         >
           <Navigation className="w-3.5 h-3.5 text-emerald-200" />
           <span>Walking Directions</span>
@@ -164,7 +180,7 @@ export default function MobilePoiPeekCard({
           <button
             type="button"
             onClick={onExpandSheet}
-            className="py-2 px-3 rounded-xl bg-[#F4EFE6] text-[#243324] text-xs font-semibold hover:bg-[#E8DCC4] active:scale-95 transition-all flex items-center gap-1 shrink-0 cursor-pointer"
+            className="min-h-[44px] py-2 px-3 rounded-xl bg-[#F4EFE6] text-[#243324] text-xs font-semibold hover:bg-[#E8DCC4] active:scale-95 transition-all flex items-center gap-1 shrink-0 cursor-pointer"
           >
             <span>All Nearby</span>
             <ChevronUp className="w-3.5 h-3.5 text-emerald-700" />

@@ -78,38 +78,6 @@ export default function HdbResaleModal({ isOpen, onClose, selectedProperty, data
     };
   }, [isOpen, propData, selectedProperty]);
 
-  if (!isOpen) return null;
-
-  if (isLoading && !data) {
-    return (
-      <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-        <div className="bg-[#FBF9F5] p-8 rounded-2xl shadow-xl flex items-center gap-3">
-          <div className="w-5 h-5 border-2 border-emerald-700 border-t-transparent rounded-full animate-spin" />
-          <span className="text-sm font-semibold text-[#243324]">Loading HDB resale transactions...</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (!data || !data.hasTransactions) {
-    return (
-      <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-        <div className="bg-[#FBF9F5] p-6 rounded-2xl shadow-xl max-w-md w-full text-center space-y-3">
-          <div className="font-serif font-bold text-base text-[#243324]">No HDB Resale Transactions</div>
-          <p className="text-xs text-[#5C695C]">
-            No HDB transactions were recorded for this address in the past 3 years. This location may be a private property.
-          </p>
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-[#243324] text-white rounded-xl text-xs font-semibold"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   const { block: originBlock } = useMemo(
     () => extractHdbStreetAndBlock(selectedProperty),
     [selectedProperty]
@@ -120,7 +88,7 @@ export default function HdbResaleModal({ isOpen, onClose, selectedProperty, data
     if (data.availableBlocksWithProximity && data.availableBlocksWithProximity.length > 0) {
       return data.availableBlocksWithProximity;
     }
-    return data.availableBlocks.map((b) => {
+    return (data.availableBlocks || []).map((b) => {
       const prox = calculateBlockProximity(b.block, originBlock);
       return {
         block: b.block,
@@ -146,45 +114,58 @@ export default function HdbResaleModal({ isOpen, onClose, selectedProperty, data
   }, [availableBlocks]);
 
   const leaseCommenceYear = useMemo(() => {
-    if (data?.transactions && data.transactions.length > 0) {
+    if (!data) return 1995;
+    const targetBlock = originBlock || (selectedBlock !== 'all' && !selectedBlock.startsWith('WALK_') ? selectedBlock : undefined);
+    if (targetBlock && data.transactions) {
+      const exactMatch = data.transactions.find(
+        (t) => t.block.toUpperCase() === targetBlock.toUpperCase() && t.leaseCommenceDate && t.leaseCommenceDate > 1950
+      );
+      if (exactMatch) return exactMatch.leaseCommenceDate;
+    }
+    if (data.transactions && data.transactions.length > 0) {
       const match = data.transactions.find((t) => t.leaseCommenceDate && t.leaseCommenceDate > 1950);
       if (match) return match.leaseCommenceDate;
     }
     return 1995;
-  }, [data]);
+  }, [data, originBlock, selectedBlock]);
 
   // Filter transactions
-  const filtered = (data.transactions || []).filter((t) => {
-    let matchBlock = false;
-    if (selectedBlock === 'WALK_5MIN') {
-      matchBlock = t.isWithin5MinWalk !== false;
-    } else if (selectedBlock === 'ALL') {
-      matchBlock = true;
-    } else {
-      matchBlock = t.block.toUpperCase() === selectedBlock.toUpperCase();
-    }
+  const filtered = useMemo(() => {
+    if (!data || !data.transactions) return [];
+    return data.transactions.filter((t) => {
+      let matchBlock = false;
+      if (selectedBlock === 'WALK_5MIN') {
+        matchBlock = t.isWithin5MinWalk !== false;
+      } else if (selectedBlock === 'ALL') {
+        matchBlock = true;
+      } else {
+        matchBlock = t.block.toUpperCase() === selectedBlock.toUpperCase();
+      }
 
-    const matchType = selectedFlatType === 'ALL' || t.flatType.toUpperCase() === selectedFlatType.toUpperCase();
-    if (!matchBlock || !matchType) return false;
+      const matchType = selectedFlatType === 'ALL' || t.flatType.toUpperCase() === selectedFlatType.toUpperCase();
+      if (!matchBlock || !matchType) return false;
 
-    if (searchFilter.trim()) {
-      const q = searchFilter.toLowerCase().trim();
-      const str = `${t.block} ${t.flatType} ${t.flatModel} ${t.storeyRange} ${t.resalePrice}`.toLowerCase();
-      if (!str.includes(q)) return false;
-    }
-    return true;
-  });
+      if (searchFilter.trim()) {
+        const q = searchFilter.toLowerCase().trim();
+        const str = `${t.block} ${t.flatType} ${t.flatModel} ${t.storeyRange} ${t.resalePrice}`.toLowerCase();
+        if (!str.includes(q)) return false;
+      }
+      return true;
+    });
+  }, [data, selectedBlock, selectedFlatType, searchFilter]);
 
   // Sort
-  const sorted = [...filtered].sort((a, b) => {
-    let diff = 0;
-    if (sortField === 'month') {
-      diff = a.month.localeCompare(b.month);
-    } else {
-      diff = (a[sortField] as number) - (b[sortField] as number);
-    }
-    return sortAsc ? diff : -diff;
-  });
+  const sorted = useMemo(() => {
+    return [...filtered].sort((a, b) => {
+      let diff = 0;
+      if (sortField === 'month') {
+        diff = a.month.localeCompare(b.month);
+      } else {
+        diff = (a[sortField] as number) - (b[sortField] as number);
+      }
+      return sortAsc ? diff : -diff;
+    });
+  }, [filtered, sortField, sortAsc]);
 
   const handleSort = (field: typeof sortField) => {
     if (sortField === field) {
@@ -194,6 +175,38 @@ export default function HdbResaleModal({ isOpen, onClose, selectedProperty, data
       setSortAsc(false);
     }
   };
+
+  if (!isOpen) return null;
+
+  if (isLoading && !data) {
+    return (
+      <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+        <div className="bg-[#FBF9F5] p-8 rounded-2xl shadow-xl flex items-center gap-3">
+          <div className="w-5 h-5 border-2 border-emerald-700 border-t-transparent rounded-full animate-spin" />
+          <span className="text-sm font-semibold text-[#243324]">Loading HDB resale transactions...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!data || !data.hasTransactions) {
+    return (
+      <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+        <div className="bg-[#FBF9F5] p-6 rounded-2xl shadow-xl max-w-md w-full text-center space-y-3">
+          <div className="font-serif font-bold text-base text-[#243324]">No HDB Resale Transactions</div>
+          <p className="text-xs text-[#5C695C]">
+            {data?.message || 'No HDB transactions were recorded for this address in the past 5 years. This location may be a private property.'}
+          </p>
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-[#243324] text-white rounded-xl text-xs font-semibold"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // CSV Export handler
   const handleExportCsv = () => {
@@ -235,7 +248,7 @@ export default function HdbResaleModal({ isOpen, onClose, selectedProperty, data
     link.setAttribute('href', url);
     link.setAttribute(
       'download',
-      `hdb_resale_${data.streetName.replace(/\s+/g, '_')}_3years.csv`
+      `hdb_resale_${data.streetName.replace(/\s+/g, '_')}_5years.csv`
     );
     document.body.appendChild(link);
     link.click();
@@ -253,7 +266,7 @@ export default function HdbResaleModal({ isOpen, onClose, selectedProperty, data
                 Official HDB Transactions
               </span>
               <span className="text-xs text-[#5C695C] font-semibold">
-                Past 3 Years ({data.timeframe.startMonth} to {data.timeframe.endMonth}) • Within 5 Mins Walk (~400m)
+                Past 5 Years ({data.timeframe.startMonth} to {data.timeframe.endMonth}) • Within 5 Mins Walk (~400m)
               </span>
             </div>
             <h2 className="font-serif font-bold text-xl text-[#243324] mt-1">
@@ -431,7 +444,7 @@ export default function HdbResaleModal({ isOpen, onClose, selectedProperty, data
         {/* Modal Footer */}
         <div className="p-4 border-t border-[#243324]/10 bg-[#F4EFE6]/60 flex items-center justify-between text-xs text-[#5C695C] shrink-0">
           <span>
-            Source: Housing & Development Board (HDB) • Dataset: <code>d_8b84c4ee58e3cfc0ece0d773c8ca6abc</code>
+            Source: Housing &amp; Development Board (HDB)
           </span>
           <a
             href={HDB_DATASET_URL}

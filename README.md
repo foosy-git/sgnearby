@@ -40,6 +40,12 @@ Designed with the exact visual language, warm editorial typography, and styling 
    - Real-time search with autocomplete supporting Singapore 6-digit postal codes, condominium names, HDB estates, and landmarks.
    - One-click **Featured Hotspots** quick selector (Pinnacle@Duxton, Natura Loft Bishan, SkyVille@Dawson, Marina One, The Interlace, Tampines GreenVerge, Waterway Terraces, etc.).
 
+8. **Official Property Price Analytics (HDB Resale & URA Private Properties)**:
+   - **HDB Resale (Data.gov.sg)**: 3-year rolling transaction history, block-level walking distance calculations, flat type breakdowns, and price trends.
+   - **Private Residential Properties (Official URA API)**: 5-year historical transactions from URA (`PMI_Resi_Transaction`), quarterly PSF/price charts, unit configuration breakdowns, market segment badges (CCR/RCR/OCR), and nearby condominium cluster comparisons.
+   - **Seamless Dataset Switching**: Automatically detects whether a location is an HDB or Condominium, with an in-card toggle to switch between HDB and URA Private datasets anywhere in Singapore.
+   - **Centralized Server-Side API**: Configure `URA_ACCESS_KEY` in `.env.local` so all users query the official URA dataset automatically without needing to input a key on the frontend.
+
 ---
 
 ## 🚀 Getting Started

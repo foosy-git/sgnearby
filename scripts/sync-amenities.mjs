@@ -23,10 +23,155 @@ console.log('🚀 Starting Singapore Amenities Sync Pipeline...');
 console.log(`📁 Target directory: ${DATA_DIR}`);
 
 // ----------------------------------------------------------------------
-// 1. Ingest Singapore Bus Stops (LTA DataMall via data.busrouter.sg)
+// Helper: Load environment variables from .env.local or .env
 // ----------------------------------------------------------------------
+function loadLocalEnv() {
+  const candidates = ['.env.local', '.env'];
+  for (const file of candidates) {
+    const filePath = path.resolve(__dirname, '..', file);
+    if (fs.existsSync(filePath)) {
+      const content = fs.readFileSync(filePath, 'utf8');
+      for (const line of content.split('\n')) {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith('#')) continue;
+        const eqIdx = trimmed.indexOf('=');
+        if (eqIdx !== -1) {
+          const key = trimmed.slice(0, eqIdx).trim();
+          const val = trimmed.slice(eqIdx + 1).trim().replace(/^['"]|['"]$/g, '');
+          if (!process.env[key]) {
+            process.env[key] = val;
+          }
+        }
+      }
+    }
+  }
+}
+loadLocalEnv();
+
+// Helper to sort bus numbers logically (e.g., 2, 14, 14e, 107, 107M)
+function sortBusNumbers(a, b) {
+  const numA = parseInt(a, 10);
+  const numB = parseInt(b, 10);
+  if (!isNaN(numA) && !isNaN(numB)) {
+    if (numA !== numB) return numA - numB;
+    return a.localeCompare(b);
+  }
+  return a.localeCompare(b);
+}
+
+// ----------------------------------------------------------------------
+// 1. Ingest Singapore Bus Stops (Direct from LTA DataMall API with fallback)
+// ----------------------------------------------------------------------
+async function fetchLtaPaginated(endpoint, accountKey) {
+  const baseUrl = `https://datamall2.mytransport.sg/ltaodataservice/${endpoint}`;
+  let skip = 0;
+  const allRecords = [];
+
+  while (true) {
+    const url = `${baseUrl}?$skip=${skip}`;
+    process.stdout.write(`   ↳ Querying LTA ${endpoint} (skip=${skip})...\r`);
+    const res = await fetch(url, {
+      headers: {
+        AccountKey: accountKey,
+        accept: 'application/json',
+      },
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`LTA DataMall API responded with HTTP ${res.status}: ${errText}`);
+    }
+
+    const data = await res.json();
+    const records = data.value || [];
+    allRecords.push(...records);
+
+    if (records.length < 500) {
+      break; // Reached last page
+    }
+    skip += 500;
+  }
+
+  process.stdout.write(`\n   ✓ Downloaded ${allRecords.length} records from LTA ${endpoint}\n`);
+  return allRecords;
+}
+
 async function syncBusStops() {
   console.log('\n🚌 [1/4] Ingesting Singapore Bus Network...');
+  const ltaKey = process.env.LTA_DATAMALL_KEY || process.env.LTA_ACCOUNT_KEY;
+
+  if (ltaKey) {
+    console.log('🔑 Detected LTA DataMall Key in environment.');
+    console.log('🌐 Fetching directly from official LTA DataMall API (datamall2.mytransport.sg)...');
+    try {
+      // 1. Fetch Bus Stops (~5,200 records, ~11 pages)
+      const rawStops = await fetchLtaPaginated('BusStops', ltaKey);
+      
+      // 2. Fetch Bus Routes (~26,000+ records, ~53 pages)
+      const rawRoutes = await fetchLtaPaginated('BusRoutes', ltaKey);
+
+      // 3. Aggregate passing services per bus stop
+      const stopServices = new Map();
+      for (const route of rawRoutes) {
+        const stopCode = route.BusStopCode;
+        const serviceNo = route.ServiceNo;
+        if (!stopCode || !serviceNo) continue;
+        if (!stopServices.has(stopCode)) {
+          stopServices.set(stopCode, new Set());
+        }
+        stopServices.get(stopCode).add(serviceNo);
+      }
+
+      // 4. Format into Amenity objects
+      const busStopsList = [];
+      for (const stop of rawStops) {
+        const code = stop.BusStopCode;
+        const lat = parseFloat(stop.Latitude);
+        const lng = parseFloat(stop.Longitude);
+        const desc = stop.Description || '';
+        const road = stop.RoadName || '';
+
+        // Singapore boundary coordinates sanity check
+        if (!lat || !lng || lat < 1.15 || lat > 1.48 || lng < 103.55 || lng > 104.05) continue;
+
+        const lines = stopServices.has(code)
+          ? Array.from(stopServices.get(code)).sort(sortBusNumbers)
+          : [];
+
+        busStopsList.push({
+          id: `bus-${code}`,
+          name: road ? `${desc} (${road})` : desc,
+          category: 'bus',
+          lat: Number(lat.toFixed(5)),
+          lng: Number(lng.toFixed(5)),
+          details: {
+            stationCode: code,
+            lines: lines.length > 0 ? lines : undefined,
+          },
+        });
+      }
+
+      busStopsList.sort((a, b) => (a.details.stationCode || '').localeCompare(b.details.stationCode || ''));
+
+      const content = `// Generated automatically by scripts/sync-amenities.mjs - DO NOT EDIT DIRECTLY
+// Source: Official LTA DataMall API (https://datamall2.mytransport.sg) - ${busStopsList.length} verified stops
+import { Amenity } from './types';
+
+export const SINGAPORE_BUS_STOPS: Amenity[] = ${JSON.stringify(busStopsList, null, 2)};
+`;
+
+      fs.writeFileSync(path.join(DATA_DIR, 'busStops.ts'), content, 'utf8');
+      console.log(`✅ Successfully synced ${busStopsList.length} Singapore bus stops directly from LTA DataMall into busStops.ts`);
+      return busStopsList.length;
+    } catch (err) {
+      console.warn(`⚠️ Direct LTA DataMall fetch failed: ${err.message}`);
+      console.log('🔄 Falling back to data.busrouter.sg mirror...');
+    }
+  } else {
+    console.log('ℹ️ No LTA_DATAMALL_KEY found in .env.local. Using data.busrouter.sg mirror...');
+  }
+
+  // Fallback: Ingest via data.busrouter.sg
   try {
     const [stopsRes, servicesRes] = await Promise.all([
       fetch('https://data.busrouter.sg/v1/stops.min.json'),
@@ -40,7 +185,6 @@ async function syncBusStops() {
     const stops = await stopsRes.json();
     const services = await servicesRes.json();
 
-    // Map each bus stop to its passing bus services
     const stopServices = new Map();
     for (const [serviceNo, serviceData] of Object.entries(services)) {
       if (!serviceData.routes) continue;
@@ -57,16 +201,10 @@ async function syncBusStops() {
     const busStopsList = [];
     for (const [code, data] of Object.entries(stops)) {
       const [lng, lat, name, road] = data;
-      // Coordinates sanity check for Singapore bounds
       if (!lat || !lng || lat < 1.15 || lat > 1.48 || lng < 103.55 || lng > 104.05) continue;
 
       const lines = stopServices.has(code)
-        ? Array.from(stopServices.get(code)).sort((a, b) => {
-            const numA = parseInt(a, 10);
-            const numB = parseInt(b, 10);
-            if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
-            return a.localeCompare(b);
-          })
+        ? Array.from(stopServices.get(code)).sort(sortBusNumbers)
         : [];
 
       busStopsList.push({
@@ -82,11 +220,10 @@ async function syncBusStops() {
       });
     }
 
-    // Sort by bus stop code
     busStopsList.sort((a, b) => (a.details.stationCode || '').localeCompare(b.details.stationCode || ''));
 
     const content = `// Generated automatically by scripts/sync-amenities.mjs - DO NOT EDIT DIRECTLY
-// Source: LTA DataMall / Singapore Public Bus Network (${busStopsList.length} verified stops)
+// Source: LTA DataMall (via busrouter mirror) (${busStopsList.length} verified stops)
 import { Amenity } from './types';
 
 export const SINGAPORE_BUS_STOPS: Amenity[] = ${JSON.stringify(busStopsList, null, 2)};
@@ -278,9 +415,11 @@ function syncSupermarketsAndMalls() {
     { id: 'sup-donki-waterway', name: 'Don Don Donki (Waterway Point)', category: 'shopping', lat: 1.4065, lng: 103.9020, address: '83 Punggol Central #B1-10', details: { brand: 'Don Don Donki Japanese Grocery' } },
   ];
 
-  const combined = [...malls, ...supermarkets];
+  const formattedMalls = malls.map((m) => ({ ...m, category: 'mall' }));
+  const formattedSupers = supermarkets.map((s) => ({ ...s, category: 'supermarket' }));
+  const combined = [...formattedMalls, ...formattedSupers];
   const content = `// Generated automatically by scripts/sync-amenities.mjs - DO NOT EDIT DIRECTLY
-// Source: Singapore Retail Directories & SLA GeoSpace (${malls.length} Shopping Malls, ${supermarkets.length} Supermarkets)
+// Source: Singapore Retail Directories & SLA GeoSpace (${formattedMalls.length} Shopping Malls, ${formattedSupers.length} Supermarkets)
 import { Amenity } from './types';
 
 export const SUPERMARKETS_MALLS: Amenity[] = ${JSON.stringify(combined, null, 2)};

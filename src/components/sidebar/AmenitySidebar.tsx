@@ -10,19 +10,23 @@ import {
 import ConvenienceScoreCard from './ConvenienceScoreCard';
 import AmenityCard from './AmenityCard';
 import HdbResaleSection from '@/components/hdb/HdbResaleSection';
+import UraResaleSection from '@/components/ura/UraResaleSection';
 import CommuteMatrixCard from '@/components/living/CommuteMatrixCard';
 import SunOrientationCard from '@/components/living/SunOrientationCard';
+import { isPrivateProperty } from '@/lib/onemap';
+import { isLrtStation } from '@/data/mrtStations';
+import { HdbResaleAnalysis } from '@/lib/hdbResale';
 import {
   Train,
   Bus,
   Utensils,
+  Building,
   Building2,
   ShoppingCart,
   GraduationCap,
   HeartPulse,
   Trees,
   Dumbbell,
-  Clock,
   Compass,
   ChevronRight,
   ChevronDown,
@@ -41,6 +45,10 @@ import {
   MapPin,
   TrendingUp,
   Sun,
+  Loader2,
+  AlertTriangle,
+  CheckCircle2,
+  Info,
 } from 'lucide-react';
 
 interface CategoryConfig {
@@ -53,7 +61,7 @@ interface CategoryConfig {
 
 
 const CATEGORIES_CONFIG: CategoryConfig[] = [
-  { id: 'mrt', label: 'MRT Stations', icon: Train, color: 'text-blue-600', badgeBg: 'bg-blue-50 text-blue-700 border-blue-200' },
+  { id: 'mrt', label: 'MRT & LRT Stations', icon: Train, color: 'text-blue-600', badgeBg: 'bg-blue-50 text-blue-700 border-blue-200' },
   { id: 'bus', label: 'Bus Stops', icon: Bus, color: 'text-sky-600', badgeBg: 'bg-sky-50 text-sky-700 border-sky-200' },
   { id: 'mall', label: 'Shopping Malls', icon: Building2, color: 'text-purple-600', badgeBg: 'bg-purple-50 text-purple-700 border-purple-200' },
   { id: 'supermarket', label: 'Supermarkets & Groceries', icon: ShoppingCart, color: 'text-emerald-600', badgeBg: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
@@ -68,7 +76,6 @@ interface Props {
   selectedProperty: SelectedProperty;
   amenities: AmenityWithDistance[];
   walkingRadius: number; // meters
-  setWalkingRadius: (val: number) => void;
   showSchoolRings: boolean;
   setShowSchoolRings: (val: boolean) => void;
   selectedCategories: AmenityCategory[];
@@ -78,16 +85,21 @@ interface Props {
   convenienceScore: ConvenienceScore;
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
-  activeSidebarTab?: 'amenities' | 'resale';
-  setActiveSidebarTab?: (tab: 'amenities' | 'resale') => void;
-  onOpenResaleModal?: () => void;
+  activeSidebarTab?: 'amenities' | 'hdb' | 'ura' | 'living';
+  setActiveSidebarTab?: (tab: 'amenities' | 'hdb' | 'ura' | 'living') => void;
+  onOpenResaleModal?: (data?: HdbResaleAnalysis | null) => void;
+  onOpenUraResaleModal?: () => void;
+  onSearchLiveGoogle?: () => void;
+  isSearchingGoogle?: boolean;
+  googleQuotaError?: string | null;
+  onClearGoogleError?: () => void;
+  googleSuccessMsg?: string | null;
 }
 
 export default function AmenitySidebar({
   selectedProperty,
   amenities,
   walkingRadius,
-  setWalkingRadius,
   showSchoolRings,
   setShowSchoolRings,
   selectedCategories,
@@ -100,11 +112,20 @@ export default function AmenitySidebar({
   activeSidebarTab,
   setActiveSidebarTab,
   onOpenResaleModal,
+  onOpenUraResaleModal,
+  onSearchLiveGoogle,
+  isSearchingGoogle = false,
+  googleQuotaError,
+  onClearGoogleError,
+  googleSuccessMsg,
 }: Props) {
   // Active Tab state (controlled or uncontrolled fallback)
-  const [internalTab, setInternalTab] = useState<'amenities' | 'resale'>('amenities');
+  const [internalTab, setInternalTab] = useState<'amenities' | 'hdb' | 'ura' | 'living'>('amenities');
   const currentTab = activeSidebarTab !== undefined ? activeSidebarTab : internalTab;
   const setCurrentTab = setActiveSidebarTab || setInternalTab;
+
+  // Active Price dataset: HDB vs URA Private Property
+  const isCondoOrLanded = isPrivateProperty(selectedProperty);
 
   // Toggle for Living Experience (Commute & Sun Orientation)
   const [showLivingExperience, setShowLivingExperience] = useState(false);
@@ -214,8 +235,9 @@ export default function AmenitySidebar({
   const [listSearch, setListSearch] = useState('');
   const [sortBy, setSortBy] = useState<'distance' | 'time' | 'name'>('distance');
   const [copiedToast, setCopiedToast] = useState(false);
+  const [showSchoolInfo, setShowSchoolInfo] = useState(false);
 
-  const handleShare = () => {
+  const handleShare = async () => {
     try {
       const url = new URL(window.location.href);
       url.searchParams.set('name', selectedProperty.name);
@@ -224,7 +246,22 @@ export default function AmenitySidebar({
       if (selectedProperty.postalCode) {
         url.searchParams.set('postal', selectedProperty.postalCode);
       }
-      navigator.clipboard.writeText(url.toString());
+      const shareUrl = url.toString();
+
+      if (typeof navigator !== 'undefined' && navigator.share) {
+        try {
+          await navigator.share({
+            title: `${selectedProperty.name} | SG Nearby`,
+            text: `Explore amenities, MRT, schools, and prices around ${selectedProperty.name}:`,
+            url: shareUrl,
+          });
+          return;
+        } catch (shareErr: any) {
+          if (shareErr.name === 'AbortError') return;
+        }
+      }
+
+      await navigator.clipboard.writeText(shareUrl);
       setCopiedToast(true);
       setTimeout(() => setCopiedToast(false), 2000);
     } catch {}
@@ -235,6 +272,9 @@ export default function AmenitySidebar({
     const nearestMrt = amenities.find((a) => a.category === 'mrt');
     const schools1km = amenities.filter((a) => a.category === 'school' && a.schoolPriority === '1km');
     const highRiskSchools1kmCount = schools1km.filter((a) => a.details?.ballotingRisk === 'High').length;
+    const twoTrackSchools2km = amenities.filter(
+      (a) => a.category === 'school' && a.isTwoTrackScheme && a.twoTrackTrack === 'within-2km'
+    );
     const hawkers = amenities.filter(
       (a) => a.category === 'food' && (!!a.details?.hawkerType || a.details?.foodType === 'Hawker Centre')
     );
@@ -247,6 +287,8 @@ export default function AmenitySidebar({
       nearestMrt,
       schools1kmCount: schools1km.length,
       highRiskSchools1kmCount,
+      twoTrackSchools2kmCount: twoTrackSchools2km.length,
+      twoTrackSchoolNames: twoTrackSchools2km.map((s) => s.name),
       hawkersCount: hawkers.length,
       supermarketsCount: supermarkets.length,
       nearestPark,
@@ -259,8 +301,7 @@ export default function AmenitySidebar({
       .filter((a) => {
         const isSelected =
           selectedCategories.includes(a.category) ||
-          (a.category === 'supermarket' && selectedCategories.includes('shopping')) ||
-          (a.category === 'shopping' && selectedCategories.includes('supermarket'));
+          (a.category === 'shopping' && (selectedCategories.includes('supermarket') || selectedCategories.includes('mall')));
         if (!isSelected) return false;
 
         // In-list keyword search
@@ -279,7 +320,9 @@ export default function AmenitySidebar({
         // Food sub-filtering
         if (a.category === 'food') {
           const isHawker = !!a.details?.hawkerType || a.details?.foodType === 'Hawker Centre';
-          const isCoffeeshop = a.details?.foodType === 'Coffeeshop / Food Court' || /coffeeshop|kopitiam|food court|food park/i.test(a.name);
+          const isCoffeeshop =
+            a.details?.foodType === 'Coffeeshop / Food Court' ||
+            /coffeeshop|kopitiam|food court|food park|food house|foodhouse|eating house/i.test(a.name);
           const isRestaurant = a.details?.foodType === 'Restaurant / Eatery' || a.details?.foodType === 'Cafe & Bakery';
 
           if (foodFilter === 'hawkers' && !isHawker) return false;
@@ -398,12 +441,6 @@ export default function AmenitySidebar({
     setExpandedCategories(new Set());
   };
 
-  const walkingOptions = [
-    { meters: 400, label: '5 min', desc: '400m' },
-    { meters: 800, label: '10 min', desc: '800m' },
-    { meters: 1200, label: '15 min', desc: '1.2km' },
-  ];
-
   if (!isOpen) {
     return null;
   }
@@ -478,43 +515,94 @@ export default function AmenitySidebar({
         </div>
       </div>
 
-      {/* Top Navigation Tabs: Amenities vs HDB Resale */}
-      <div className="px-4 py-2.5 bg-[#FBF9F5] border-b border-[#243324]/10 shrink-0">
-        <div className="grid grid-cols-2 gap-1.5 p-1 bg-[#F4EFE6] rounded-xl border border-[#243324]/10">
+      {/* Top Navigation Tabs: Amenities vs HDB Resale vs Private Property vs Living */}
+      <div className="px-3 py-2 bg-[#FBF9F5] border-b border-[#243324]/10 shrink-0">
+        <div className="grid grid-cols-4 gap-1 p-1 bg-[#F4EFE6] rounded-xl border border-[#243324]/10">
           <button
             type="button"
             onClick={() => setCurrentTab('amenities')}
-            className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+            className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer truncate ${
               currentTab === 'amenities'
                 ? 'bg-[#243324] text-white shadow-xs'
                 : 'text-[#5C695C] hover:text-[#243324]'
             }`}
+            title={`Nearby Amenities (${amenities.length})`}
           >
-            <Compass className="w-3.5 h-3.5" />
-            <span>Amenities ({amenities.length})</span>
+            <Compass className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">Amenities</span>
           </button>
+
           <button
             type="button"
-            onClick={() => setCurrentTab('resale')}
-            className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-              currentTab === 'resale'
+            onClick={() => setCurrentTab('hdb')}
+            className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer truncate ${
+              currentTab === 'hdb'
                 ? 'bg-emerald-800 text-white shadow-xs'
+                : !isCondoOrLanded
+                ? 'text-emerald-950 bg-emerald-100/70 hover:bg-emerald-200/80 font-bold border border-emerald-300'
                 : 'text-[#5C695C] hover:text-[#243324]'
             }`}
+            title="Official 5-Year HDB Resale Transactions"
           >
-            <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
-            <span>HDB Resale (3Y)</span>
+            <Building className={`w-3.5 h-3.5 shrink-0 ${currentTab === 'hdb' ? 'text-emerald-200' : 'text-emerald-700'}`} />
+            <span className="truncate">HDB Resale</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setCurrentTab('ura')}
+            className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer truncate ${
+              currentTab === 'ura'
+                ? 'bg-amber-800 text-white shadow-xs'
+                : isCondoOrLanded
+                ? 'text-amber-950 bg-amber-100/70 hover:bg-amber-200/80 font-bold border border-amber-300'
+                : 'text-[#5C695C] hover:text-[#243324]'
+            }`}
+            title="Official URA Private Residential Transactions"
+          >
+            <Building2 className={`w-3.5 h-3.5 shrink-0 ${currentTab === 'ura' ? 'text-amber-200' : 'text-amber-700'}`} />
+            <span className="truncate">Private</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setCurrentTab('living')}
+            className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer truncate ${
+              currentTab === 'living'
+                ? 'bg-[#243324] text-white shadow-xs'
+                : 'text-[#5C695C] hover:text-[#243324]'
+            }`}
+            title="Door-to-Door Commute Matrix & Afternoon Sun Heat Test"
+          >
+            <Sun className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+            <span className="truncate">Living</span>
           </button>
         </div>
       </div>
 
       {/* Conditional Content based on active tab */}
-      {currentTab === 'resale' ? (
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar">
+      {currentTab === 'hdb' ? (
+        <div className="flex-1 overflow-y-auto p-4 space-y-3.5 no-scrollbar">
           <HdbResaleSection
             selectedProperty={selectedProperty}
             onOpenModal={onOpenResaleModal}
           />
+        </div>
+      ) : currentTab === 'ura' ? (
+        <div className="flex-1 overflow-y-auto p-4 space-y-3.5 no-scrollbar">
+          <UraResaleSection
+            selectedProperty={selectedProperty}
+            onOpenModal={onOpenUraResaleModal}
+          />
+        </div>
+      ) : currentTab === 'living' ? (
+        <div className="flex-1 overflow-y-auto p-4 space-y-3.5 no-scrollbar">
+          <CommuteMatrixCard
+            propertyLat={selectedProperty.lat}
+            propertyLng={selectedProperty.lng}
+            nearestMrt={neighborhoodHighlights.nearestMrt}
+          />
+          <SunOrientationCard />
         </div>
       ) : (
         /* Scrollable Amenities Content */
@@ -530,16 +618,20 @@ export default function AmenitySidebar({
               <span>Estate Snapshot</span>
             </span>
             <span className="text-[10px] text-emerald-800 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-              Within {walkingRadius}m
+              Within {walkingRadius / 80} mins ({walkingRadius >= 1000 ? `${(walkingRadius / 1000).toFixed(1)}km` : `${walkingRadius}m`})
             </span>
           </div>
 
           <div className="grid grid-cols-2 gap-2 text-xs">
-            {/* Nearest MRT */}
+            {/* Nearest MRT or LRT */}
             <div className="p-2.5 rounded-xl bg-[#F4EFE6]/70 border border-[#243324]/5 flex flex-col justify-between">
               <div className="text-[10px] text-[#5C695C] font-semibold flex items-center gap-1">
                 <Train className="w-3 h-3 text-blue-600 shrink-0" />
-                <span>Nearest MRT</span>
+                <span>
+                  {neighborhoodHighlights.nearestMrt && isLrtStation(neighborhoodHighlights.nearestMrt)
+                    ? 'Nearest LRT'
+                    : 'Nearest MRT'}
+                </span>
               </div>
               <div className="mt-1 font-bold text-[#243324] text-xs truncate">
                 {neighborhoodHighlights.nearestMrt ? neighborhoodHighlights.nearestMrt.name : 'None in radius'}
@@ -549,21 +641,29 @@ export default function AmenitySidebar({
               </div>
             </div>
 
-            {/* MOE Primary Schools in 1km */}
+            {/* MOE Primary Schools in 1km & Two-Track in 2km */}
             <div className="p-2.5 rounded-xl bg-indigo-50/70 border border-indigo-200/60 flex flex-col justify-between">
-              <div className="text-[10px] text-indigo-700 font-semibold flex items-center gap-1">
-                <School className="w-3 h-3 text-indigo-600 shrink-0" />
-                <span>Schools in 1km</span>
+              <div className="text-[10px] text-indigo-700 font-semibold flex items-center justify-between gap-1">
+                <span className="flex items-center gap-1">
+                  <School className="w-3 h-3 text-indigo-600 shrink-0" />
+                  <span>Primary Schools</span>
+                </span>
+                {neighborhoodHighlights.twoTrackSchools2kmCount > 0 && (
+                  <span className="text-[9px] px-1 py-0.2 rounded-full font-bold bg-purple-200 text-purple-900 border border-purple-300">
+                    Two-Track
+                  </span>
+                )}
               </div>
-              <div className="mt-1 font-bold text-indigo-950 text-xs">
-                {neighborhoodHighlights.schools1kmCount} MOE {neighborhoodHighlights.schools1kmCount === 1 ? 'School' : 'Schools'}
+              <div className="mt-1 font-bold text-indigo-950 text-xs truncate">
+                {neighborhoodHighlights.schools1kmCount} in 1km
+                {neighborhoodHighlights.twoTrackSchools2kmCount > 0
+                  ? ` · ${neighborhoodHighlights.twoTrackSchools2kmCount} in 2km Track`
+                  : ''}
               </div>
               <div className="text-[10px] text-indigo-800 font-semibold mt-0.5 truncate">
-                {neighborhoodHighlights.highRiskSchools1kmCount > 0
-                  ? `🔥 ${neighborhoodHighlights.highRiskSchools1kmCount} High 2C Ballot Risk`
-                  : neighborhoodHighlights.schools1kmCount > 0
-                  ? 'Phase 2C Priority'
-                  : 'Outside 1km'}
+                {neighborhoodHighlights.schools1kmCount > 0
+                  ? 'Within 1km'
+                  : 'Expand radius'}
               </div>
             </div>
 
@@ -595,23 +695,33 @@ export default function AmenitySidebar({
               </div>
             </div>
 
-            {/* Quick HDB Resale Banner in Estate Snapshot */}
+            {/* Quick Price Banner in Estate Snapshot */}
             <div
-              onClick={() => setCurrentTab('resale')}
-              className="col-span-2 p-2.5 rounded-xl bg-emerald-50/80 border border-emerald-200/80 flex items-center justify-between cursor-pointer hover:bg-emerald-100/80 transition-colors group"
+              onClick={() => setCurrentTab(isCondoOrLanded ? 'ura' : 'hdb')}
+              className={`col-span-2 p-2.5 rounded-xl flex items-center justify-between cursor-pointer transition-colors group ${
+                isCondoOrLanded
+                  ? 'bg-amber-50/80 border border-amber-200/80 hover:bg-amber-100/80'
+                  : 'bg-emerald-50/80 border border-emerald-200/80 hover:bg-emerald-100/80'
+              }`}
             >
               <div className="flex items-center gap-2">
-                <TrendingUp className="w-3.5 h-3.5 text-emerald-700 shrink-0 group-hover:scale-110 transition-transform" />
+                {isCondoOrLanded ? (
+                  <Building2 className="w-3.5 h-3.5 text-amber-700 shrink-0 group-hover:scale-110 transition-transform" />
+                ) : (
+                  <TrendingUp className="w-3.5 h-3.5 text-emerald-700 shrink-0 group-hover:scale-110 transition-transform" />
+                )}
                 <div>
-                  <div className="text-[10px] text-emerald-900 font-bold uppercase tracking-wider">
-                    HDB Resale Prices (Within 5 Mins Walk)
+                  <div className={`text-[10px] font-bold uppercase tracking-wider ${isCondoOrLanded ? 'text-amber-900' : 'text-emerald-900'}`}>
+                    {isCondoOrLanded ? 'Private Property Transactions' : 'HDB Resale Prices (Within 5 Mins Walk)'}
                   </div>
-                  <div className="text-[11px] text-emerald-800 font-medium">
-                    View official resale transactions, PSF & 36-month trends within 400m
+                  <div className={`text-[11px] font-medium ${isCondoOrLanded ? 'text-amber-800' : 'text-emerald-800'}`}>
+                    {isCondoOrLanded
+                      ? 'View official URA transactions, PSF & 5-year trend lines'
+                      : 'View official resale transactions, PSF & 5-year trends within 400m'}
                   </div>
                 </div>
               </div>
-              <ChevronRight className="w-4 h-4 text-emerald-700 group-hover:translate-x-0.5 transition-transform shrink-0" />
+              <ChevronRight className={`w-4 h-4 group-hover:translate-x-0.5 transition-transform shrink-0 ${isCondoOrLanded ? 'text-amber-700' : 'text-emerald-700'}`} />
             </div>
           </div>
         </div>
@@ -660,62 +770,153 @@ export default function AmenitySidebar({
           )}
         </div>
 
-        {/* Walking Radius & School Rings Filters */}
-        <div className="bg-[#FFFFFF]/90 backdrop-blur-md rounded-2xl p-4 border border-[#243324]/10 shadow-xs space-y-3">
-          {/* Walking Radius Selector */}
-          <div>
-            <div className="flex items-center justify-between text-xs mb-2">
-              <span className="font-semibold text-[#5C695C] uppercase tracking-wider flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-emerald-700" />
-                Walking Radius
-              </span>
-              <span className="font-bold text-[#243324]">
-                {walkingRadius}m ({walkingRadius / 80} min)
-              </span>
-            </div>
-            <div className="grid grid-cols-3 gap-2">
-              {walkingOptions.map((opt) => (
+        {/* MOE Primary School Priority Rings Toggle */}
+        <div className="bg-[#FFFFFF]/90 backdrop-blur-md rounded-2xl p-4 border border-[#243324]/10 shadow-xs flex items-center justify-between">
+          <div className="space-y-0.5 pr-3">
+            <div className="text-xs font-semibold text-[#243324] flex items-center gap-1.5">
+              <School className="w-3.5 h-3.5 text-blue-600" />
+              <span>MOE Primary School Rings</span>
+              <div
+                className="relative inline-flex items-center"
+                onMouseEnter={() => setShowSchoolInfo(true)}
+                onMouseLeave={() => setShowSchoolInfo(false)}
+              >
                 <button
-                  key={opt.meters}
-                  onClick={() => setWalkingRadius(opt.meters)}
-                  className={`py-2 px-3 rounded-xl text-xs font-semibold transition-all border ${
-                    walkingRadius === opt.meters
-                      ? 'bg-[#243324] text-[#FBF9F5] border-[#243324] shadow-xs'
-                      : 'bg-[#F4EFE6]/70 text-[#243324] border-[#243324]/10 hover:bg-[#F4EFE6]'
-                  }`}
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowSchoolInfo((prev) => !prev);
+                  }}
+                  className="text-blue-600 hover:text-blue-800 transition-colors p-0.5 rounded-full hover:bg-blue-50 cursor-pointer inline-flex items-center"
+                  title="This is for reference only. Please refer to official MOE data for the most accurate information."
+                  aria-label="MOE School Rings Reference Notice"
                 >
-                  <div>{opt.label}</div>
-                  <div className="text-[10px] opacity-75">{opt.desc}</div>
+                  <Info className="w-3.5 h-3.5" />
                 </button>
-              ))}
-            </div>
-          </div>
-
-          {/* School Rings Toggle */}
-          <div className="pt-3 border-t border-[#243324]/10 flex items-center justify-between">
-            <div className="space-y-0.5">
-              <div className="text-xs font-semibold text-[#243324] flex items-center gap-1.5">
-                <School className="w-3.5 h-3.5 text-blue-600" />
-                <span>MOE Primary School Rings</span>
+                {showSchoolInfo && (
+                  <div
+                    className="absolute left-1/2 -translate-x-1/2 bottom-full pb-2 z-50"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="w-64 sm:w-72 p-2.5 bg-[#243324] text-white text-[11px] font-normal leading-relaxed rounded-xl shadow-2xl animate-in fade-in zoom-in-95 duration-150 border border-white/15">
+                      <div className="flex items-center justify-between gap-1 mb-1 border-b border-white/15 pb-1">
+                        <div className="font-semibold text-amber-300 flex items-center gap-1">
+                          <Info className="w-3 h-3 text-amber-300 shrink-0" />
+                          <span>For reference only</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setShowSchoolInfo(false)}
+                          className="text-white/60 hover:text-white p-0.5 cursor-pointer text-sm font-bold leading-none"
+                        >
+                          &times;
+                        </button>
+                      </div>
+                      <p className="text-white/90 leading-snug">
+                        This is for reference only. Please refer to official MOE data for the most accurate information.
+                      </p>
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-2 border-4 border-transparent border-t-[#243324]" />
+                    </div>
+                  </div>
+                )}
               </div>
-              <p className="text-[11px] text-[#5C695C]">
-                Draw 1km (Blue) & 2km (Orange) ballot priority zones
-              </p>
             </div>
-            <button
-              onClick={() => setShowSchoolRings(!showSchoolRings)}
-              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                showSchoolRings ? 'bg-emerald-600' : 'bg-slate-300'
-              }`}
-            >
-              <span
-                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-xs ring-0 transition duration-200 ease-in-out ${
-                  showSchoolRings ? 'translate-x-5' : 'translate-x-0'
-                }`}
-              />
-            </button>
+            <p className="text-[11px] text-[#5C695C]">
+              Draw 1km (Blue) &amp; 2km (Orange) zones. When off, schools outside walking radius disappear.
+            </p>
           </div>
+          <button
+            type="button"
+            onClick={() => setShowSchoolRings(!showSchoolRings)}
+            className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+              showSchoolRings ? 'bg-emerald-600' : 'bg-slate-300'
+            }`}
+            title="Toggle MOE Primary School Priority Rings"
+          >
+            <span
+              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-xs ring-0 transition duration-200 ease-in-out ${
+                showSchoolRings ? 'translate-x-5' : 'translate-x-0'
+              }`}
+            />
+          </button>
         </div>
+
+        {/* Compact On-Demand "Search Live on Google" Button & Hard Quota Alert */}
+        {onSearchLiveGoogle && (
+          <div className="bg-[#FFFFFF]/90 backdrop-blur-md rounded-xl p-2.5 border border-[#243324]/10 shadow-2xs space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <div
+                className="flex items-center gap-1.5 text-xs text-[#243324] min-w-0"
+                title="Search Google Places for nearby coffeeshops, kopitiams, and food spots"
+              >
+                <Utensils className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                <span className="font-semibold truncate">Looking for more food spots?</span>
+              </div>
+              <button
+                type="button"
+                onClick={onSearchLiveGoogle}
+                disabled={isSearchingGoogle}
+                className={`py-1 px-2.5 rounded-lg border text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
+                  isSearchingGoogle
+                    ? 'bg-[#F4EFE6] text-[#5C695C] border-[#243324]/10 cursor-not-allowed'
+                    : 'bg-blue-50/80 hover:bg-blue-100 text-blue-900 border-blue-200/80 hover:border-blue-300 shadow-2xs active:scale-95'
+                }`}
+                title={`Scan Google Places for heartland spots within ${walkingRadius}m`}
+              >
+                {isSearchingGoogle ? (
+                  <>
+                    <Loader2 className="w-3 h-3 animate-spin text-blue-600" />
+                    <span>Scanning...</span>
+                  </>
+                ) : (
+                  <>
+                    <Search className="w-3 h-3 text-blue-600" />
+                    <span>Search Live on Google</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Success Notification */}
+            {googleSuccessMsg && (
+              <div className="p-2 rounded-lg bg-emerald-50 border border-emerald-300/70 text-emerald-950 text-xs flex items-center justify-between animate-in fade-in">
+                <span className="font-semibold text-[11px]">{googleSuccessMsg}</span>
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              </div>
+            )}
+
+            {/* Google Hard Quota Cap Explanatory Alert */}
+            {googleQuotaError && (
+              <div className="p-2.5 rounded-xl bg-amber-50/95 border border-amber-300/80 text-amber-950 space-y-1.5 animate-in fade-in shadow-2xs">
+                <div className="flex items-start justify-between gap-1.5">
+                  <div className="flex items-center gap-1.5 font-bold text-xs text-amber-900">
+                    <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                    <span>Google Quota Limit Reached</span>
+                  </div>
+                  {onClearGoogleError && (
+                    <button
+                      type="button"
+                      onClick={onClearGoogleError}
+                      className="text-amber-700 hover:text-amber-950 p-0.5 rounded cursor-pointer"
+                      title="Dismiss alert"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
+
+                <p className="text-[11px] text-amber-900/90 leading-tight font-medium">
+                  {googleQuotaError}
+                </p>
+
+                <div className="pt-1.5 border-t border-amber-200/70 text-[10px] space-y-0.5 text-amber-900">
+                  <div>🛡️ <strong>$0 Protected:</strong> Daily quota cap triggered in Google Cloud to prevent billing.</div>
+                  <div>🇸🇬 <strong>Official Data Active:</strong> OneMap, LTA, MOE, NEA, HDB &amp; URA stay fully functional.</div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Nearby Facilities Multi-Select Dropdown Filter */}
         <div className="space-y-2">

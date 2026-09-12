@@ -103,12 +103,12 @@ export async function GET(request: NextRequest) {
       rawRecords = cached.records;
     } else {
       // Query data.gov.sg datastore_search for this street
-      // We query up to 500 recent transactions sorted newest first
+      // We query up to 3000 recent transactions sorted newest first, with pagination support
       const queryParams = new URLSearchParams({
         resource_id: HDB_DATASET_ID,
         filters: JSON.stringify({ street_name: normalizedStreet }),
         sort: 'month desc',
-        limit: '500',
+        limit: '3000',
       });
 
       const dataGovUrl = `https://data.gov.sg/api/action/datastore_search?${queryParams.toString()}`;
@@ -125,6 +125,33 @@ export async function GET(request: NextRequest) {
       const json = await apiRes.json();
       if (json.success && json.result && Array.isArray(json.result.records)) {
         rawRecords = json.result.records;
+        const total = json.result.total ?? rawRecords.length;
+
+        // If road exceeds 3000 records, fetch second page to ensure complete street history
+        if (total > rawRecords.length && rawRecords.length === 3000) {
+          try {
+            const p2Params = new URLSearchParams({
+              resource_id: HDB_DATASET_ID,
+              filters: JSON.stringify({ street_name: normalizedStreet }),
+              sort: 'month desc',
+              limit: '3000',
+              offset: '3000',
+            });
+            const p2Res = await fetch(
+              `https://data.gov.sg/api/action/datastore_search?${p2Params.toString()}`,
+              { headers: { Accept: 'application/json' } }
+            );
+            if (p2Res.ok) {
+              const p2Json = await p2Res.json();
+              if (p2Json.success && p2Json.result && Array.isArray(p2Json.result.records)) {
+                rawRecords = rawRecords.concat(p2Json.result.records);
+              }
+            }
+          } catch (p2Err) {
+            console.warn('Failed to fetch page 2 of HDB resale data:', p2Err);
+          }
+        }
+
         cache.set(cacheKey, { timestamp: Date.now(), records: rawRecords });
       }
     }
@@ -156,21 +183,21 @@ export async function GET(request: NextRequest) {
     const latestMonth = rawRecords[0]?.month || '2026-09';
     const [latestYear, latestMonthNum] = latestMonth.split('-').map(Number);
 
-    // Calculate rolling 3-year cutoff (36 months prior)
-    const cutoffYear = latestYear - 3;
+    // Calculate rolling 5-year cutoff (60 months prior)
+    const cutoffYear = latestYear - 5;
     const cutoffMonth = `${cutoffYear}-${String(latestMonthNum).padStart(2, '0')}`;
 
-    // Filter to strictly the past 3 years (36 months)
-    const past3YearsRecords = rawRecords.filter((r) => r.month >= cutoffMonth);
+    // Filter to strictly the past 5 years (60 months)
+    const past5YearsRecords = rawRecords.filter((r) => r.month >= cutoffMonth);
 
-    if (past3YearsRecords.length === 0) {
+    if (past5YearsRecords.length === 0) {
       return NextResponse.json<HdbResaleAnalysis>({
         streetName: normalizedStreet,
         queryBlock: block,
         town: rawRecords[0]?.town,
         datasetId: HDB_DATASET_ID,
         datasetUrl: HDB_DATASET_URL,
-        timeframe: { startMonth: cutoffMonth, endMonth: latestMonth, monthsCovered: 36 },
+        timeframe: { startMonth: cutoffMonth, endMonth: latestMonth, monthsCovered: 60 },
         totalTransactions: 0,
         avgResalePrice: 0,
         medianResalePrice: 0,
@@ -183,13 +210,13 @@ export async function GET(request: NextRequest) {
         availableBlocks: [],
         transactions: [],
         hasTransactions: false,
-        message: `No transactions recorded on ${normalizedStreet} in the past 3 years (${cutoffMonth} to ${latestMonth}).`,
+        message: `No transactions recorded on ${normalizedStreet} in the past 5 years (${cutoffMonth} to ${latestMonth}).`,
       });
     }
 
     // Collect all available blocks and compute walking proximity relative to the selected block
     const blockCountMap = new Map<string, number>();
-    for (const r of past3YearsRecords) {
+    for (const r of past5YearsRecords) {
       blockCountMap.set(r.block, (blockCountMap.get(r.block) || 0) + 1);
     }
 
@@ -220,7 +247,7 @@ export async function GET(request: NextRequest) {
 
     // Map raw records into formatted HdbTransaction models with walking distance
     // 1 sqm = 10.7639 sq ft
-    const mappedTransactions: HdbTransaction[] = past3YearsRecords.map((r) => {
+    const mappedTransactions: HdbTransaction[] = past5YearsRecords.map((r) => {
       const sqm = parseFloat(r.floor_area_sqm) || 0;
       const price = parseFloat(r.resale_price) || 0;
       const sqft = sqm * 10.7639;
@@ -363,7 +390,7 @@ export async function GET(request: NextRequest) {
       timeframe: {
         startMonth: cutoffMonth,
         endMonth: latestMonth,
-        monthsCovered: 36,
+        monthsCovered: 60,
       },
       totalTransactions: overallStats.total,
       walk5MinCount,

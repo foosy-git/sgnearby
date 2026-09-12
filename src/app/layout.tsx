@@ -1,6 +1,16 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import 'leaflet/dist/leaflet.css';
+import FeedbackWidget from '@/components/ui/FeedbackWidget';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
+  themeColor: '#FBF9F5',
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://sgnearby.fsyhub.com'),
@@ -32,6 +42,7 @@ export default function RootLayout({
       </head>
       <body className="antialiased font-sans bg-[#FBF9F5] text-[#243324] selection:bg-[#E8DCC4] selection:text-[#1F2B1D] min-h-screen flex flex-col">
         {children}
+        <FeedbackWidget />
       </body>
     </html>
   );

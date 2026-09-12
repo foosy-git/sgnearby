@@ -1,5 +1,6 @@
 import { SelectedProperty } from '@/data/types';
 import { extractHdbStreetAndBlock } from './hdbResale';
+import { isPrivateProperty } from './onemap';
 
 export interface PortalLinkItem {
   id: 'propertyguru' | '99co';
@@ -76,25 +77,57 @@ export function resolvePropertyPostalCode(property: SelectedProperty): string | 
 }
 
 /**
+ * Normalizes project and condo names into 99.co-compatible URL slug format.
+ * Examples:
+ *   "FOREST WOODS" -> "forest-woods"
+ *   "D'LEEDON" -> "dleedon"
+ *   "THE SAIL @ MARINA BAY" -> "the-sail-at-marina-bay"
+ *   "TREASURE AT TAMPINES" -> "treasure-at-tampines"
+ */
+export function slugifyProjectName(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/'/g, '')
+    .replace(/@/g, 'at')
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+/**
  * Builds smart, targeted search queries for Singapore real estate portals:
- * - PropertyGuru: https://www.propertyguru.com.sg/property-for-sale?freetext=<postal code>&market=residential
- * - 99.co: https://www.99.co/singapore/sale/hdb/<postal code>
+ * - PropertyGuru: https://www.propertyguru.com.sg/property-for-sale?freetext=<query>&market=residential
+ * - 99.co:
+ *   - Private Condos: https://www.99.co/singapore/sale/condos-apartments/<project-slug>
+ *   - Landed Houses: https://www.99.co/singapore/sale/houses/<project-slug>
+ *   - HDB: https://www.99.co/singapore/sale/hdb/<postal-or-slug>
  */
 export function generatePortalLinks(
   property: SelectedProperty,
-  flatType?: string
+  flatType?: string,
+  overrideProjectName?: string
 ): PortalLinkItem[] {
-  const result = getPortalLinksWithMetadata(property, flatType);
+  const result = getPortalLinksWithMetadata(property, flatType, overrideProjectName);
   return result.links;
 }
 
 export function getPortalLinksWithMetadata(
   property: SelectedProperty,
-  flatType?: string
+  flatType?: string,
+  overrideProjectName?: string
 ): PortalLinksResult {
+  const isPrivate =
+    isPrivateProperty(property) ||
+    property.propertyType === 'Condo' ||
+    property.propertyType === 'Landed';
+  const isLanded = property.propertyType === 'Landed';
+
   const postalCode = resolvePropertyPostalCode(property);
   const { block, streetName } = extractHdbStreetAndBlock(property);
   const townSlug = getTownSlug(property.town);
+
+  const rawProjectName = (overrideProjectName || (isPrivate ? property.name : '') || '').trim();
+  const projectSlug = rawProjectName ? slugifyProjectName(rawProjectName) : '';
 
   let searchTerm = '';
   let isPostalCode = false;
@@ -102,6 +135,9 @@ export function getPortalLinksWithMetadata(
   if (postalCode) {
     searchTerm = postalCode;
     isPostalCode = true;
+  } else if (rawProjectName) {
+    searchTerm = rawProjectName;
+    isPostalCode = false;
   } else {
     const parts: string[] = [];
     if (block) parts.push(`Block ${block}`);
@@ -113,21 +149,43 @@ export function getPortalLinksWithMetadata(
 
   const encodedTerm = encodeURIComponent(searchTerm);
 
-  // 99.co deeplink structure: https://www.99.co/singapore/sale/hdb/<postal code>
-  const ninetynineUrl = isPostalCode
-    ? `https://www.99.co/singapore/sale/hdb/${searchTerm}`
-    : townSlug
-    ? `https://www.99.co/singapore/sale/hdb/${townSlug}`
-    : `https://www.99.co/singapore/sale/hdb/${encodedTerm}`;
+  // 99.co deeplink structure:
+  // - Condos: https://www.99.co/singapore/sale/condos-apartments/<slug>
+  // - Landed: https://www.99.co/singapore/sale/houses/<slug>
+  // - HDB: https://www.99.co/singapore/sale/hdb/<postal code | townSlug | searchTerm>
+  let ninetynineUrl = '';
+  if (isPrivate) {
+    const categoryPath = isLanded ? 'houses' : 'condos-apartments';
+    if (projectSlug) {
+      ninetynineUrl = `https://www.99.co/singapore/sale/${categoryPath}/${projectSlug}`;
+    } else if (isPostalCode) {
+      ninetynineUrl = `https://www.99.co/singapore/sale/${categoryPath}?query_text=${searchTerm}`;
+    } else {
+      ninetynineUrl = `https://www.99.co/singapore/sale/${categoryPath}`;
+    }
+  } else {
+    ninetynineUrl = isPostalCode
+      ? `https://www.99.co/singapore/sale/hdb/${searchTerm}`
+      : townSlug
+      ? `https://www.99.co/singapore/sale/hdb/${townSlug}`
+      : `https://www.99.co/singapore/sale/hdb/${encodedTerm}`;
+  }
 
-  // PropertyGuru deeplink structure: https://www.propertyguru.com.sg/property-for-sale?freetext=<postal code>&market=residential
-  const propertyGuruUrl = `https://www.propertyguru.com.sg/property-for-sale?freetext=${encodedTerm}&market=residential`;
+  // PropertyGuru deeplink structure: https://www.propertyguru.com.sg/property-for-sale?freetext=<postal code | project name>&market=residential
+  const pgQuery = rawProjectName || (isPostalCode ? searchTerm : property.address || searchTerm);
+  const propertyGuruUrl = `https://www.propertyguru.com.sg/property-for-sale?freetext=${encodeURIComponent(pgQuery)}&market=residential`;
+
+  const tagline = rawProjectName
+    ? `${rawProjectName} • Active Sale`
+    : isPostalCode
+    ? `S(${searchTerm}) • Postal Search`
+    : 'Active Sale Listings';
 
   const links: PortalLinkItem[] = [
     {
       id: 'propertyguru',
       name: 'PropertyGuru',
-      tagline: isPostalCode ? `S(${searchTerm}) • Postal Search` : 'Active Sale Listings',
+      tagline,
       badgeBg: 'bg-red-50 hover:bg-red-100 border-red-200 text-red-700',
       badgeText: 'text-red-700',
       url: propertyGuruUrl,
@@ -137,7 +195,7 @@ export function getPortalLinksWithMetadata(
     {
       id: '99co',
       name: '99.co',
-      tagline: isPostalCode ? `S(${searchTerm}) • Postal Search` : 'Active Sale Listings',
+      tagline,
       badgeBg: 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700',
       badgeText: 'text-blue-700',
       url: ninetynineUrl,
@@ -165,20 +223,21 @@ export interface CovAnalysis {
 
 /**
  * Calculates an educational Cash-Over-Valuation (COV) guidance based on historical median price.
+ * Clarifies that HDB does not publish valuation data and many resale transactions close at $0 COV.
  */
 export function estimateCovGuidance(medianPrice: number): CovAnalysis {
-  const lowCov = Math.round((medianPrice * 0.03) / 1000) * 1000;
-  const highCov = Math.round((medianPrice * 0.08) / 1000) * 1000;
+  const lowCov = Math.round((medianPrice * 0.02) / 1000) * 1000;
+  const highCov = Math.round((medianPrice * 0.06) / 1000) * 1000;
   const askingBenchmark = medianPrice + Math.round((lowCov + highCov) / 2);
 
   return {
     medianTransactedPrice: medianPrice,
     askingPriceBenchmark: askingBenchmark,
     potentialCovRange: {
-      low: Math.max(10000, lowCov),
-      high: Math.max(30000, highCov),
+      low: Math.max(0, lowCov),
+      high: Math.max(20000, highCov),
     },
     explanation:
-      'HDB loans and bank mortgages are strictly capped at official HDB valuation. Any premium asked by sellers on PropertyGuru or 99.co above official valuation is Cash-Over-Valuation (COV), which must be paid in 100% upfront cold hard cash (cannot use CPF OA or housing loan).',
+      'HDB loans and bank mortgages are strictly capped at official HDB valuation. Note: Official valuation is only determined by HDB after Option-to-Purchase (OTP) is granted. While competitive listings may ask for a premium, many transactions across Singapore close at $0 COV (at or below valuation). Any actual COV must be paid in cash (cannot use CPF OA or housing loan).',
   };
 }

@@ -19,6 +19,42 @@ export const MRT_LINES: Record<string, MRTLineInfo> = {
   PG: { code: 'PG', name: 'Punggol LRT', color: '#748577', bgClass: 'bg-[#748577] text-white' },
 };
 
+/**
+ * Returns true if the station is purely an LRT station.
+ */
+export function isLrtStation(
+  amenity?: { id?: string; name?: string; details?: { stationCode?: string; lines?: string[] } } | null
+): boolean {
+  if (!amenity) return false;
+  if (amenity.id?.startsWith('lrt-')) return true;
+  if (amenity.name?.toLowerCase().includes('lrt')) return true;
+  const code = amenity.details?.stationCode || '';
+  if (/^(BP|SE|SW|PE|PW)\d+/i.test(code)) return true;
+  const lines = amenity.details?.lines || [];
+  const lrtLines = ['BP', 'SK', 'PG'];
+  const mrtLines = ['NS', 'EW', 'NE', 'CC', 'DT', 'TE'];
+  const hasLrt = lines.some((l) => lrtLines.includes(l));
+  const hasMrt = lines.some((l) => mrtLines.includes(l));
+  return hasLrt && !hasMrt;
+}
+
+/**
+ * Identifies whether a rail station is LRT, MRT, or an MRT / LRT interchange.
+ */
+export function getTransitStationType(
+  amenity?: { id?: string; name?: string; details?: { stationCode?: string; lines?: string[] } } | null
+): 'LRT' | 'MRT' | 'MRT / LRT' {
+  if (!amenity) return 'MRT';
+  const lines = amenity.details?.lines || [];
+  const lrtLines = ['BP', 'SK', 'PG'];
+  const mrtLines = ['NS', 'EW', 'NE', 'CC', 'DT', 'TE'];
+  const hasLrt = lines.some((l) => lrtLines.includes(l)) || amenity.id?.startsWith('lrt-') || /^(BP|SE|SW|PE|PW)\d+/i.test(amenity.details?.stationCode || '');
+  const hasMrt = lines.some((l) => mrtLines.includes(l));
+  if (hasLrt && hasMrt) return 'MRT / LRT';
+  if (hasLrt) return 'LRT';
+  return 'MRT';
+}
+
 export const MRT_STATIONS: Amenity[] = [
   // --- North-South Line (NSL) ---
   { id: 'mrt-ns1', name: 'Jurong East', category: 'mrt', lat: 1.3331, lng: 103.7423, details: { stationCode: 'NS1 / EW24', lines: ['NS', 'EW'] } },
@@ -169,4 +205,48 @@ export const MRT_STATIONS: Amenity[] = [
   { id: 'mrt-te27', name: 'Marine Terrace', category: 'mrt', lat: 1.3065, lng: 103.9161, details: { stationCode: 'TE27', lines: ['TE'] } },
   { id: 'mrt-te28', name: 'Siglap', category: 'mrt', lat: 1.3101, lng: 103.9298, details: { stationCode: 'TE28', lines: ['TE'] } },
   { id: 'mrt-te29', name: 'Bayshore', category: 'mrt', lat: 1.3129, lng: 103.9438, details: { stationCode: 'TE29', lines: ['TE'] } },
+
+  // --- Bukit Panjang LRT (BPLRT) ---
+  { id: 'lrt-bp2', name: 'South View', category: 'mrt', lat: 1.3803, lng: 103.7453, details: { stationCode: 'BP2', lines: ['BP'] } },
+  { id: 'lrt-bp3', name: 'Keat Hong', category: 'mrt', lat: 1.3786, lng: 103.7489, details: { stationCode: 'BP3', lines: ['BP'] } },
+  { id: 'lrt-bp4', name: 'Teck Whye', category: 'mrt', lat: 1.3767, lng: 103.7537, details: { stationCode: 'BP4', lines: ['BP'] } },
+  { id: 'lrt-bp5', name: 'Phoenix', category: 'mrt', lat: 1.3786, lng: 103.7580, details: { stationCode: 'BP5', lines: ['BP'] } },
+  { id: 'lrt-bp7', name: 'Petir', category: 'mrt', lat: 1.3778, lng: 103.7667, details: { stationCode: 'BP7', lines: ['BP'] } },
+  { id: 'lrt-bp8', name: 'Pending', category: 'mrt', lat: 1.3762, lng: 103.7713, details: { stationCode: 'BP8', lines: ['BP'] } },
+  { id: 'lrt-bp9', name: 'Bangkit', category: 'mrt', lat: 1.3800, lng: 103.7727, details: { stationCode: 'BP9', lines: ['BP'] } },
+  { id: 'lrt-bp10', name: 'Fajar', category: 'mrt', lat: 1.3845, lng: 103.7709, details: { stationCode: 'BP10', lines: ['BP'] } },
+  { id: 'lrt-bp11', name: 'Segar', category: 'mrt', lat: 1.3879, lng: 103.7697, details: { stationCode: 'BP11', lines: ['BP'] } },
+  { id: 'lrt-bp12', name: 'Jelapang', category: 'mrt', lat: 1.3867, lng: 103.7645, details: { stationCode: 'BP12', lines: ['BP'] } },
+  { id: 'lrt-bp13', name: 'Senja', category: 'mrt', lat: 1.3828, lng: 103.7624, details: { stationCode: 'BP13', lines: ['BP'] } },
+
+  // --- Sengkang LRT (SKLRT) ---
+  { id: 'lrt-se1', name: 'Compassvale', category: 'mrt', lat: 1.3945, lng: 103.9006, details: { stationCode: 'SE1', lines: ['SK'] } },
+  { id: 'lrt-se2', name: 'Rumbia', category: 'mrt', lat: 1.3914, lng: 103.9060, details: { stationCode: 'SE2', lines: ['SK'] } },
+  { id: 'lrt-se3', name: 'Bakau', category: 'mrt', lat: 1.3880, lng: 103.9054, details: { stationCode: 'SE3', lines: ['SK'] } },
+  { id: 'lrt-se4', name: 'Kangkar', category: 'mrt', lat: 1.3840, lng: 103.9022, details: { stationCode: 'SE4', lines: ['SK'] } },
+  { id: 'lrt-se5', name: 'Ranggung', category: 'mrt', lat: 1.3842, lng: 103.8972, details: { stationCode: 'SE5', lines: ['SK'] } },
+  { id: 'lrt-sw1', name: 'Cheng Lim', category: 'mrt', lat: 1.3962, lng: 103.8938, details: { stationCode: 'SW1', lines: ['SK'] } },
+  { id: 'lrt-sw2', name: 'Farmway', category: 'mrt', lat: 1.3973, lng: 103.8893, details: { stationCode: 'SW2', lines: ['SK'] } },
+  { id: 'lrt-sw3', name: 'Kupang', category: 'mrt', lat: 1.3982, lng: 103.8817, details: { stationCode: 'SW3', lines: ['SK'] } },
+  { id: 'lrt-sw4', name: 'Thanggam', category: 'mrt', lat: 1.3973, lng: 103.8756, details: { stationCode: 'SW4', lines: ['SK'] } },
+  { id: 'lrt-sw5', name: 'Fernvale', category: 'mrt', lat: 1.3919, lng: 103.8763, details: { stationCode: 'SW5', lines: ['SK'] } },
+  { id: 'lrt-sw6', name: 'Layar', category: 'mrt', lat: 1.3921, lng: 103.8800, details: { stationCode: 'SW6', lines: ['SK'] } },
+  { id: 'lrt-sw7', name: 'Tongkang', category: 'mrt', lat: 1.3893, lng: 103.8859, details: { stationCode: 'SW7', lines: ['SK'] } },
+  { id: 'lrt-sw8', name: 'Renjong', category: 'mrt', lat: 1.3868, lng: 103.8906, details: { stationCode: 'SW8', lines: ['SK'] } },
+
+  // --- Punggol LRT (PGLRT) ---
+  { id: 'lrt-pe1', name: 'Cove', category: 'mrt', lat: 1.3993, lng: 103.9060, details: { stationCode: 'PE1', lines: ['PG'] } },
+  { id: 'lrt-pe2', name: 'Meridian', category: 'mrt', lat: 1.3969, lng: 103.9089, details: { stationCode: 'PE2', lines: ['PG'] } },
+  { id: 'lrt-pe3', name: 'Coral Edge', category: 'mrt', lat: 1.3939, lng: 103.9126, details: { stationCode: 'PE3', lines: ['PG'] } },
+  { id: 'lrt-pe4', name: 'Riviera', category: 'mrt', lat: 1.3945, lng: 103.9162, details: { stationCode: 'PE4', lines: ['PG'] } },
+  { id: 'lrt-pe5', name: 'Kadaloor', category: 'mrt', lat: 1.3996, lng: 103.9165, details: { stationCode: 'PE5', lines: ['PG'] } },
+  { id: 'lrt-pe6', name: 'Oasis', category: 'mrt', lat: 1.4023, lng: 103.9128, details: { stationCode: 'PE6', lines: ['PG'] } },
+  { id: 'lrt-pe7', name: 'Damai', category: 'mrt', lat: 1.4052, lng: 103.9086, details: { stationCode: 'PE7', lines: ['PG'] } },
+  { id: 'lrt-pw1', name: 'Sam Kee', category: 'mrt', lat: 1.4097, lng: 103.9048, details: { stationCode: 'PW1', lines: ['PG'] } },
+  { id: 'lrt-pw2', name: 'Teck Lee', category: 'mrt', lat: 1.4128, lng: 103.9067, details: { stationCode: 'PW2', lines: ['PG'] } },
+  { id: 'lrt-pw3', name: 'Punggol Point', category: 'mrt', lat: 1.4169, lng: 103.9066, details: { stationCode: 'PW3', lines: ['PG'] } },
+  { id: 'lrt-pw4', name: 'Samudera', category: 'mrt', lat: 1.4158, lng: 103.9022, details: { stationCode: 'PW4', lines: ['PG'] } },
+  { id: 'lrt-pw5', name: 'Nibong', category: 'mrt', lat: 1.4119, lng: 103.9003, details: { stationCode: 'PW5', lines: ['PG'] } },
+  { id: 'lrt-pw6', name: 'Sumang', category: 'mrt', lat: 1.4085, lng: 103.8986, details: { stationCode: 'PW6', lines: ['PG'] } },
+  { id: 'lrt-pw7', name: 'Soo Teck', category: 'mrt', lat: 1.4053, lng: 103.8973, details: { stationCode: 'PW7', lines: ['PG'] } },
 ];

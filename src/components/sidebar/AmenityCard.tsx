@@ -1,6 +1,6 @@
 import React from 'react';
 import { AmenityWithDistance, SelectedProperty } from '@/data/types';
-import { MRT_LINES } from '@/data/mrtStations';
+import { MRT_LINES, isLrtStation } from '@/data/mrtStations';
 import { getGoogleMapsWalkUrl, formatDistance } from '@/lib/geoUtils';
 import {
   Train,
@@ -34,7 +34,11 @@ export default function AmenityCard({
   const getIcon = () => {
     switch (amenity.category) {
       case 'mrt':
-        return <Train className="w-4 h-4 text-blue-600" />;
+        return isLrtStation(amenity) ? (
+          <Train className="w-4 h-4 text-teal-600" />
+        ) : (
+          <Train className="w-4 h-4 text-blue-600" />
+        );
       case 'bus':
         return <Bus className="w-4 h-4 text-sky-600" />;
       case 'food':
@@ -138,6 +142,15 @@ export default function AmenityCard({
                     </>
                   ) : (
                     <>
+                      <span
+                        className={`px-1.5 py-0.5 rounded text-[10px] font-bold tracking-wider border ${
+                          isLrtStation(amenity)
+                            ? 'bg-teal-50 text-teal-800 border-teal-200'
+                            : 'bg-blue-50 text-blue-800 border-blue-200'
+                        }`}
+                      >
+                        {isLrtStation(amenity) ? 'LRT' : 'MRT'}
+                      </span>
                       {amenity.details.lines.map((line) => {
                         const lineInfo = MRT_LINES[line];
                         return (
@@ -182,7 +195,7 @@ export default function AmenityCard({
                 </span>
               )}
 
-              {amenity.details?.cuisine && (
+              {amenity.category === 'food' && amenity.details?.cuisine && (
                 <span className="line-clamp-1">{amenity.details.cuisine}</span>
               )}
 
@@ -242,43 +255,18 @@ export default function AmenityCard({
               )}
             </div>
 
-            {/* School 1km / 2km Priority & Phase 2C Balloting Risk */}
-            {amenity.category === 'school' && (
-              <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                {amenity.schoolPriority === '1km' ? (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-100 text-blue-800 border border-blue-300">
-                    ★ Within 1km (Priority Phase 2C)
+            {/* Primary School Distance Badge (Within 1km or 1km - 2km) */}
+            {amenity.category === 'school' && (amenity.details?.schoolLevel === 'Primary' || !amenity.details?.schoolLevel) && (
+              <div className="mt-1.5 flex items-center gap-1.5">
+                {(amenity.schoolPriority === '1km' || amenity.distanceMeters <= 1000) ? (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider bg-blue-100 text-blue-800 border border-blue-300">
+                    Within 1km
                   </span>
-                ) : amenity.schoolPriority === '2km' ? (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-300">
-                    1km - 2km Range
+                ) : (amenity.schoolPriority === '2km' || amenity.distanceMeters <= 2000) ? (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider bg-amber-100 text-amber-800 border border-amber-300">
+                    1km - 2km
                   </span>
                 ) : null}
-
-                {amenity.details?.ballotingRisk && (
-                  <span
-                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
-                      amenity.details.ballotingRisk === 'High'
-                        ? 'bg-rose-100 text-rose-800 border-rose-300'
-                        : amenity.details.ballotingRisk === 'Moderate'
-                        ? 'bg-amber-100 text-amber-900 border-amber-300'
-                        : 'bg-emerald-100 text-emerald-800 border-emerald-300'
-                    }`}
-                    title={amenity.details.ballotingNote || undefined}
-                  >
-                    {amenity.details.ballotingRisk === 'High'
-                      ? '🔥 High 2C Ballot Risk'
-                      : amenity.details.ballotingRisk === 'Moderate'
-                      ? '⚖️ Moderate 2C Demand'
-                      : '✅ High Placement Chance'}
-                  </span>
-                )}
-              </div>
-            )}
-
-            {amenity.details?.ballotingNote && amenity.schoolPriority === '1km' && (
-              <div className="text-[10px] text-[#5C695C] italic mt-1 line-clamp-1">
-                {amenity.details.ballotingNote}
               </div>
             )}
           </div>
@@ -287,9 +275,9 @@ export default function AmenityCard({
         {/* Distance & Walking Duration Badge */}
         <div className="text-right shrink-0 flex flex-col items-end">
           <div className="font-bold text-xs text-[#243324]">
-            {formatDistance(amenity.distanceMeters)}
+            ~{formatDistance(amenity.distanceMeters)}
           </div>
-          <div className="text-[11px] text-[#5C695C] font-medium flex items-center gap-0.5 mt-0.5">
+          <div className="text-[11px] text-[#5C695C] font-medium flex items-center gap-0.5 mt-0.5" title="Straight-line distance. Actual pedestrian route may vary.">
             <Navigation className="w-2.5 h-2.5" />
             ~{amenity.walkingMinutes} min walk
           </div>
