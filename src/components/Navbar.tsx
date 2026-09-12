@@ -179,6 +179,33 @@ export default function Navbar({
     setIsMobileSearchOpen(false);
   };
 
+  // Submit search (Enter key or Search button)
+  const handleSearchSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const query = searchQuery.trim();
+    if (!query) return;
+
+    // If results are already loaded, select the first match immediately
+    if (searchResults.length > 0) {
+      handleSelectResult(searchResults[0]);
+      return;
+    }
+
+    // Otherwise immediately fetch without waiting for debounce
+    setIsSearching(true);
+    try {
+      const results = await searchSingaporeLocation(query);
+      setIsSearching(false);
+      if (results.length > 0) {
+        handleSelectResult(results[0]);
+      } else {
+        setSearchResults([]);
+      }
+    } catch {
+      setIsSearching(false);
+    }
+  };
+
   // GPS "Near Me" Geolocation handler
   const handleLocateMe = useCallback(() => {
     if (!navigator.geolocation) {
@@ -299,9 +326,13 @@ export default function Navbar({
                     if (!showDropdown) setShowDropdown(true);
                     setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : searchResults.length - 1));
                   } else if (e.key === 'Enter') {
+                    e.preventDefault();
                     if (highlightedIndex >= 0 && searchResults[highlightedIndex]) {
-                      e.preventDefault();
                       handleSelectResult(searchResults[highlightedIndex]);
+                    } else if (searchResults.length > 0) {
+                      handleSelectResult(searchResults[0]);
+                    } else if (searchQuery.trim()) {
+                      handleSearchSubmit();
                     }
                   } else if (e.key === 'Escape') {
                     setShowDropdown(false);
@@ -569,176 +600,218 @@ export default function Navbar({
     {isMounted && isMobileSearchOpen && typeof document !== 'undefined' && createPortal(
       <div className="fixed inset-0 z-[9999] bg-[#FBF9F5] flex flex-col h-[100dvh] w-full overflow-hidden animate-in fade-in duration-150">
         {/* Top Search Input Bar */}
-        <div className="p-3 border-b border-[#243324]/10 flex items-center gap-2 bg-white shrink-0">
+        <form
+          onSubmit={handleSearchSubmit}
+          action="javascript:void(0)"
+          className="p-3 border-b border-[#243324]/10 flex items-center gap-2 bg-white shrink-0"
+        >
           <Search className="w-4 h-4 text-[#5C695C] shrink-0 ml-1" />
           <input
             ref={mobileSearchInputRef}
-            type="text"
+            type="search"
+            enterKeyHint="search"
+            autoCapitalize="off"
+            autoCorrect="off"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleSearchSubmit();
+              }
+            }}
             placeholder="Search condos, HDBs, MRTs, or postal codes..."
             className="flex-1 text-sm bg-transparent outline-none text-[#243324] placeholder:text-[#5C695C]/60"
           />
           {searchQuery && (
             <button
               type="button"
-              onClick={() => setSearchQuery('')}
+              onClick={() => {
+                setSearchQuery('');
+                setSearchResults([]);
+              }}
               className="p-1 text-[#5C695C] hover:text-[#243324] cursor-pointer"
+              aria-label="Clear search"
             >
               <X className="w-4 h-4" />
+            </button>
+          )}
+          {searchQuery.trim().length > 0 && (
+            <button
+              type="submit"
+              disabled={isSearching}
+              className="px-3 py-1.5 text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 active:scale-95 rounded-xl shadow-xs transition-all cursor-pointer shrink-0"
+            >
+              {isSearching ? '...' : 'Search'}
             </button>
           )}
           <button
             type="button"
             onClick={() => setIsMobileSearchOpen(false)}
-            className="px-2.5 py-1 text-xs font-semibold text-[#243324] hover:bg-[#F4EFE6] rounded-lg cursor-pointer"
+            className="px-2.5 py-1.5 text-xs font-semibold text-[#243324] hover:bg-[#F4EFE6] rounded-xl cursor-pointer shrink-0"
           >
             Cancel
           </button>
-        </div>
+        </form>
 
         {/* Search Content & Results */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-20 overscroll-contain">
-          {/* GPS Quick Location Button */}
-          <button
-            type="button"
-            onClick={handleLocateMe}
-            disabled={isLocatingUser}
-            className="w-full p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 font-semibold text-xs flex items-center justify-between shadow-xs active:scale-[0.99] transition-transform cursor-pointer"
-          >
-            <div className="flex items-center gap-2.5 min-w-0 pr-2">
-              <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0">
-                <Crosshair className={`w-4 h-4 ${isLocatingUser ? 'animate-spin' : ''}`} />
-              </div>
-              <div className="text-left min-w-0">
-                <div className="font-bold text-[#243324] truncate">Explore Around My Location</div>
-                <div className="text-[10px] text-emerald-700 font-normal truncate">Use current GPS coordinates</div>
-              </div>
-            </div>
-            <div className="px-2.5 py-1.5 rounded-lg bg-emerald-600 text-white text-[10px] font-bold shrink-0">
-              Locate Me
-            </div>
-          </button>
+          {/* Active Search Mode: Results at top */}
+          {searchQuery.trim().length > 0 ? (
+            <>
+              {isSearching && (
+                <div className="p-6 text-center text-xs text-[#5C695C] bg-white rounded-2xl border border-[#243324]/10 shadow-xs flex items-center justify-center gap-2">
+                  <div className="w-4 h-4 border-2 border-emerald-700 border-t-transparent rounded-full animate-spin" />
+                  <span>Searching Singapore locations for &ldquo;{searchQuery}&rdquo;...</span>
+                </div>
+              )}
 
-          {/* Live Search Geocoder Results */}
-          {searchResults.length > 0 && (
-            <div>
-              <div className="text-[10px] font-bold uppercase tracking-wider text-[#5C695C] mb-1.5">
-                Locations Found ({searchResults.length})
-              </div>
-              <div className="bg-white rounded-2xl border border-[#243324]/10 shadow-xs divide-y divide-[#243324]/5 overflow-hidden">
-                {searchResults.map((res, idx) => {
-                  const isCondo = res.propertyType === 'Condo' || res.propertyType === 'Landed';
-                  return (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => handleSelectResult(res)}
-                      className="w-full text-left p-3 hover:bg-[#F4EFE6]/70 flex items-start gap-2.5 transition-colors"
-                    >
-                      <MapPin className={`w-4 h-4 shrink-0 mt-0.5 ${isCondo ? 'text-amber-700' : 'text-emerald-700'}`} />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-1.5">
-                          <div className="font-semibold text-xs text-[#243324] truncate">
-                            {res.buildingName || res.address}
+              {!isSearching && searchResults.length > 0 && (
+                <div>
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#5C695C] mb-1.5 flex items-center justify-between">
+                    <span>Locations Found ({searchResults.length})</span>
+                    <span className="text-[10px] font-normal text-emerald-800">Tap to select</span>
+                  </div>
+                  <div className="bg-white rounded-2xl border border-[#243324]/10 shadow-xs divide-y divide-[#243324]/5 overflow-hidden">
+                    {searchResults.map((res, idx) => {
+                      const isCondo = res.propertyType === 'Condo' || res.propertyType === 'Landed';
+                      return (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => handleSelectResult(res)}
+                          className="w-full text-left p-3 hover:bg-[#F4EFE6]/70 flex items-start gap-2.5 transition-colors cursor-pointer"
+                        >
+                          <MapPin className={`w-4 h-4 shrink-0 mt-0.5 ${isCondo ? 'text-amber-700' : 'text-emerald-700'}`} />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-1.5">
+                              <div className="font-semibold text-xs text-[#243324] truncate">
+                                {res.buildingName || res.address}
+                              </div>
+                              <span
+                                className={`px-1.5 py-0.2 rounded text-[9px] font-bold uppercase shrink-0 border ${
+                                  isCondo
+                                    ? 'bg-amber-50 text-amber-900 border-amber-200'
+                                    : 'bg-emerald-50 text-emerald-900 border-emerald-200'
+                                }`}
+                              >
+                                {isCondo ? 'Condo / Private' : 'HDB'}
+                              </span>
+                            </div>
+                            <div className="text-[11px] text-[#5C695C] line-clamp-1">{res.address}</div>
                           </div>
-                          <span
-                            className={`px-1.5 py-0.2 rounded text-[9px] font-bold uppercase shrink-0 border ${
-                              isCondo
-                                ? 'bg-amber-50 text-amber-900 border-amber-200'
-                                : 'bg-emerald-50 text-emerald-900 border-emerald-200'
-                            }`}
-                          >
-                            {isCondo ? 'Condo / Private' : 'HDB'}
-                          </span>
-                        </div>
-                        <div className="text-[11px] text-[#5C695C] line-clamp-1">{res.address}</div>
-                      </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {!isSearching && searchQuery.trim().length >= 2 && searchResults.length === 0 && (
+                <div className="p-6 text-center text-xs text-[#5C695C] bg-white rounded-2xl border border-[#243324]/10 shadow-xs space-y-1">
+                  <div className="font-semibold text-[#243324]">No locations found for &ldquo;{searchQuery}&rdquo;</div>
+                  <div className="text-[11px] text-[#5C695C]">
+                    Try a 6-digit postal code (e.g. 560416), condominium name, or MRT station.
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            /* Idle / Discovery Mode: GPS Locate Me, Recent Searches, Popular Hotspots */
+            <>
+              {/* GPS Quick Location Button */}
+              <button
+                type="button"
+                onClick={handleLocateMe}
+                disabled={isLocatingUser}
+                className="w-full p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 font-semibold text-xs flex items-center justify-between shadow-xs active:scale-[0.99] transition-transform cursor-pointer"
+              >
+                <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                  <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0">
+                    <Crosshair className={`w-4 h-4 ${isLocatingUser ? 'animate-spin' : ''}`} />
+                  </div>
+                  <div className="text-left min-w-0">
+                    <div className="font-bold text-[#243324] truncate">Explore Around My Location</div>
+                    <div className="text-[10px] text-emerald-700 font-normal truncate">Use current GPS coordinates</div>
+                  </div>
+                </div>
+                <div className="px-2.5 py-1.5 rounded-lg bg-emerald-600 text-white text-[10px] font-bold shrink-0">
+                  Locate Me
+                </div>
+              </button>
+
+              {/* Recent Searches */}
+              {recentSearches.length > 0 && (
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#5C695C]">
+                      Recent Searches
+                    </span>
+                    <button
+                      type="button"
+                      onClick={clearRecentSearches}
+                      className="text-[10px] font-semibold text-rose-600 hover:underline capitalize cursor-pointer"
+                    >
+                      Clear
                     </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+                  </div>
+                  <div className="bg-white rounded-2xl border border-[#243324]/10 shadow-xs divide-y divide-[#243324]/5 overflow-hidden">
+                    {recentSearches.map((rec) => (
+                      <button
+                        key={rec.id}
+                        type="button"
+                        onClick={() => {
+                          onSelectLocation(rec);
+                          setIsMobileSearchOpen(false);
+                        }}
+                        className="w-full text-left p-3 hover:bg-[#F4EFE6]/70 flex items-center justify-between gap-2 transition-colors cursor-pointer"
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <History className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                          <span className="text-xs font-medium text-[#243324] truncate">{rec.name}</span>
+                        </div>
+                        {rec.postalCode && (
+                          <span className="text-[10px] text-[#5C695C] font-mono shrink-0">
+                            S({rec.postalCode})
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-          {isSearching && (
-            <div className="p-4 text-center text-xs text-[#5C695C]">
-              Searching Singapore geocoder...
-            </div>
-          )}
-
-          {/* Recent Searches */}
-          {!searchQuery && recentSearches.length > 0 && (
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#5C695C]">
-                  Recent Searches
-                </span>
-                <button
-                  type="button"
-                  onClick={clearRecentSearches}
-                  className="text-[10px] font-semibold text-rose-600 hover:underline capitalize"
-                >
-                  Clear
-                </button>
+              {/* Featured Properties Quick List */}
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-[#5C695C] mb-1.5 flex items-center gap-1">
+                  <Sparkles className="w-3 h-3 text-amber-600" />
+                  <span>Popular Singapore Locations</span>
+                </div>
+                <div className="bg-white rounded-2xl border border-[#243324]/10 shadow-xs divide-y divide-[#243324]/5 overflow-hidden">
+                  {FEATURED_PROPERTIES.slice(0, 6).map((prop) => (
+                    <button
+                      key={prop.id}
+                      type="button"
+                      onClick={() => {
+                        onSelectLocation(prop);
+                        setIsMobileSearchOpen(false);
+                      }}
+                      className="w-full text-left p-3 hover:bg-[#F4EFE6]/70 flex items-center justify-between gap-2 transition-colors cursor-pointer"
+                    >
+                      <div className="min-w-0">
+                        <div className="font-semibold text-xs text-[#243324]">{prop.name}</div>
+                        <div className="text-[10px] text-[#5C695C] truncate">{prop.town || prop.address}</div>
+                      </div>
+                      {prop.postalCode && (
+                        <span className="text-[10px] text-emerald-800 font-mono font-semibold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 shrink-0">
+                          S({prop.postalCode})
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div className="bg-white rounded-2xl border border-[#243324]/10 shadow-xs divide-y divide-[#243324]/5 overflow-hidden">
-                {recentSearches.map((rec) => (
-                  <button
-                    key={rec.id}
-                    type="button"
-                    onClick={() => {
-                      onSelectLocation(rec);
-                      setIsMobileSearchOpen(false);
-                    }}
-                    className="w-full text-left p-3 hover:bg-[#F4EFE6]/70 flex items-center justify-between gap-2 transition-colors"
-                  >
-                    <div className="flex items-center gap-2 min-w-0">
-                      <History className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span className="text-xs font-medium text-[#243324] truncate">{rec.name}</span>
-                    </div>
-                    {rec.postalCode && (
-                      <span className="text-[10px] text-[#5C695C] font-mono shrink-0">
-                        S({rec.postalCode})
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Featured Properties Quick List (when no search query) */}
-          {!searchQuery && (
-            <div>
-              <div className="text-[10px] font-bold uppercase tracking-wider text-[#5C695C] mb-1.5 flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-amber-600" />
-                <span>Popular Singapore Locations</span>
-              </div>
-              <div className="bg-white rounded-2xl border border-[#243324]/10 shadow-xs divide-y divide-[#243324]/5 overflow-hidden">
-                {FEATURED_PROPERTIES.slice(0, 6).map((prop) => (
-                  <button
-                    key={prop.id}
-                    type="button"
-                    onClick={() => {
-                      onSelectLocation(prop);
-                      setIsMobileSearchOpen(false);
-                    }}
-                    className="w-full text-left p-3 hover:bg-[#F4EFE6]/70 flex items-center justify-between gap-2 transition-colors"
-                  >
-                    <div className="min-w-0">
-                      <div className="font-semibold text-xs text-[#243324]">{prop.name}</div>
-                      <div className="text-[10px] text-[#5C695C] truncate">{prop.town || prop.address}</div>
-                    </div>
-                    {prop.postalCode && (
-                      <span className="text-[10px] text-emerald-800 font-mono font-semibold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 shrink-0">
-                        S({prop.postalCode})
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
+            </>
           )}
         </div>
       </div>,
