@@ -14,9 +14,33 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://sgnearby.fsyhub.com'),
-  title: 'SG Nearby | See What’s Around Any Singapore Postal Code',
+  title: 'SG Nearby | See What’s Around Any Singapore Location',
   description:
     'Interactive Singapore map to see what’s nearby any home, condo, or postal code. Explore walking distance to hawker centres, MRT stations, bus stops, supermarkets, schools, and parks.',
+  openGraph: {
+    title: 'SG Nearby | See What’s Around Any Singapore Location',
+    description:
+      'Interactive Singapore map to see what’s nearby any home, condo, or postal code. Explore walking distance to hawker centres, MRT stations, bus stops, supermarkets, schools, and parks.',
+    url: 'https://sgnearby.fsyhub.com',
+    siteName: 'SG Nearby',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1024,
+        height: 544,
+        alt: 'SG Nearby Singapore Location & Amenities Map',
+      },
+    ],
+    locale: 'en_SG',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SG Nearby | See What’s Around Any Singapore Location',
+    description:
+      'Interactive Singapore map to see what’s nearby any home, condo, or postal code. Explore walking distance to hawker centres, MRT stations, bus stops, supermarkets, schools, and parks.',
+    images: ['/og-image.png'],
+  },
   icons: {
     icon: [
       { url: '/favicon.svg', type: 'image/svg+xml' },

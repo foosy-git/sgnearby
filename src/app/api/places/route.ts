@@ -119,8 +119,85 @@ function mapGoogleTypeToCategory(
   return 'food';
 }
 
+// In-memory rate limiting: max 30 requests per IP per 10 minutes
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
+const MAX_REQUESTS_PER_WINDOW = 30;
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const record = rateLimitMap.get(ip);
+
+  // Periodic cleanup if map grows
+  if (rateLimitMap.size > 1000) {
+    rateLimitMap.forEach((val, key) => {
+      if (now > val.resetTime) rateLimitMap.delete(key);
+    });
+  }
+
+  if (!record || now > record.resetTime) {
+    rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
+    return true;
+  }
+
+  if (record.count >= MAX_REQUESTS_PER_WINDOW) {
+    return false;
+  }
+
+  record.count += 1;
+  return true;
+}
+
+// In-memory caching for places requests (30-minute TTL)
+interface PlacesCacheEntry {
+  timestamp: number;
+  data: Amenity[];
+}
+const placesCache = new Map<string, PlacesCacheEntry>();
+const PLACES_CACHE_TTL_MS = 30 * 60 * 1000;
+
 export async function POST(req: NextRequest) {
   try {
+    // 1. Origin / Referer verification
+    const origin = req.headers.get('origin');
+    const referer = req.headers.get('referer');
+    const host = req.headers.get('host') || '';
+
+    const isAllowedHost = (urlStr: string | null) => {
+      if (!urlStr) return false;
+      try {
+        const parsed = new URL(urlStr);
+        return (
+          parsed.hostname === 'sgnearby.fsyhub.com' ||
+          parsed.hostname === 'localhost' ||
+          parsed.hostname === '127.0.0.1' ||
+          (host && parsed.host === host)
+        );
+      } catch {
+        return false;
+      }
+    };
+
+    if (
+      (origin && !isAllowedHost(origin)) ||
+      (referer && !isAllowedHost(referer)) ||
+      (!origin && !referer && process.env.NODE_ENV === 'production')
+    ) {
+      return NextResponse.json(
+        { error: 'FORBIDDEN', message: 'Unauthorized origin.' },
+        { status: 403 }
+      );
+    }
+
+    // 2. IP Rate limiting
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown';
+    if (!checkRateLimit(ip)) {
+      return NextResponse.json(
+        { error: 'RATE_LIMITED', message: 'Too many requests. Please wait a few minutes before scanning again.' },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
     const { lat, lng, radius = 800 } = body;
 
@@ -129,6 +206,19 @@ export async function POST(req: NextRequest) {
         { error: 'MISSING_COORDINATES', message: 'Missing property coordinates.' },
         { status: 400 }
       );
+    }
+
+    const safeRadius = Math.min(Math.max(radius, 100), 2000);
+
+    // 3. Coordinate caching (~110m grid)
+    const cacheKey = `${Number(lat).toFixed(3)}_${Number(lng).toFixed(3)}_${safeRadius}`;
+    const cached = placesCache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < PLACES_CACHE_TTL_MS) {
+      return NextResponse.json({
+        success: true,
+        count: cached.data.length,
+        places: cached.data,
+      });
     }
 
     const apiKey =
@@ -145,7 +235,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const safeRadius = Math.min(Math.max(radius, 100), 2000);
     const collectedPlaces = new Map<string, Amenity>();
 
     // 1. Primary: Google Places API (New) Nearby Search
@@ -364,6 +453,10 @@ export async function POST(req: NextRequest) {
     }
 
     const placesArray = Array.from(collectedPlaces.values());
+
+    if (placesArray.length > 0) {
+      placesCache.set(cacheKey, { timestamp: Date.now(), data: placesArray });
+    }
 
     return NextResponse.json({
       success: true,

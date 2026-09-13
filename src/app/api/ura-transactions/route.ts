@@ -32,6 +32,34 @@ interface BatchCache {
 const batchCache = new Map<number, BatchCache>();
 const BATCH_CACHE_TTL_MS = 12 * 60 * 60 * 1000; // 12 hours
 
+// In-memory rate limiting: max 60 requests per IP per 5 minutes
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT_WINDOW_MS = 5 * 60 * 1000;
+const MAX_REQUESTS_PER_WINDOW = 60;
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const record = rateLimitMap.get(ip);
+
+  if (rateLimitMap.size > 1000) {
+    rateLimitMap.forEach((val, key) => {
+      if (now > val.resetTime) rateLimitMap.delete(key);
+    });
+  }
+
+  if (!record || now > record.resetTime) {
+    rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
+    return true;
+  }
+
+  if (record.count >= MAX_REQUESTS_PER_WINDOW) {
+    return false;
+  }
+
+  record.count += 1;
+  return true;
+}
+
 /**
  * Fetches and caches a specific URA PMI_Resi_Transaction batch (1 to 4).
  * If URA rejects with a token expiration/validity message, automatically refreshes the token and retries once.
@@ -372,6 +400,13 @@ function getDemoAnalysis(projectName: string, streetName: string, postal?: strin
 
 export async function GET(request: NextRequest) {
   try {
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown';
+    if (!checkRateLimit(ip)) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please slow down.' },
+        { status: 429 }
+      );
+    }
     const { searchParams } = new URL(request.url);
     const projectNameQuery = searchParams.get('project') || searchParams.get('name') || '';
     const streetQuery = searchParams.get('street') || '';

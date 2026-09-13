@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { mapCoordinatesToDistrict } from '@/lib/uraProperty';
 
 export const dynamic = 'force-dynamic';
@@ -15,7 +15,51 @@ export interface ReverseGeocodeResponse {
   lng: number;
 }
 
+// In-memory rate limiting: max 30 requests per IP per minute
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const MAX_REQUESTS_PER_WINDOW = 30;
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const record = rateLimitMap.get(ip);
+
+  if (rateLimitMap.size > 1000) {
+    rateLimitMap.forEach((val, key) => {
+      if (now > val.resetTime) rateLimitMap.delete(key);
+    });
+  }
+
+  if (!record || now > record.resetTime) {
+    rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
+    return true;
+  }
+
+  if (record.count >= MAX_REQUESTS_PER_WINDOW) {
+    return false;
+  }
+
+  record.count += 1;
+  return true;
+}
+
+// In-memory caching for reverse geocode coordinates (1 hour TTL)
+interface GeoCacheEntry {
+  timestamp: number;
+  data: ReverseGeocodeResponse;
+}
+const geoCache = new Map<string, GeoCacheEntry>();
+const GEO_CACHE_TTL_MS = 60 * 60 * 1000;
+
 export async function GET(request: NextRequest) {
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown';
+  if (!checkRateLimit(ip)) {
+    return NextResponse.json(
+      { error: 'Too many reverse geocode requests. Please slow down.' },
+      { status: 429 }
+    );
+  }
+
   const { searchParams } = new URL(request.url);
   const latStr = searchParams.get('lat');
   const lngStr = searchParams.get('lng');
@@ -29,6 +73,13 @@ export async function GET(request: NextRequest) {
 
   if (isNaN(lat) || isNaN(lng)) {
     return NextResponse.json({ error: 'Invalid coordinate numbers' }, { status: 400 });
+  }
+
+  // Check cache by rounded coordinates (~110m grid)
+  const cacheKey = `${lat.toFixed(3)}_${lng.toFixed(3)}`;
+  const cached = geoCache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < GEO_CACHE_TTL_MS) {
+    return NextResponse.json(cached.data);
   }
 
   // Get district from coordinates
@@ -85,6 +136,8 @@ export async function GET(request: NextRequest) {
     lat,
     lng,
   };
+
+  geoCache.set(cacheKey, { timestamp: Date.now(), data: result });
 
   return NextResponse.json(result);
 }
