@@ -52,7 +52,7 @@ export default function FeedbackWidget() {
       const response = await fetch('/api/feedback', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type, message, email, website }),
+        body: JSON.stringify({ app: 'SG Nearby', type, message, email, website }),
       });
 
       if (response.ok) {
@@ -93,10 +93,15 @@ export default function FeedbackWidget() {
       >
         {/* Header */}
         <div className="bg-[#243324] p-4 flex justify-between items-center text-white">
-          <h3 className="font-serif font-medium text-lg flex items-center gap-2">
-            <MessageSquarePlus className="w-5 h-5 text-emerald-400" />
-            <span>Send Feedback</span>
-          </h3>
+          <div className="flex items-center gap-2">
+            <MessageSquarePlus className="w-5 h-5 text-emerald-400 shrink-0" />
+            <div className="flex items-center gap-2">
+              <h3 className="font-serif font-medium text-lg leading-tight">Send Feedback</h3>
+              <span className="text-[10px] font-sans font-semibold tracking-wide bg-white/15 text-emerald-300 px-2 py-0.5 rounded-full uppercase">
+                SG Nearby
+              </span>
+            </div>
+          </div>
           <button
             type="button"
             onClick={() => setIsOpen(false)}
