@@ -871,7 +871,7 @@ export default function PropertyMap({
       {/* Top Map Action Toolbar: Basemap Style Dropdown & Category Filter Dropdown */}
       <div
         ref={toolbarRef}
-        className="custom-map-overlay absolute top-3 left-12 sm:top-4 sm:left-16 z-[1000] flex items-center gap-1.5 sm:gap-2 max-w-[calc(100vw-110px)] sm:max-w-none overflow-visible no-scrollbar py-0.5"
+        className="custom-map-overlay absolute top-3 left-11 sm:top-4 sm:left-16 z-[1000] flex items-center gap-1 sm:gap-2 max-w-[calc(100vw-52px)] sm:max-w-none overflow-visible no-scrollbar py-0.5"
         style={{ pointerEvents: 'auto' }}
       >
         {/* Basemap Style Dropdown */}
@@ -884,7 +884,7 @@ export default function PropertyMap({
               setIsCategoryOpen(false);
               setIsRadiusOpen(false);
             }}
-            className="bg-white/95 backdrop-blur-md px-3 py-2 rounded-xl shadow-md border border-[#243324]/15 hover:bg-[#F4EFE6] text-[#243324] transition-all flex items-center gap-1.5 text-xs font-semibold cursor-pointer"
+            className="bg-white/95 backdrop-blur-md px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl shadow-md border border-[#243324]/15 hover:bg-[#F4EFE6] text-[#243324] transition-all flex items-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs font-semibold cursor-pointer"
             title="Select basemap layer style"
           >
             <Layers className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
@@ -894,7 +894,7 @@ export default function PropertyMap({
             <span className="sm:hidden">
               {mapStyle === 'osm' ? 'OSM' : 'OneMap'}
             </span>
-            <ChevronDown className={`w-3.5 h-3.5 text-[#5C695C] transition-transform duration-200 ${isMapStyleOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#5C695C] transition-transform duration-200 ${isMapStyleOpen ? 'rotate-180' : ''}`} />
           </button>
 
           {isMapStyleOpen && (
@@ -1018,7 +1018,7 @@ export default function PropertyMap({
 
         {/* Category Filter Dropdown */}
         {selectedCategories && onToggleCategory && (
-          <div className="relative">
+          <div className="relative shrink-0">
             <button
               type="button"
               onClick={(e) => {
@@ -1027,7 +1027,7 @@ export default function PropertyMap({
                 setIsMapStyleOpen(false);
                 setIsRadiusOpen(false);
               }}
-              className={`bg-white/95 backdrop-blur-md px-3 py-2 rounded-xl shadow-md border transition-all flex items-center gap-1.5 text-xs font-semibold cursor-pointer ${
+              className={`bg-white/95 backdrop-blur-md px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl shadow-md border transition-all flex items-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs font-semibold cursor-pointer shrink-0 ${
                 isCategoryOpen || selectedCategories.length > 0
                   ? 'border-emerald-700/30 text-[#243324]'
                   : 'border-[#243324]/15 text-[#5C695C]'
@@ -1035,11 +1035,12 @@ export default function PropertyMap({
               title="Filter visible amenity categories on map"
             >
               <SlidersHorizontal className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-              <span>Categories</span>
-              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+              <span className="hidden sm:inline">Categories</span>
+              <span className="sm:hidden">Filters</span>
+              <span className="px-1.5 py-0.2 rounded-full text-[9px] sm:text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
                 {selectedCategories.filter((c) => c !== 'shopping').length}
               </span>
-              <ChevronDown className={`w-3.5 h-3.5 text-[#5C695C] transition-transform duration-200 ${isCategoryOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#5C695C] transition-transform duration-200 ${isCategoryOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {isCategoryOpen && (
@@ -1132,7 +1133,7 @@ export default function PropertyMap({
         {onToggleSchoolRings && (
           <div className="relative flex items-center shrink-0">
             <div
-              className={`bg-white/95 backdrop-blur-md px-2.5 sm:px-3 py-2 rounded-xl shadow-md border transition-all flex items-center gap-1.5 text-xs font-semibold ${
+              className={`bg-white/95 backdrop-blur-md px-2 sm:px-2.5 py-1.5 sm:py-2 rounded-xl shadow-md border transition-all flex items-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs font-semibold ${
                 showSchoolRings
                   ? 'border-blue-600/40 bg-blue-50/90 text-blue-950'
                   : 'border-[#243324]/15 text-[#5C695C] hover:bg-[#F4EFE6]'
@@ -1144,14 +1145,14 @@ export default function PropertyMap({
                   e.stopPropagation();
                   onToggleSchoolRings();
                 }}
-                className="flex items-center gap-1.5 cursor-pointer"
+                className="flex items-center gap-1 sm:gap-1.5 cursor-pointer"
                 title="Toggle 1km & 2km MOE Primary School Priority Rings (Updated for 2027 Two-Track Framework)"
               >
                 <span className="text-xs">🏫</span>
                 <span className="hidden sm:inline">School Rings</span>
                 <span className="sm:hidden">1k &amp; 2k</span>
                 <span
-                  className={`w-2 h-2 rounded-full transition-colors ${
+                  className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-colors ${
                     showSchoolRings ? 'bg-blue-600' : 'bg-slate-300'
                   }`}
                 />
@@ -1172,7 +1173,7 @@ export default function PropertyMap({
                   className="text-blue-700/80 hover:text-blue-950 p-0.5 rounded-full hover:bg-blue-100/70 transition-colors cursor-pointer inline-flex items-center ml-0.5"
                   aria-label="MOE Primary School Rings Reference Notice"
                 >
-                  <Info className="w-3.5 h-3.5" />
+                  <Info className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 </button>
 
                 {/* Hover & Tap Popover Tooltip */}
@@ -1181,7 +1182,7 @@ export default function PropertyMap({
                     className="absolute right-0 sm:left-1/2 sm:-translate-x-1/2 top-full pt-2 z-[1500]"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <div className="w-64 sm:w-72 p-3 bg-[#243324] text-white text-[11px] font-normal leading-relaxed rounded-xl shadow-2xl border border-white/20 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="w-64 sm:w-72 max-w-[calc(100vw-32px)] p-3 bg-[#243324] text-white text-[11px] font-normal leading-relaxed rounded-xl shadow-2xl border border-white/20 animate-in fade-in zoom-in-95 duration-150">
                       <div className="flex items-center justify-between gap-1.5 border-b border-white/15 pb-1.5 mb-1.5">
                         <div className="font-semibold text-amber-300 flex items-center gap-1.5">
                           <Info className="w-3.5 h-3.5 text-amber-300 shrink-0" />
