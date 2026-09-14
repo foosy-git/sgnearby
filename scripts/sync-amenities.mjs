@@ -356,7 +356,7 @@ function syncSupermarketsAndMalls() {
 
     // North (Woodlands, Yishun, Sembawang)
     { id: 'mall-causeway-point', name: 'Causeway Point', category: 'shopping', lat: 1.4361, lng: 103.7859, address: '1 Woodlands Square', details: { brand: 'Woodlands Regional Centre Mall' } },
-    { id: 'mall-northpoint', name: 'Northpoint City', category: 'shopping', lat: 1.4297, lng: 103.8361, address: '930 Yishun Ave 2', details: { brand: 'Largest Mall in Northern SG' } },
+    { id: 'mall-northpoint', name: 'Northpoint City', category: 'shopping', lat: 1.4297, lng: 103.8361, address: '930 Yishun Ave 2', details: { brand: 'Largest Mall in Northern SG, FairPrice, Don Don Donki, Yishun ITH' } },
     { id: 'mall-sun-plaza', name: 'Sun Plaza', category: 'shopping', lat: 1.4485, lng: 103.8198, address: '30 Sembawang Dr', details: { brand: 'Sembawang MRT Mall' } },
     { id: 'mall-canberra-plaza', name: 'Canberra Plaza', category: 'shopping', lat: 1.4435, lng: 103.8298, address: '133 Canberra View', details: { brand: 'Connected to Canberra MRT' } },
 
@@ -388,10 +388,18 @@ function syncSupermarketsAndMalls() {
     { id: 'sup-fp-toa-payoh', name: 'FairPrice (Toa Payoh HDB Hub)', category: 'shopping', lat: 1.3323, lng: 103.8483, address: '500 Lor 6 Toa Payoh #B1-32', details: { brand: 'FairPrice Supermarket' } },
     { id: 'sup-fp-woodlands-civic', name: 'FairPrice (Woodlands Civic Centre)', category: 'shopping', lat: 1.4354, lng: 103.7872, address: '900 South Woodlands Dr', details: { brand: 'FairPrice Supermarket' } },
     { id: 'sup-fp-tampines-hub', name: 'FairPrice (Our Tampines Hub)', category: 'shopping', lat: 1.3532, lng: 103.9402, address: '1 Tampines Walk #B1-01', details: { brand: 'FairPrice Supermarket' } },
+    { id: 'sup-fp-northpoint', name: 'FairPrice (Northpoint City)', category: 'shopping', lat: 1.4287, lng: 103.8362, address: '1 North Point Dr, South Wing #B2-103/107 Northpoint City', details: { brand: 'FairPrice Supermarket (South Wing)' } },
+    { id: 'sup-fp-yishun-mrt', name: 'FairPrice (Yishun MRT)', category: 'shopping', lat: 1.4295, lng: 103.8350, address: '301 Yishun Ave 2 #01-02 Yishun MRT Station', details: { brand: 'FairPrice Supermarket' } },
+    { id: 'sup-fp-bedok-reservoir-745', name: 'FairPrice (Bedok Reservoir Village)', category: 'shopping', lat: 1.3375, lng: 103.9238, address: 'Blk 745 Bedok Reservoir Rd #01-3015', details: { brand: 'FairPrice Supermarket' } },
+    { id: 'sup-fp-bedok-reservoir-631', name: 'FairPrice (Bedok Reservoir 631)', category: 'shopping', lat: 1.3328, lng: 103.9145, address: 'Blk 631 Bedok Reservoir Rd #01-954', details: { brand: 'FairPrice Supermarket' } },
 
     // Sheng Siong Outlets (Popular Heartlands Supermarket)
     { id: 'sup-ss-chin-swee', name: 'Sheng Siong Supermarket (Chin Swee)', category: 'shopping', lat: 1.2868, lng: 103.8415, address: '52 Chin Swee Rd', details: { brand: 'Sheng Siong (24 Hours)' } },
+    { id: 'sup-ss-bedok-reservoir-739a', name: 'Sheng Siong Supermarket (Bedok Reservoir 739A)', category: 'shopping', lat: 1.3381, lng: 103.9233, address: 'Blk 739A Bedok Reservoir Rd #01-01', details: { brand: 'Sheng Siong (24 Hours)' } },
     { id: 'sup-ss-bedok-central', name: 'Sheng Siong (Bedok Central)', category: 'shopping', lat: 1.3255, lng: 103.9317, address: '209 New Upper Changi Rd', details: { brand: 'Sheng Siong Supermarket' } },
+    { id: 'sup-ss-bedok-north-539a', name: 'Sheng Siong (Bedok North 539A)', category: 'shopping', lat: 1.3323, lng: 103.9256, address: 'Blk 539A Bedok North St 3 #01-477', details: { brand: 'Sheng Siong (24 Hours)' } },
+    { id: 'sup-ss-bedok-north-115', name: 'Sheng Siong (Bedok North 115)', category: 'shopping', lat: 1.3313, lng: 103.9365, address: 'Blk 115 Bedok North Rd #01-319', details: { brand: 'Sheng Siong (24 Hours)' } },
+    { id: 'sup-ss-yishun-845', name: 'Sheng Siong (Yishun 845)', category: 'shopping', lat: 1.4235, lng: 103.8345, address: 'Blk 845 Yishun St 81 #01-186', details: { brand: 'Sheng Siong (24 Hours)' } },
     { id: 'sup-ss-punggol-central', name: 'Sheng Siong (Punggol Central 301)', category: 'shopping', lat: 1.4038, lng: 103.9069, address: '301 Punggol Central', details: { brand: 'Sheng Siong Supermarket' } },
     { id: 'sup-ss-amk-122', name: 'Sheng Siong (Ang Mo Kio 122)', category: 'shopping', lat: 1.3702, lng: 103.8542, address: 'Blk 122 Ang Mo Kio Ave 3', details: { brand: 'Sheng Siong (24 Hours)' } },
     { id: 'sup-ss-woodlands-301', name: 'Sheng Siong (Woodlands 301)', category: 'shopping', lat: 1.4308, lng: 103.7795, address: 'Blk 301 Woodlands St 31', details: { brand: 'Sheng Siong (24 Hours)' } },
@@ -413,6 +421,7 @@ function syncSupermarketsAndMalls() {
     { id: 'sup-donki-tampines-1', name: 'Don Don Donki (Tampines 1)', category: 'shopping', lat: 1.3542, lng: 103.9455, address: '10 Tampines Central 1 #02-28', details: { brand: 'Don Don Donki Japanese Grocery' } },
     { id: 'sup-donki-sunshine', name: 'Don Don Donki (Downtown East)', category: 'shopping', lat: 1.3768, lng: 103.9552, address: '1 Pasir Ris Cl', details: { brand: 'Don Don Donki Japanese Grocery' } },
     { id: 'sup-donki-waterway', name: 'Don Don Donki (Waterway Point)', category: 'shopping', lat: 1.4065, lng: 103.9020, address: '83 Punggol Central #B1-10', details: { brand: 'Don Don Donki Japanese Grocery' } },
+    { id: 'sup-donki-northpoint', name: 'DON DON DONKI (Northpoint City)', category: 'shopping', lat: 1.4297, lng: 103.8358, address: '930 Yishun Ave 2, South Wing #B1-06/07 Northpoint City', details: { brand: 'Don Don Donki Japanese Grocery' } },
   ];
 
   const formattedMalls = malls.map((m) => ({ ...m, category: 'mall' }));

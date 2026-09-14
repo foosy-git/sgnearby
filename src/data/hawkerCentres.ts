@@ -651,6 +651,15 @@ export const HAWKER_CENTRES: Amenity[] = [
     details: { hawkerType: 'NEA Hawker Centre', cuisine: 'Supper hotspot: Fried Hokkien Mee, Carrot Cake, Duck Rice, BBQ Stingray', stallsCount: 64 }
   },
   {
+    id: 'hawk-bedok-630',
+    name: 'Bedok Reservoir Market & Food Centre (Blk 630)',
+    category: 'food',
+    lat: 1.3330,
+    lng: 103.9142,
+    address: '630 Bedok Reservoir Rd, Singapore 470630',
+    details: { hawkerType: 'NEA Hawker Centre', cuisine: 'Siglap Kway Chap, Wang\'s Noodle & Dumpling House, Roasted Delights, Carrot Cake, Fishball Noodle (Pasar Makan @ Reservoir)', stallsCount: 36 }
+  },
+  {
     id: 'hawk-bedok-58',
     name: 'Bedok South Horizon Food Centre (Blk 58)',
     category: 'food',

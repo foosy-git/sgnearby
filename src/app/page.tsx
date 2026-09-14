@@ -156,7 +156,7 @@ export default function Home() {
 
     const result: Amenity[] = [...ALL_AMENITIES];
     for (const live of livePlaces) {
-      const isDuplicate = ALL_AMENITIES.some((base) => {
+      const baseIndex = result.findIndex((base) => {
         if (base.category !== live.category) return false;
         const nameMatch =
           live.name.toLowerCase().trim() === base.name.toLowerCase().trim() ||
@@ -167,7 +167,19 @@ export default function Home() {
         return nameMatch || closeProximity;
       });
 
-      if (!isDuplicate) {
+      if (baseIndex !== -1) {
+        // Enhance base amenity with live ratings & opening hours
+        const base = result[baseIndex];
+        if (live.details?.cuisine && !base.details?.cuisine?.includes('⭐')) {
+          result[baseIndex] = {
+            ...base,
+            details: {
+              ...base.details,
+              cuisine: `${live.details.cuisine}${base.details?.cuisine ? ` • ${base.details.cuisine}` : ''}`,
+            },
+          };
+        }
+      } else {
         result.push(live);
       }
     }

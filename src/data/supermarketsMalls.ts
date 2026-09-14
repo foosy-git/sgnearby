@@ -805,7 +805,7 @@ export const SUPERMARKETS_MALLS: Amenity[] = [
     "address": "930 Yishun Ave 2",
     "details": {
       "mallType": "Mega Regional Mall",
-      "brand": "Largest Mall in Northern SG, 500+ Shops, Yishun ITH"
+      "brand": "Largest Mall in Northern SG, FairPrice, Don Don Donki, 500+ Shops, Yishun ITH"
     }
   },
   {
@@ -1851,6 +1851,105 @@ export const SUPERMARKETS_MALLS: Amenity[] = [
     "address": "83 Punggol Central #B1-10",
     "details": {
       "brand": "Don Don Donki Japanese Grocery"
+    },
+    "category": "supermarket"
+  },
+  {
+    "id": "sup-fp-northpoint",
+    "name": "FairPrice (Northpoint City)",
+    "lat": 1.4287,
+    "lng": 103.8362,
+    "address": "1 North Point Dr, South Wing #B2-103/107 Northpoint City",
+    "details": {
+      "brand": "FairPrice Supermarket (South Wing)"
+    },
+    "category": "supermarket"
+  },
+  {
+    "id": "sup-donki-northpoint",
+    "name": "DON DON DONKI (Northpoint City)",
+    "lat": 1.4297,
+    "lng": 103.8358,
+    "address": "930 Yishun Ave 2, South Wing #B1-06/07 Northpoint City",
+    "details": {
+      "brand": "Don Don Donki Japanese Grocery"
+    },
+    "category": "supermarket"
+  },
+  {
+    "id": "sup-fp-yishun-mrt",
+    "name": "FairPrice (Yishun MRT)",
+    "lat": 1.4295,
+    "lng": 103.835,
+    "address": "301 Yishun Ave 2 #01-02 Yishun MRT Station",
+    "details": {
+      "brand": "FairPrice Supermarket"
+    },
+    "category": "supermarket"
+  },
+  {
+    "id": "sup-ss-yishun-845",
+    "name": "Sheng Siong (Yishun 845)",
+    "lat": 1.4235,
+    "lng": 103.8345,
+    "address": "Blk 845 Yishun St 81 #01-186",
+    "details": {
+      "brand": "Sheng Siong (24 Hours)"
+    },
+    "category": "supermarket"
+  },
+  {
+    "id": "sup-ss-bedok-reservoir-739a",
+    "name": "Sheng Siong Supermarket (Bedok Reservoir 739A)",
+    "lat": 1.3381,
+    "lng": 103.9233,
+    "address": "Blk 739A Bedok Reservoir Rd #01-01",
+    "details": {
+      "brand": "Sheng Siong (24 Hours)"
+    },
+    "category": "supermarket"
+  },
+  {
+    "id": "sup-fp-bedok-reservoir-745",
+    "name": "FairPrice (Bedok Reservoir Village)",
+    "lat": 1.3375,
+    "lng": 103.9238,
+    "address": "Blk 745 Bedok Reservoir Rd #01-3015",
+    "details": {
+      "brand": "FairPrice Supermarket"
+    },
+    "category": "supermarket"
+  },
+  {
+    "id": "sup-fp-bedok-reservoir-631",
+    "name": "FairPrice (Bedok Reservoir 631)",
+    "lat": 1.3328,
+    "lng": 103.9145,
+    "address": "Blk 631 Bedok Reservoir Rd #01-954",
+    "details": {
+      "brand": "FairPrice Supermarket"
+    },
+    "category": "supermarket"
+  },
+  {
+    "id": "sup-ss-bedok-north-539a",
+    "name": "Sheng Siong (Bedok North 539A)",
+    "lat": 1.3323,
+    "lng": 103.9256,
+    "address": "Blk 539A Bedok North St 3 #01-477",
+    "details": {
+      "brand": "Sheng Siong (24 Hours)"
+    },
+    "category": "supermarket"
+  },
+  {
+    "id": "sup-ss-bedok-north-115",
+    "name": "Sheng Siong (Bedok North 115)",
+    "lat": 1.3313,
+    "lng": 103.9365,
+    "address": "Blk 115 Bedok North Rd #01-319",
+    "details": {
+      "brand": "Sheng Siong (24 Hours)"
     },
     "category": "supermarket"
   }

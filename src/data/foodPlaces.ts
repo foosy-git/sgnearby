@@ -383,16 +383,16 @@ export const ALL_FOOD_PLACES: Amenity[] = [
   },
   {
     id: 'hawk-nea-18-bedok-reservoir-road',
-    name: 'Bedok Reservoir Road Blk 630',
+    name: 'Bedok Reservoir Market & Food Centre (Blk 630)',
     category: 'food',
     lat: 1.332980,
     lng: 103.914208,
-    address: 'Blk 630, Bedok Reservoir Road, Singapore 470630',
+    address: 'Blk 630 Bedok Reservoir Road, Singapore 470630',
     details: {
       foodType: 'Hawker Centre',
       hawkerType: 'NEA Hawker Centre',
       stallsCount: 36,
-      cuisine: 'Located within walking distance from the Eunos Community Club, the centre is a convenient place which meets the dining and marketing needs o'
+      cuisine: 'Popular heartland wet market and hawker centre (Pasar Makan @ Reservoir). Stalls include famous Siglap Kway Chap, Wang\'s Noodle & Dumpling House, Roasted Delights, Fried Carrot Cake & Fish Soup.'
     }
   },
   {

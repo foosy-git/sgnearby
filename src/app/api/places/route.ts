@@ -46,6 +46,9 @@ function mapGoogleTypeToCategory(
     nameLower.includes('foodhouse') ||
     nameLower.includes('food house') ||
     nameLower.includes('eating house') ||
+    nameLower.includes('market & food') ||
+    nameLower.includes('market and food') ||
+    nameLower.includes('pasar makan') ||
     allTypes.some((t) =>
       ['restaurant', 'cafe', 'food_court', 'coffee_shop', 'bakery', 'meal_takeaway', 'fast_food_restaurant'].includes(t)
     )
@@ -55,6 +58,14 @@ function mapGoogleTypeToCategory(
 
   // Supermarket & Groceries
   if (
+    nameLower.includes('supermarket') ||
+    nameLower.includes('sheng siong') ||
+    nameLower.includes('fairprice') ||
+    nameLower.includes('cold storage') ||
+    nameLower.includes('don don donki') ||
+    nameLower.includes('giant hypermarket') ||
+    nameLower.includes('prime supermarket') ||
+    nameLower.includes('scarlett') ||
     allTypes.some((t) =>
       ['supermarket', 'grocery_store', 'convenience_store', 'market'].includes(t)
     )
@@ -251,40 +262,50 @@ export async function POST(req: NextRequest) {
       'places.currentOpeningHours.openNow',
     ].join(',');
 
-    const includedTypes = [
-      'restaurant',
-      'cafe',
-      'coffee_shop',
-      'bakery',
-      'food_court',
-      'meal_takeaway',
-      'supermarket',
-      'grocery_store',
-      'convenience_store',
-    ];
-
     try {
-      const gResponse = await fetch(newPlacesUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Goog-Api-Key': apiKey,
-          'X-Goog-FieldMask': fieldMask,
-        },
-        body: JSON.stringify({
-          includedTypes,
-          maxResultCount: 20,
-          locationRestriction: {
-            circle: {
-              center: { latitude: lat, longitude: lng },
-              radius: safeRadius,
-            },
+      const [gResponseGroc, gResponseDining] = await Promise.all([
+        // Dedicated groceries & supermarket scan (ensures supermarkets are never crowded out)
+        fetch(newPlacesUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Goog-Api-Key': apiKey,
+            'X-Goog-FieldMask': fieldMask,
           },
+          body: JSON.stringify({
+            includedTypes: ['supermarket', 'grocery_store', 'market', 'convenience_store'],
+            maxResultCount: 15,
+            locationRestriction: {
+              circle: {
+                center: { latitude: lat, longitude: lng },
+                radius: safeRadius,
+              },
+            },
+          }),
         }),
-      });
+        // Dedicated dining & eateries scan
+        fetch(newPlacesUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Goog-Api-Key': apiKey,
+            'X-Goog-FieldMask': fieldMask,
+          },
+          body: JSON.stringify({
+            includedTypes: ['restaurant', 'cafe', 'coffee_shop', 'bakery', 'food_court', 'meal_takeaway'],
+            maxResultCount: 20,
+            locationRestriction: {
+              circle: {
+                center: { latitude: lat, longitude: lng },
+                radius: safeRadius,
+              },
+            },
+          }),
+        }),
+      ]);
 
       // Explicit quota limit check for Places API (New)
-      if (gResponse.status === 429) {
+      if (gResponseGroc.status === 429 || gResponseDining.status === 429) {
         return NextResponse.json(
           {
             error: 'QUOTA_EXCEEDED',
@@ -295,12 +316,20 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      if (gResponse.ok) {
-        const gData = await gResponse.json();
-        const rawPlaces = gData.places || [];
+      const rawPlaces: any[] = [];
+      if (gResponseGroc.ok) {
+        const grocData = await gResponseGroc.json();
+        if (Array.isArray(grocData.places)) rawPlaces.push(...grocData.places);
+      }
+      if (gResponseDining.ok) {
+        const diningData = await gResponseDining.json();
+        if (Array.isArray(diningData.places)) rawPlaces.push(...diningData.places);
+      }
 
+      if (rawPlaces.length > 0) {
         for (const p of rawPlaces) {
           if (!p.id || !p.location?.latitude || !p.location?.longitude) continue;
+          if (collectedPlaces.has(p.id)) continue;
           const name = p.displayName?.text || 'Unnamed Place';
           const category = mapGoogleTypeToCategory(p.types, p.primaryType, name);
 
@@ -310,7 +339,7 @@ export async function POST(req: NextRequest) {
             /coffeeshop|kopitiam|food court|foodhouse|food house|eating house/i.test(name);
 
           const isHawker =
-            /hawker|food centre/i.test(name) ||
+            /hawker|food centre|pasar makan/i.test(name) ||
             p.primaryType === 'hawker_centre';
 
           let foodType:
@@ -343,6 +372,25 @@ export async function POST(req: NextRequest) {
               }`
             : 'Google Places Verified';
 
+          const supermarketBrand =
+            category === 'supermarket'
+              ? /sheng siong/i.test(name)
+                ? 'Sheng Siong Supermarket'
+                : /fairprice/i.test(name)
+                ? 'FairPrice Supermarket'
+                : /don don donki/i.test(name)
+                ? 'Don Don Donki'
+                : /cold storage|cs fresh/i.test(name)
+                ? 'Cold Storage CS Fresh'
+                : /giant/i.test(name)
+                ? 'Giant Supermarket'
+                : /prime/i.test(name)
+                ? 'Prime Supermarket'
+                : /scarlett/i.test(name)
+                ? 'Scarlett Supermarket'
+                : 'Supermarket & Groceries'
+              : undefined;
+
           collectedPlaces.set(p.id, {
             id: `gplace-${p.id}`,
             name,
@@ -355,12 +403,12 @@ export async function POST(req: NextRequest) {
               hawkerType,
               cuisine: cuisineLabel,
               mallType: category === 'mall' ? 'Shopping Mall' : undefined,
-              brand: category === 'supermarket' ? 'Grocery Store' : undefined,
+              brand: supermarketBrand,
             },
           });
         }
       } else {
-        const errJson = await gResponse.json().catch(() => ({}));
+        const errJson = await gResponseGroc.json().catch(() => ({}));
         const status = errJson?.error?.status;
         const code = errJson?.error?.code;
 

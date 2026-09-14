@@ -1,5 +1,7 @@
 import { SelectedProperty } from '@/data/types';
 import { FEATURED_PROPERTIES } from '@/data/featuredProperties';
+import { SUPERMARKETS_MALLS } from '@/data/supermarketsMalls';
+import { HAWKER_CENTRES } from '@/data/hawkerCentres';
 
 export interface GeocodeResult {
   address: string;
@@ -181,11 +183,14 @@ export async function searchSingaporeLocation(query: string): Promise<GeocodeRes
   const trimmed = query.trim();
   if (!trimmed || trimmed.length < 2) return [];
 
-  // Check local featured properties first
+  // Normalize search query for common Singapore typos and variations (e.g., 'reservior' -> 'reservoir')
+  const normalizedQuery = trimmed.toLowerCase().replace(/reservior/g, 'reservoir');
+
+  // 1. Check local featured properties first
   const localMatches: GeocodeResult[] = FEATURED_PROPERTIES.filter(
     (p) =>
-      p.name.toLowerCase().includes(trimmed.toLowerCase()) ||
-      p.address.toLowerCase().includes(trimmed.toLowerCase()) ||
+      p.name.toLowerCase().includes(normalizedQuery) ||
+      p.address.toLowerCase().includes(normalizedQuery) ||
       (p.postalCode && p.postalCode.includes(trimmed))
   ).map((p) => ({
     address: p.address,
@@ -198,10 +203,44 @@ export async function searchSingaporeLocation(query: string): Promise<GeocodeRes
     propertyType: p.propertyType,
   }));
 
+  // 2. Check local major landmarks (Hawker Centres, Supermarkets & Malls)
+  const allLandmarks = [...SUPERMARKETS_MALLS, ...HAWKER_CENTRES];
+  for (const lm of allLandmarks) {
+    const nameLower = lm.name.toLowerCase();
+    const addrLower = (lm.address || '').toLowerCase();
+    const brandLower = (lm.details?.brand || '').toLowerCase();
+    const cuisineLower = (lm.details?.cuisine || '').toLowerCase();
+
+    const isDirectMatch =
+      nameLower.includes(normalizedQuery) ||
+      addrLower.includes(normalizedQuery) ||
+      brandLower.includes(normalizedQuery);
+
+    // Multi-term landmark heuristics (e.g., "bedok reservoir market", "sheng siong bedok", "fairprice northpoint")
+    const isKeywordCombo =
+      (normalizedQuery.includes('bedok') && normalizedQuery.includes('market') && nameLower.includes('bedok reservoir market')) ||
+      (normalizedQuery.includes('sheng siong') && (normalizedQuery.includes('reservoir') || normalizedQuery.includes('739')) && nameLower.includes('bedok reservoir 739a')) ||
+      (normalizedQuery.includes('northpoint') && normalizedQuery.includes('fairprice') && nameLower.includes('fairprice (northpoint city)')) ||
+      (normalizedQuery.includes('northpoint') && normalizedQuery.includes('donki') && nameLower.includes('don don donki (northpoint city)'));
+
+    if (isDirectMatch || isKeywordCombo) {
+      if (!localMatches.some((m) => Math.abs(m.lat - lm.lat) < 0.0001 && Math.abs(m.lng - lm.lng) < 0.0001)) {
+        localMatches.push({
+          address: lm.address || `${lm.name}, Singapore`,
+          lat: lm.lat,
+          lng: lm.lng,
+          buildingName: lm.name,
+          roadName: lm.address?.split(',')[0],
+          propertyType: 'Custom Location',
+        });
+      }
+    }
+  }
+
   try {
-    // 1. Try Singapore OneMap Search API
+    // 3. Try Singapore OneMap Search API
     const onemapUrl = `https://www.onemap.gov.sg/api/common/elastic/search?searchVal=${encodeURIComponent(
-      trimmed
+      normalizedQuery
     )}&returnGeom=Y&getAddrDetails=Y&pageNum=1`;
 
     const controller = new AbortController();
