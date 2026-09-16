@@ -272,3 +272,11 @@ export function calculateConvenienceScore(
     summaryLabel,
   };
 }
+
+/**
+ * Validates if a coordinate pair falls within Singapore's geographic boundaries.
+ * Approx bounding box: Lat 1.15 to 1.48, Lng 103.58 to 104.08
+ */
+export function isWithinSingapore(lat: number, lng: number): boolean {
+  return lat >= 1.15 && lat <= 1.48 && lng >= 103.58 && lng <= 104.08;
+}

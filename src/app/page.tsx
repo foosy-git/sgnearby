@@ -22,12 +22,20 @@ import {
 import {
   processAmenitiesWithDistance,
   calculateConvenienceScore,
+  isWithinSingapore,
 } from '@/lib/geoUtils';
+import LocationToast from '@/components/ui/LocationToast';
 import { Compass } from 'lucide-react';
 
 export default function Home() {
   // Initial selected location: Natura Loft (Bishan)
   const [selectedProperty, setSelectedProperty] = useState<SelectedProperty>(FEATURED_PROPERTIES[1]);
+
+  // Notification toast state for geolocation events
+  const [locationToast, setLocationToast] = useState<{
+    message: string;
+    type?: 'info' | 'warning';
+  } | null>(null);
 
   // Walking radius filter in meters: 400 (5 min), 800 (10 min), 1200 (15 min)
   const [walkingRadius, setWalkingRadius] = useState<number>(800);
@@ -77,10 +85,12 @@ export default function Home() {
 
   const isLoaded = useRef(false);
 
-  // Read URL search params on mount, and sync user state changes thereafter
+  // Read URL search params on mount, or auto-locate user by default
   useEffect(() => {
     if (!isLoaded.current) {
       isLoaded.current = true;
+      let hasUrlCoordinates = false;
+
       try {
         const params = new URLSearchParams(window.location.search);
         const latParam = params.get('lat');
@@ -93,6 +103,7 @@ export default function Home() {
           const lat = parseFloat(latParam);
           const lng = parseFloat(lngParam);
           if (!isNaN(lat) && !isNaN(lng)) {
+            hasUrlCoordinates = true;
             const matchedFeatured = FEATURED_PROPERTIES.find(
               (p) =>
                 (nameParam && p.name.toLowerCase() === nameParam.toLowerCase()) ||
@@ -123,6 +134,78 @@ export default function Home() {
           }
         }
       } catch {}
+
+      // If no shared coordinates in URL, auto-navigate to user's current GPS location
+      if (!hasUrlCoordinates) {
+        if (typeof window !== 'undefined' && 'geolocation' in navigator) {
+          navigator.geolocation.getCurrentPosition(
+            async (pos) => {
+              const { latitude: lat, longitude: lng } = pos.coords;
+
+              // Check if user is within Singapore boundaries
+              if (!isWithinSingapore(lat, lng)) {
+                setLocationToast({
+                  message:
+                    'You appear to be outside Singapore. Showing default location (Natura Loft, Bishan).',
+                  type: 'info',
+                });
+                return;
+              }
+
+              // Within Singapore: Reverse geocode to get human-friendly location name & address
+              let displayName = `Current Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+              let address = `Coordinates: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+              let postalCode: string | undefined;
+
+              try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 4000);
+                const res = await fetch(`/api/reverse-geocode?lat=${lat}&lng=${lng}`, {
+                  signal: controller.signal,
+                });
+                clearTimeout(timeoutId);
+
+                if (res.ok) {
+                  const data = await res.json();
+                  if (data && data.displayName) {
+                    displayName = data.displayName;
+                    address = data.address;
+                    postalCode = data.postalCode;
+                  }
+                }
+              } catch {}
+
+              const userProp: SelectedProperty = {
+                id: `gps-${Date.now()}`,
+                name: displayName,
+                address,
+                lat,
+                lng,
+                postalCode,
+                propertyType: 'Custom Location',
+              };
+
+              setSelectedProperty(userProp);
+            },
+            (err) => {
+              console.warn('Initial geolocation error:', err);
+              setLocationToast({
+                message:
+                  'Location access was not granted or unavailable. Showing default location (Natura Loft, Bishan).',
+                type: 'warning',
+              });
+            },
+            { timeout: 8000, enableHighAccuracy: true }
+          );
+        } else {
+          setLocationToast({
+            message:
+              'Geolocation is not supported by your browser. Showing default location (Natura Loft, Bishan).',
+            type: 'info',
+          });
+        }
+      }
+
       return;
     }
 
@@ -522,6 +605,13 @@ export default function Home() {
         onClose={() => setIsResaleModalOpen(false)}
         selectedProperty={selectedProperty}
         data={modalHdbData}
+      />
+
+      {/* Geolocation Notice / Toast */}
+      <LocationToast
+        message={locationToast?.message || null}
+        type={locationToast?.type || 'info'}
+        onClose={() => setLocationToast(null)}
       />
     </div>
   );
