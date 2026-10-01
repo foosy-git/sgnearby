@@ -1,5 +1,5 @@
 // Generated automatically by scripts/sync-amenities.mjs - DO NOT EDIT DIRECTLY
-// Source: Official LTA DataMall API (https://datamall2.mytransport.sg) - 5206 verified stops
+// Source: LTA DataMall (via busrouter mirror) (5207 verified stops)
 import { Amenity } from './types';
 
 export const SINGAPORE_BUS_STOPS: Amenity[] = [
@@ -129,7 +129,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "130",
         "133",
         "960",
-        "960e"
+        "960e",
+        "S43"
       ]
     }
   },
@@ -206,7 +207,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "130",
         "133",
         "960",
-        "960e"
+        "960e",
+        "S42"
       ]
     }
   },
@@ -559,7 +561,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
   },
   {
     "id": "bus-01511",
-    "name": "DUO (Beach Rd)",
+    "name": "Opp The Gateway (Beach Rd)",
     "category": "bus",
     "lat": 1.2992,
     "lng": 103.85865,
@@ -641,7 +643,9 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
       "lines": [
         "12e",
         "48",
-        "57"
+        "57",
+        "S42",
+        "S43"
       ]
     }
   },
@@ -649,8 +653,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-01549",
     "name": "Opp Duo Residences (Ophir Rd)",
     "category": "bus",
-    "lat": 1.3007,
-    "lng": 103.85873,
+    "lat": 1.30069,
+    "lng": 103.85856,
     "details": {
       "stationCode": "01549",
       "lines": [
@@ -663,8 +667,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-01559",
     "name": "Village Hotel Bugis (Ophir Rd)",
     "category": "bus",
-    "lat": 1.30169,
-    "lng": 103.85753,
+    "lat": 1.30162,
+    "lng": 103.85746,
     "details": {
       "stationCode": "01559",
       "lines": [
@@ -839,19 +843,6 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     }
   },
   {
-    "id": "bus-02051",
-    "name": "The Float @ Marina Bay (Raffles Ave)",
-    "category": "bus",
-    "lat": 1.2895,
-    "lng": 103.85903,
-    "details": {
-      "stationCode": "02051",
-      "lines": [
-        "960"
-      ]
-    }
-  },
-  {
     "id": "bus-02061",
     "name": "The Esplanade (Raffles Ave)",
     "category": "bus",
@@ -904,7 +895,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "672",
         "960",
         "960e",
-        "961M"
+        "961M",
+        "S42"
       ]
     }
   },
@@ -1135,7 +1127,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "676",
         "677",
         "678",
-        "679"
+        "679",
+        "S42"
       ]
     }
   },
@@ -1311,7 +1304,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
       "stationCode": "03041",
       "lines": [
         "186",
-        "970"
+        "970",
+        "S42"
       ]
     }
   },
@@ -1780,7 +1774,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Gardens by the Bay Stn Exit 2 (Marina Gdns Dr)",
     "category": "bus",
     "lat": 1.27992,
-    "lng": 103.86889,
+    "lng": 103.8689,
     "details": {
       "stationCode": "03361",
       "lines": [
@@ -1888,7 +1882,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "677",
         "678",
         "679",
-        "684"
+        "684",
+        "S42"
       ]
     }
   },
@@ -2006,7 +2001,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "676",
         "677",
         "678",
-        "679"
+        "679",
+        "S42"
       ]
     }
   },
@@ -2035,7 +2031,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "676",
         "677",
         "678",
-        "679"
+        "679",
+        "S42"
       ]
     }
   },
@@ -2075,7 +2072,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "677",
         "678",
         "679",
-        "684"
+        "684",
+        "S42"
       ]
     }
   },
@@ -2176,7 +2174,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
       "lines": [
         "64",
         "65",
-        "139"
+        "139",
+        "S42"
       ]
     }
   },
@@ -2660,15 +2659,16 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-04331",
     "name": "Bef Fort Canning Stn (River Valley Rd)",
     "category": "bus",
-    "lat": 1.29184,
-    "lng": 103.84504,
+    "lat": 1.29198,
+    "lng": 103.84496,
     "details": {
       "stationCode": "04331",
       "lines": [
         "32",
         "54",
         "195",
-        "195A"
+        "195A",
+        "S42"
       ]
     }
   },
@@ -2683,7 +2683,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
       "lines": [
         "32",
         "54",
-        "195"
+        "195",
+        "S42"
       ]
     }
   },
@@ -2776,7 +2777,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "166",
         "190",
         "851",
-        "851e"
+        "851e",
+        "S42"
       ]
     }
   },
@@ -2932,7 +2934,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
       "stationCode": "05129",
       "lines": [
         "186",
-        "970"
+        "970",
+        "S42"
       ]
     }
   },
@@ -3024,8 +3027,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-05259",
     "name": "Opp Maxwell Stn Exit 3 (Neil Rd)",
     "category": "bus",
-    "lat": 1.27974,
-    "lng": 103.8427,
+    "lat": 1.27979,
+    "lng": 103.84263,
     "details": {
       "stationCode": "05259",
       "lines": [
@@ -3073,7 +3076,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
       "stationCode": "05319",
       "lines": [
         "186",
-        "970"
+        "970",
+        "S42"
       ]
     }
   },
@@ -3137,8 +3141,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-05431",
     "name": "Aft Tanjong Pagar Rd (Hoe Chiang Rd)",
     "category": "bus",
-    "lat": 1.27408,
-    "lng": 103.84205,
+    "lat": 1.27404,
+    "lng": 103.84185,
     "details": {
       "stationCode": "05431",
       "lines": [
@@ -3228,8 +3232,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-05641",
     "name": "Bef Cantonment Rd (Keppel Rd)",
     "category": "bus",
-    "lat": 1.27272,
-    "lng": 103.84141,
+    "lat": 1.27261,
+    "lng": 103.84135,
     "details": {
       "stationCode": "05641",
       "lines": [
@@ -4031,11 +4035,24 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     }
   },
   {
+    "id": "bus-07522",
+    "name": "Jalan Besar S42 Boarding (Weld Rd)",
+    "category": "bus",
+    "lat": 1.30475,
+    "lng": 103.85562,
+    "details": {
+      "stationCode": "07522",
+      "lines": [
+        "S42"
+      ]
+    }
+  },
+  {
     "id": "bus-07529",
     "name": "Jln Besar Stn Exit A (Jln Besar)",
     "category": "bus",
-    "lat": 1.30432,
-    "lng": 103.85502,
+    "lat": 1.30453,
+    "lng": 103.85479,
     "details": {
       "stationCode": "07529",
       "lines": [
@@ -4049,7 +4066,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "147A",
         "170",
         "857",
-        "857B"
+        "857B",
+        "S42"
       ]
     }
   },
@@ -4071,7 +4089,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "851e",
         "960",
         "960e",
-        "980"
+        "980",
+        "S43"
       ]
     }
   },
@@ -4095,7 +4114,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "851e",
         "960",
         "960e",
-        "980"
+        "980",
+        "S43"
       ]
     }
   },
@@ -4122,8 +4142,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-07561",
     "name": "Bef Waterloo St (Middle Rd)",
     "category": "bus",
-    "lat": 1.29945,
-    "lng": 103.85268,
+    "lat": 1.2995,
+    "lng": 103.85272,
     "details": {
       "stationCode": "07561",
       "lines": [
@@ -4149,8 +4169,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-07571",
     "name": "Sunshine Plaza (Middle Rd)",
     "category": "bus",
-    "lat": 1.30063,
-    "lng": 103.85114,
+    "lat": 1.30069,
+    "lng": 103.85117,
     "details": {
       "stationCode": "07571",
       "lines": [
@@ -4405,7 +4425,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "663",
         "665",
         "681",
-        "683"
+        "683",
+        "S42"
       ]
     }
   },
@@ -4851,7 +4872,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Orchard Blvd Stn Exit 1 (Grange Rd)",
     "category": "bus",
     "lat": 1.30353,
-    "lng": 103.82358,
+    "lng": 103.82359,
     "details": {
       "stationCode": "09139",
       "lines": [
@@ -5888,7 +5909,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-10219",
     "name": "Skoda S'pore/Volkswagen Grp (Leng Kee Rd)",
     "category": "bus",
-    "lat": 1.29083,
+    "lat": 1.29084,
     "lng": 103.81181,
     "details": {
       "stationCode": "10219",
@@ -6638,8 +6659,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-10471",
     "name": "Bef Tanglin Rd (Kay Siang Rd)",
     "category": "bus",
-    "lat": 1.2968,
-    "lng": 103.81468,
+    "lat": 1.29677,
+    "lng": 103.81475,
     "details": {
       "stationCode": "10471",
       "lines": [
@@ -8178,8 +8199,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-11401",
     "name": "Holland V Stn/Blk 12 (Holland Ave)",
     "category": "bus",
-    "lat": 1.30907,
-    "lng": 103.79507,
+    "lat": 1.30898,
+    "lng": 103.795,
     "details": {
       "stationCode": "11401",
       "lines": [
@@ -8351,7 +8372,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Blk 30 (Margaret Dr)",
     "category": "bus",
     "lat": 1.29882,
-    "lng": 103.80439,
+    "lng": 103.8044,
     "details": {
       "stationCode": "11489",
       "lines": [
@@ -8392,7 +8413,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-11511",
     "name": "Alexandra Hosp (Alexandra Rd)",
     "category": "bus",
-    "lat": 1.28595,
+    "lat": 1.2861,
     "lng": 103.80252,
     "details": {
       "stationCode": "11511",
@@ -8667,7 +8688,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-12041",
     "name": "Aft Pandan Valley (Ulu Pandan Rd)",
     "category": "bus",
-    "lat": 1.32055,
+    "lat": 1.32056,
     "lng": 103.77642,
     "details": {
       "stationCode": "12041",
@@ -9895,7 +9916,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-14059",
     "name": "Bef Telok Blangah Hts (Henderson Rd)",
     "category": "bus",
-    "lat": 1.27602,
+    "lat": 1.27603,
     "lng": 103.81561,
     "details": {
       "stationCode": "14059",
@@ -9933,8 +9954,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-14069",
     "name": "Cantonment Stn Exit 4 (Keppel Rd)",
     "category": "bus",
-    "lat": 1.27254,
-    "lng": 103.83641,
+    "lat": 1.2725,
+    "lng": 103.83708,
     "details": {
       "stationCode": "14069",
       "lines": [
@@ -12745,7 +12766,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Bef West Coast Cres (West Coast Link)",
     "category": "bus",
     "lat": 1.29968,
-    "lng": 103.76542,
+    "lng": 103.76543,
     "details": {
       "stationCode": "17089",
       "lines": [
@@ -13766,8 +13787,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-18059",
     "name": "Opp one-north Stn (Ayer Rajah Ave)",
     "category": "bus",
-    "lat": 1.29849,
-    "lng": 103.78721,
+    "lat": 1.29851,
+    "lng": 103.78728,
     "details": {
       "stationCode": "18059",
       "lines": [
@@ -13851,8 +13872,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-18089",
     "name": "S'pore Post (Ayer Rajah Cres)",
     "category": "bus",
-    "lat": 1.29481,
-    "lng": 103.78757,
+    "lat": 1.29474,
+    "lng": 103.78758,
     "details": {
       "stationCode": "18089",
       "lines": [
@@ -14440,8 +14461,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-18339",
     "name": "Opp Kent Ridge Stn Exit A (Lower Kent Ridge Rd)",
     "category": "bus",
-    "lat": 1.29506,
-    "lng": 103.78456,
+    "lat": 1.29498,
+    "lng": 103.78458,
     "details": {
       "stationCode": "18339",
       "lines": [
@@ -15119,8 +15140,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-20159",
     "name": "Blk 411 (West Coast Rd)",
     "category": "bus",
-    "lat": 1.31842,
-    "lng": 103.74651,
+    "lat": 1.31851,
+    "lng": 103.7464,
     "details": {
       "stationCode": "20159",
       "lines": [
@@ -15151,8 +15172,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-20169",
     "name": "Blk 35 (West Coast Rd)",
     "category": "bus",
-    "lat": 1.31915,
-    "lng": 103.74272,
+    "lat": 1.31928,
+    "lng": 103.74251,
     "details": {
       "stationCode": "20169",
       "lines": [
@@ -15333,8 +15354,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-20231",
     "name": "Bef Hasanah Mque (Teban Gdns Rd)",
     "category": "bus",
-    "lat": 1.32234,
-    "lng": 103.73944,
+    "lat": 1.32233,
+    "lng": 103.73968,
     "details": {
       "stationCode": "20231",
       "lines": [
@@ -16046,7 +16067,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-21181",
     "name": "Opp Blk 161 (Corporation Rd)",
     "category": "bus",
-    "lat": 1.32991,
+    "lat": 1.32992,
     "lng": 103.72095,
     "details": {
       "stationCode": "21181",
@@ -16451,8 +16472,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-21339",
     "name": "Premier Milk Pte Ltd (Jln Boon Lay)",
     "category": "bus",
-    "lat": 1.3299,
-    "lng": 103.70831,
+    "lat": 1.32987,
+    "lng": 103.70838,
     "details": {
       "stationCode": "21339",
       "lines": [
@@ -16478,8 +16499,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-21349",
     "name": "GSK (Jln Boon Lay)",
     "category": "bus",
-    "lat": 1.33553,
-    "lng": 103.7093,
+    "lat": 1.33573,
+    "lng": 103.70939,
     "details": {
       "stationCode": "21349",
       "lines": [
@@ -16781,8 +16802,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-21441",
     "name": "Blk 207 (Boon Lay Pl)",
     "category": "bus",
-    "lat": 1.34638,
-    "lng": 103.71326,
+    "lat": 1.34649,
+    "lng": 103.71317,
     "details": {
       "stationCode": "21441",
       "lines": [
@@ -16845,8 +16866,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-21461",
     "name": "Bef Tukang Innovation Dr (Jln Tukang)",
     "category": "bus",
-    "lat": 1.32732,
-    "lng": 103.71799,
+    "lat": 1.32739,
+    "lng": 103.71828,
     "details": {
       "stationCode": "21461",
       "lines": [
@@ -16910,7 +16931,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-21489",
     "name": "Opp Grundfos (Jln Tukang)",
     "category": "bus",
-    "lat": 1.32615,
+    "lat": 1.32616,
     "lng": 103.7122,
     "details": {
       "stationCode": "21489",
@@ -17619,7 +17640,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Blk 239A (Boon Lay Dr)",
     "category": "bus",
     "lat": 1.34256,
-    "lng": 103.71107,
+    "lng": 103.71108,
     "details": {
       "stationCode": "21721",
       "lines": [
@@ -18658,8 +18679,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-22441",
     "name": "Blk 669 CP (Jurong West St 64)",
     "category": "bus",
-    "lat": 1.34282,
-    "lng": 103.70358,
+    "lat": 1.34285,
+    "lng": 103.7036,
     "details": {
       "stationCode": "22441",
       "lines": [
@@ -18678,8 +18699,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-22449",
     "name": "Blk 685B (Jurong West St 64)",
     "category": "bus",
-    "lat": 1.34306,
-    "lng": 103.70381,
+    "lat": 1.34304,
+    "lng": 103.70377,
     "details": {
       "stationCode": "22449",
       "lines": [
@@ -18698,7 +18719,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-22451",
     "name": "Opp Blk 643 (Pioneer Rd Nth)",
     "category": "bus",
-    "lat": 1.33817,
+    "lat": 1.33836,
     "lng": 103.69561,
     "details": {
       "stationCode": "22451",
@@ -18861,8 +18882,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-22499",
     "name": "Opp Blk 662C (Jurong West St 64)",
     "category": "bus",
-    "lat": 1.33771,
-    "lng": 103.70463,
+    "lat": 1.33769,
+    "lng": 103.7048,
     "details": {
       "stationCode": "22499",
       "lines": [
@@ -18949,8 +18970,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-22521",
     "name": "Pioneer Stn Exit A (Jurong West St 63)",
     "category": "bus",
-    "lat": 1.33742,
-    "lng": 103.69777,
+    "lat": 1.33749,
+    "lng": 103.69784,
     "details": {
       "stationCode": "22521",
       "lines": [
@@ -18988,8 +19009,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-22531",
     "name": "Opp Jurong West Pr Sch (Jurong West St 61)",
     "category": "bus",
-    "lat": 1.33923,
-    "lng": 103.69814,
+    "lat": 1.33921,
+    "lng": 103.69821,
     "details": {
       "stationCode": "22531",
       "lines": [
@@ -19004,8 +19025,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-22539",
     "name": "Jurong West Pr Sch (Jurong West St 61)",
     "category": "bus",
-    "lat": 1.3392,
-    "lng": 103.69839,
+    "lat": 1.33922,
+    "lng": 103.69833,
     "details": {
       "stationCode": "22539",
       "lines": [
@@ -19119,7 +19140,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Blk 678D (Jurong West St 64)",
     "category": "bus",
     "lat": 1.34436,
-    "lng": 103.70345,
+    "lng": 103.70343,
     "details": {
       "stationCode": "22599",
       "lines": [
@@ -19375,8 +19396,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-23089",
     "name": "S'pore Discovery Ctr (Upp Jurong Rd)",
     "category": "bus",
-    "lat": 1.33039,
-    "lng": 103.67859,
+    "lat": 1.33043,
+    "lng": 103.67843,
     "details": {
       "stationCode": "23089",
       "lines": [
@@ -19755,8 +19776,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-23231",
     "name": "Keppel Logistics (Pioneer Rd)",
     "category": "bus",
-    "lat": 1.3093,
-    "lng": 103.67503,
+    "lat": 1.30926,
+    "lng": 103.67492,
     "details": {
       "stationCode": "23231",
       "lines": [
@@ -19769,8 +19790,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-23239",
     "name": "Opp Keppel Logistics (Pioneer Rd)",
     "category": "bus",
-    "lat": 1.30918,
-    "lng": 103.67499,
+    "lat": 1.30915,
+    "lng": 103.67519,
     "details": {
       "stationCode": "23239",
       "lines": [
@@ -20263,8 +20284,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-23491",
     "name": "Joo Koon Stn Exit B (Joo Koon Circle)",
     "category": "bus",
-    "lat": 1.32788,
-    "lng": 103.67785,
+    "lat": 1.32792,
+    "lng": 103.67781,
     "details": {
       "stationCode": "23491",
       "lines": [
@@ -20428,8 +20449,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-24049",
     "name": "Pasir Laba Camp (Upp Jurong Rd)",
     "category": "bus",
-    "lat": 1.33091,
-    "lng": 103.67378,
+    "lat": 1.33094,
+    "lng": 103.67379,
     "details": {
       "stationCode": "24049",
       "lines": [
@@ -21759,7 +21780,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Raffles Country Club (Jln Ahmad Ibrahim)",
     "category": "bus",
     "lat": 1.33514,
-    "lng": 103.65104,
+    "lng": 103.65105,
     "details": {
       "stationCode": "25221",
       "lines": [
@@ -22426,7 +22447,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-25549",
     "name": "CAST Laboratories (Tuas Ave 7)",
     "category": "bus",
-    "lat": 1.32981,
+    "lat": 1.32982,
     "lng": 103.64769,
     "details": {
       "stationCode": "25549",
@@ -22634,7 +22655,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-25651",
     "name": "Novartis (Tuas Sth Ave 6)",
     "category": "bus",
-    "lat": 1.29934,
+    "lat": 1.29935,
     "lng": 103.63553,
     "details": {
       "stationCode": "25651",
@@ -22926,7 +22947,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-25819",
     "name": "Aft Tuas Ave 7 (Tuas Ave 12)",
     "category": "bus",
-    "lat": 1.33249,
+    "lat": 1.3325,
     "lng": 103.64353,
     "details": {
       "stationCode": "25819",
@@ -22991,7 +23012,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-26029",
     "name": "Chia Hock Trading Co (Tuas Cres)",
     "category": "bus",
-    "lat": 1.3178,
+    "lat": 1.31781,
     "lng": 103.64726,
     "details": {
       "stationCode": "26029",
@@ -23056,8 +23077,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-26051",
     "name": "Blasting Abrasives (Tuas Cres)",
     "category": "bus",
-    "lat": 1.31638,
-    "lng": 103.64129,
+    "lat": 1.31639,
+    "lng": 103.6413,
     "details": {
       "stationCode": "26051",
       "lines": [
@@ -23165,7 +23186,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Rotary Engrg (Tuas Ave 20)",
     "category": "bus",
     "lat": 1.32466,
-    "lng": 103.63613,
+    "lng": 103.63614,
     "details": {
       "stationCode": "26091",
       "lines": [
@@ -23885,8 +23906,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-27121",
     "name": "Bef Nanyang Ave (Jln Bahar)",
     "category": "bus",
-    "lat": 1.35682,
-    "lng": 103.69521,
+    "lat": 1.35635,
+    "lng": 103.69574,
     "details": {
       "stationCode": "27121",
       "lines": [
@@ -23998,8 +24019,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-27171",
     "name": "Bef Lor Danau (Nanyang Ave)",
     "category": "bus",
-    "lat": 1.35605,
-    "lng": 103.69168,
+    "lat": 1.35613,
+    "lng": 103.69146,
     "details": {
       "stationCode": "27171",
       "lines": [
@@ -24050,8 +24071,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-27199",
     "name": "Hall 11 (Nanyang Ave)",
     "category": "bus",
-    "lat": 1.35434,
-    "lng": 103.68686,
+    "lat": 1.35352,
+    "lng": 103.6864,
     "details": {
       "stationCode": "27199",
       "lines": [
@@ -24423,7 +24444,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Opp Blk 755 (Jurong West St 75)",
     "category": "bus",
     "lat": 1.34754,
-    "lng": 103.70115,
+    "lng": 103.70116,
     "details": {
       "stationCode": "27371",
       "lines": [
@@ -24724,7 +24745,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-27461",
     "name": "Opp Blk 276B (Jurong West Ave 3)",
     "category": "bus",
-    "lat": 1.35322,
+    "lat": 1.35323,
     "lng": 103.70505,
     "details": {
       "stationCode": "27461",
@@ -25116,8 +25137,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-28051",
     "name": "Opp Ng Teng Fong Gen Hosp (Boon Lay Way)",
     "category": "bus",
-    "lat": 1.33241,
-    "lng": 103.74564,
+    "lat": 1.33229,
+    "lng": 103.74574,
     "details": {
       "stationCode": "28051",
       "lines": [
@@ -26463,8 +26484,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-28509",
     "name": "Blk 422 (Jurong West Ave 1)",
     "category": "bus",
-    "lat": 1.35003,
-    "lng": 103.72654,
+    "lat": 1.35,
+    "lng": 103.72653,
     "details": {
       "stationCode": "28509",
       "lines": [
@@ -26657,8 +26678,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-28571",
     "name": "Blk 416 (Jurong West St 42)",
     "category": "bus",
-    "lat": 1.35242,
-    "lng": 103.72542,
+    "lat": 1.35239,
+    "lng": 103.72544,
     "details": {
       "stationCode": "28571",
       "lines": [
@@ -27637,7 +27658,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-30109",
     "name": "Opp Blk 485A (Brickland Rd)",
     "category": "bus",
-    "lat": 1.37374,
+    "lat": 1.37375,
     "lng": 103.73835,
     "details": {
       "stationCode": "30109",
@@ -28508,7 +28529,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "851e",
         "960",
         "960e",
-        "980"
+        "980",
+        "S43"
       ]
     }
   },
@@ -28533,7 +28555,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "851e",
         "960",
         "960e",
-        "980"
+        "980",
+        "S43"
       ]
     }
   },
@@ -28619,7 +28642,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "170",
         "960",
         "960e",
-        "972M"
+        "972M",
+        "S43"
       ]
     }
   },
@@ -28637,7 +28661,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "170",
         "960",
         "960e",
-        "972M"
+        "972M",
+        "S43"
       ]
     }
   },
@@ -28745,7 +28770,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "170",
         "960",
         "960e",
-        "972M"
+        "972M",
+        "S43"
       ]
     }
   },
@@ -28763,7 +28789,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "170",
         "960",
         "960e",
-        "972M"
+        "972M",
+        "S43"
       ]
     }
   },
@@ -28959,7 +28986,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-40181",
     "name": "Newton Stn Exit A (Scotts Rd)",
     "category": "bus",
-    "lat": 1.31246,
+    "lat": 1.31247,
     "lng": 103.83808,
     "details": {
       "stationCode": "40181",
@@ -29137,8 +29164,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-40231",
     "name": "Raffles Town Club (Whitley Rd)",
     "category": "bus",
-    "lat": 1.32231,
-    "lng": 103.82577,
+    "lat": 1.32211,
+    "lng": 103.8257,
     "details": {
       "stationCode": "40231",
       "lines": [
@@ -29910,7 +29937,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-40489",
     "name": "Opp Blk 113 (Plantation Cres)",
     "category": "bus",
-    "lat": 1.35337,
+    "lat": 1.35338,
     "lng": 103.73549,
     "details": {
       "stationCode": "40489",
@@ -29925,7 +29952,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Bef Plantation Cres (Tengah Gdn Ave)",
     "category": "bus",
     "lat": 1.35298,
-    "lng": 103.73364,
+    "lng": 103.73365,
     "details": {
       "stationCode": "40491",
       "lines": [
@@ -30059,7 +30086,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "154",
         "156",
         "170",
-        "186"
+        "186",
+        "S43"
       ]
     }
   },
@@ -30079,7 +30107,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "154",
         "156",
         "170",
-        "186"
+        "186",
+        "S43"
       ]
     }
   },
@@ -30171,7 +30200,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "174",
         "852",
         "961",
-        "961M"
+        "961M",
+        "S43"
       ]
     }
   },
@@ -30217,7 +30247,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "174",
         "852",
         "961",
-        "961M"
+        "961M",
+        "S43"
       ]
     }
   },
@@ -30286,7 +30317,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "174",
         "852",
         "961",
-        "961M"
+        "961M",
+        "S43"
       ]
     }
   },
@@ -30590,7 +30622,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "174",
         "852",
         "961",
-        "961M"
+        "961M",
+        "S43"
       ]
     }
   },
@@ -30758,7 +30791,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "852",
         "961",
         "961M",
-        "970"
+        "970",
+        "S43"
       ]
     }
   },
@@ -30782,7 +30816,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "852",
         "961",
         "961M",
-        "970"
+        "970",
+        "S43"
       ]
     }
   },
@@ -30894,7 +30929,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "184",
         "852",
         "961",
-        "961M"
+        "961M",
+        "S43"
       ]
     }
   },
@@ -30910,7 +30946,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "67",
         "75",
         "170",
-        "173"
+        "173",
+        "S43"
       ]
     }
   },
@@ -31654,7 +31691,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "184",
         "961",
         "961M",
-        "973"
+        "973",
+        "S43"
       ]
     }
   },
@@ -31673,7 +31711,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "178",
         "184",
         "961",
-        "961M"
+        "961M",
+        "S43"
       ]
     }
   },
@@ -31734,7 +31773,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "961",
         "961M",
         "963",
-        "970"
+        "970",
+        "S43"
       ]
     }
   },
@@ -31754,7 +31794,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "184",
         "961",
         "961M",
-        "973"
+        "973",
+        "S43"
       ]
     }
   },
@@ -31784,7 +31825,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-43081",
     "name": "Opp St. Joseph's Ch (Bt Timah) (Upp Bt Timah Rd)",
     "category": "bus",
-    "lat": 1.36624,
+    "lat": 1.36625,
     "lng": 103.76635,
     "details": {
       "stationCode": "43081",
@@ -31840,7 +31881,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "961",
         "961M",
         "963",
-        "970"
+        "970",
+        "S43"
       ]
     }
   },
@@ -31882,7 +31924,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "961",
         "961M",
         "963",
-        "970"
+        "970",
+        "S43"
       ]
     }
   },
@@ -32865,8 +32908,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-43409",
     "name": "Opp Blk 122 (Bt Batok West Ave 3)",
     "category": "bus",
-    "lat": 1.35236,
-    "lng": 103.74624,
+    "lat": 1.35244,
+    "lng": 103.74702,
     "details": {
       "stationCode": "43409",
       "lines": [
@@ -33462,8 +33505,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-43579",
     "name": "Bt Gombak Stn (Bt Batok West Ave 5)",
     "category": "bus",
-    "lat": 1.35912,
-    "lng": 103.75167,
+    "lat": 1.35884,
+    "lng": 103.75168,
     "details": {
       "stationCode": "43579",
       "lines": [
@@ -34240,7 +34283,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-43899",
     "name": "Bef Dairy Farm Cres (Dairy Farm Rd)",
     "category": "bus",
-    "lat": 1.36353,
+    "lat": 1.36354,
     "lng": 103.769,
     "details": {
       "stationCode": "43899",
@@ -34388,7 +34431,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "961",
         "961M",
         "963",
-        "970"
+        "970",
+        "S43"
       ]
     }
   },
@@ -34413,7 +34457,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "963",
         "970",
         "974",
-        "974A"
+        "974A",
+        "S43"
       ]
     }
   },
@@ -34738,8 +34783,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-44121",
     "name": "Blk 113 (Choa Chu Kang Way)",
     "category": "bus",
-    "lat": 1.37762,
-    "lng": 103.75086,
+    "lat": 1.3777,
+    "lng": 103.75094,
     "details": {
       "stationCode": "44121",
       "lines": [
@@ -36133,7 +36178,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-44549",
     "name": "Opp Northvale Condo (Choa Chu Kang Dr)",
     "category": "bus",
-    "lat": 1.38749,
+    "lat": 1.38721,
     "lng": 103.74619,
     "details": {
       "stationCode": "44549",
@@ -36710,8 +36755,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-44791",
     "name": "West View Pr Sch (Senja Rd)",
     "category": "bus",
-    "lat": 1.38372,
-    "lng": 103.76069,
+    "lat": 1.38369,
+    "lng": 103.76075,
     "details": {
       "stationCode": "44791",
       "lines": [
@@ -36945,8 +36990,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-44889",
     "name": "Opp Blk 816A (Keat Hong Link)",
     "category": "bus",
-    "lat": 1.37553,
-    "lng": 103.74833,
+    "lat": 1.3756,
+    "lng": 103.7484,
     "details": {
       "stationCode": "44889",
       "lines": [
@@ -38120,7 +38165,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Yew Tee Stn (Choa Chu Kang Dr)",
     "category": "bus",
     "lat": 1.39735,
-    "lng": 103.74766,
+    "lng": 103.74767,
     "details": {
       "stationCode": "45321",
       "lines": [
@@ -38483,7 +38528,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-45591",
     "name": "Fuchun CC (Woodlands Ave 1)",
     "category": "bus",
-    "lat": 1.42921,
+    "lat": 1.42922,
     "lng": 103.77489,
     "details": {
       "stationCode": "45591",
@@ -38703,8 +38748,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-46051",
     "name": "Bef BKE (Woodlands Rd)",
     "category": "bus",
-    "lat": 1.43897,
-    "lng": 103.76641,
+    "lat": 1.43884,
+    "lng": 103.76639,
     "details": {
       "stationCode": "46051",
       "lines": [
@@ -38717,8 +38762,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-46059",
     "name": "GlobalFoundries/Aft BKE (Woodlands Rd)",
     "category": "bus",
-    "lat": 1.43875,
-    "lng": 103.76656,
+    "lat": 1.43891,
+    "lng": 103.76664,
     "details": {
       "stationCode": "46059",
       "lines": [
@@ -38734,8 +38779,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-46069",
     "name": "W'lands Train Checkpt (Woodlands Ctr Rd)",
     "category": "bus",
-    "lat": 1.44289,
-    "lng": 103.76934,
+    "lat": 1.44278,
+    "lng": 103.76936,
     "details": {
       "stationCode": "46069",
       "lines": [
@@ -38824,8 +38869,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-46101",
     "name": "W'lands Checkpt (Woodlands Crossing)",
     "category": "bus",
-    "lat": 1.44461,
-    "lng": 103.76775,
+    "lat": 1.44616,
+    "lng": 103.76854,
     "details": {
       "stationCode": "46101",
       "lines": [
@@ -38840,8 +38885,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-46109",
     "name": "W'lands Checkpt (Woodlands Crossing)",
     "category": "bus",
-    "lat": 1.44694,
-    "lng": 103.76925,
+    "lat": 1.44571,
+    "lng": 103.76868,
     "details": {
       "stationCode": "46109",
       "lines": [
@@ -39157,8 +39202,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-46211",
     "name": "Johor Bahru Checkpt (Johor Bahru)",
     "category": "bus",
-    "lat": 1.46492,
-    "lng": 103.76548,
+    "lat": 1.4657,
+    "lng": 103.76751,
     "details": {
       "stationCode": "46211",
       "lines": [
@@ -39173,8 +39218,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-46219",
     "name": "Johor Bahru Checkpt (Johor Bahru)",
     "category": "bus",
-    "lat": 1.46543,
-    "lng": 103.76827,
+    "lat": 1.46491,
+    "lng": 103.76662,
     "details": {
       "stationCode": "46219",
       "lines": [
@@ -40064,8 +40109,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-46509",
     "name": "Marsiling Pk (Woodlands Ctr Rd)",
     "category": "bus",
-    "lat": 1.43804,
-    "lng": 103.77096,
+    "lat": 1.43885,
+    "lng": 103.77105,
     "details": {
       "stationCode": "46509",
       "lines": [
@@ -40105,8 +40150,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-46519",
     "name": "Opp Blk 144 (Woodlands Ctr Rd)",
     "category": "bus",
-    "lat": 1.43555,
-    "lng": 103.77214,
+    "lat": 1.4355,
+    "lng": 103.77222,
     "details": {
       "stationCode": "46519",
       "lines": [
@@ -40337,7 +40382,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Blk 178 (Woodlands St 13)",
     "category": "bus",
     "lat": 1.43478,
-    "lng": 103.77748,
+    "lng": 103.77749,
     "details": {
       "stationCode": "46569",
       "lines": [
@@ -41918,8 +41963,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-47539",
     "name": "Opp Woodgrove Sec Sch (Woodlands Ave 6)",
     "category": "bus",
-    "lat": 1.42938,
-    "lng": 103.79797,
+    "lat": 1.42936,
+    "lng": 103.79799,
     "details": {
       "stationCode": "47539",
       "lines": [
@@ -41990,8 +42035,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-47561",
     "name": "Blk 620 (Woodlands Ave 5)",
     "category": "bus",
-    "lat": 1.43321,
-    "lng": 103.79842,
+    "lat": 1.43316,
+    "lng": 103.79838,
     "details": {
       "stationCode": "47561",
       "lines": [
@@ -42290,8 +42335,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-47711",
     "name": "JB Sentral Bus Ter (Jln Jim Quee)",
     "category": "bus",
-    "lat": 1.46346,
-    "lng": 103.76442,
+    "lat": 1.46349,
+    "lng": 103.76498,
     "details": {
       "stationCode": "47711",
       "lines": [
@@ -42306,7 +42351,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Blk 568B (Woodlands Dr 17)",
     "category": "bus",
     "lat": 1.42791,
-    "lng": 103.79005,
+    "lng": 103.79006,
     "details": {
       "stationCode": "47721",
       "lines": [
@@ -42372,8 +42417,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-47759",
     "name": "Blk 694C (Woodlands Dr 62)",
     "category": "bus",
-    "lat": 1.43922,
-    "lng": 103.80564,
+    "lat": 1.43923,
+    "lng": 103.80565,
     "details": {
       "stationCode": "47759",
       "lines": [
@@ -43133,6 +43178,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "details": {
       "stationCode": "49121",
       "lines": [
+        "925A",
         "925M"
       ]
     }
@@ -43406,8 +43452,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "details": {
       "stationCode": "49259",
       "lines": [
-        "925",
-        "925A"
+        "925"
       ]
     }
   },
@@ -43468,7 +43513,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-50029",
     "name": "Opp United Sq (Thomson Rd)",
     "category": "bus",
-    "lat": 1.31679,
+    "lat": 1.3168,
     "lng": 103.84466,
     "details": {
       "stationCode": "50029",
@@ -44220,8 +44265,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-50339",
     "name": "Opp Blk 122 (Mcnair Rd)",
     "category": "bus",
-    "lat": 1.31856,
-    "lng": 103.8574,
+    "lat": 1.31857,
+    "lng": 103.85741,
     "details": {
       "stationCode": "50339",
       "lines": [
@@ -44499,8 +44544,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-51069",
     "name": "Mt Alvernia Hosp (Thomson Rd)",
     "category": "bus",
-    "lat": 1.34126,
-    "lng": 103.8366,
+    "lat": 1.34108,
+    "lng": 103.83665,
     "details": {
       "stationCode": "51069",
       "lines": [
@@ -44575,8 +44620,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-51089",
     "name": "Marymount Convent Sch (Marymount Rd)",
     "category": "bus",
-    "lat": 1.34155,
-    "lng": 103.83963,
+    "lat": 1.34163,
+    "lng": 103.83933,
     "details": {
       "stationCode": "51089",
       "lines": [
@@ -44723,8 +44768,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-51139",
     "name": "Braddell View (Braddell Rd)",
     "category": "bus",
-    "lat": 1.34437,
-    "lng": 103.84032,
+    "lat": 1.34399,
+    "lng": 103.83967,
     "details": {
       "stationCode": "51139",
       "lines": [
@@ -45418,7 +45463,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Blk 101C CP (Lor 2 Toa Payoh)",
     "category": "bus",
     "lat": 1.33925,
-    "lng": 103.84677,
+    "lng": 103.84678,
     "details": {
       "stationCode": "52209",
       "lines": [
@@ -46629,7 +46674,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-53051",
     "name": "Upp Thomson Stn Exit 5 (Upp Thomson Rd)",
     "category": "bus",
-    "lat": 1.35499,
+    "lat": 1.355,
     "lng": 103.8316,
     "details": {
       "stationCode": "53051",
@@ -46845,8 +46890,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-53119",
     "name": "Aft Bishan St 21 (Marymount Rd)",
     "category": "bus",
-    "lat": 1.34706,
-    "lng": 103.83945,
+    "lat": 1.34668,
+    "lng": 103.83926,
     "details": {
       "stationCode": "53119",
       "lines": [
@@ -48036,8 +48081,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-54059",
     "name": "Bef Ang Mo Kio Lib (Ang Mo Kio Ave 6)",
     "category": "bus",
-    "lat": 1.37628,
-    "lng": 103.84498,
+    "lat": 1.37468,
+    "lng": 103.8451,
     "details": {
       "stationCode": "54059",
       "lines": [
@@ -48712,7 +48757,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Blk 570 (Ang Mo Kio Ave 3)",
     "category": "bus",
     "lat": 1.36969,
-    "lng": 103.85516,
+    "lng": 103.85517,
     "details": {
       "stationCode": "54281",
       "lines": [
@@ -49388,7 +49433,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-54489",
     "name": "Opp ITE Coll Ctrl (Ang Mo Kio Ave 5)",
     "category": "bus",
-    "lat": 1.37567,
+    "lat": 1.37568,
     "lng": 103.85542,
     "details": {
       "stationCode": "54489",
@@ -50397,7 +50442,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Yio Chu Kang Stn (Ang Mo Kio Ave 6)",
     "category": "bus",
     "lat": 1.38296,
-    "lng": 103.84422,
+    "lng": 103.84423,
     "details": {
       "stationCode": "55189",
       "lines": [
@@ -50937,8 +50982,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-55509",
     "name": "Yio Chu Kang Int (Ang Mo Kio Ave 8)",
     "category": "bus",
-    "lat": 1.38113,
-    "lng": 103.84556,
+    "lat": 1.38262,
+    "lng": 103.84471,
     "details": {
       "stationCode": "55509",
       "lines": [
@@ -51140,7 +51185,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Aft Tagore Dr (Upp Thomson Rd)",
     "category": "bus",
     "lat": 1.38515,
-    "lng": 103.82286,
+    "lng": 103.82287,
     "details": {
       "stationCode": "56061",
       "lines": [
@@ -51620,7 +51665,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-57061",
     "name": "Dieppe Barracks (Sembawang Rd)",
     "category": "bus",
-    "lat": 1.4199,
+    "lat": 1.41991,
     "lng": 103.82455,
     "details": {
       "stationCode": "57061",
@@ -51673,8 +51718,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-57079",
     "name": "Khatib Camp (Sembawang Rd)",
     "category": "bus",
-    "lat": 1.42444,
-    "lng": 103.82567,
+    "lat": 1.42401,
+    "lng": 103.82559,
     "details": {
       "stationCode": "57079",
       "lines": [
@@ -52306,8 +52351,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-58139",
     "name": "Bef Assyafaah Mque (Canberra Rd)",
     "category": "bus",
-    "lat": 1.45638,
-    "lng": 103.82075,
+    "lat": 1.45645,
+    "lng": 103.82076,
     "details": {
       "stationCode": "58139",
       "lines": [
@@ -52394,8 +52439,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-58161",
     "name": "Bef Sembawang Shipyard G 3 (Admiralty Rd West)",
     "category": "bus",
-    "lat": 1.46053,
-    "lng": 103.82037,
+    "lat": 1.4605,
+    "lng": 103.82034,
     "details": {
       "stationCode": "58161",
       "lines": [
@@ -53665,7 +53710,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-58999",
     "name": "Blk 936 CP (Yishun Ave 2)",
     "category": "bus",
-    "lat": 1.42382,
+    "lat": 1.42383,
     "lng": 103.83516,
     "details": {
       "stationCode": "58999",
@@ -54186,8 +54231,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-59091",
     "name": "Blk 154 (Yishun Ave 2)",
     "category": "bus",
-    "lat": 1.43165,
-    "lng": 103.83511,
+    "lat": 1.43193,
+    "lng": 103.83518,
     "details": {
       "stationCode": "59091",
       "lines": [
@@ -54410,8 +54455,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-59161",
     "name": "Opp Blk 201 (Yishun Ctrl)",
     "category": "bus",
-    "lat": 1.43015,
-    "lng": 103.83793,
+    "lat": 1.43023,
+    "lng": 103.83783,
     "details": {
       "stationCode": "59161",
       "lines": [
@@ -55236,8 +55281,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "811",
         "860",
         "860T",
-        "861",
-        "861B"
+        "861"
       ]
     }
   },
@@ -55265,7 +55309,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-59431",
     "name": "Blk 630 (Yishun Ring Rd)",
     "category": "bus",
-    "lat": 1.4178,
+    "lat": 1.41781,
     "lng": 103.83768,
     "details": {
       "stationCode": "59431",
@@ -55276,8 +55320,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "811",
         "860",
         "860T",
-        "861",
-        "861B"
+        "861"
       ]
     }
   },
@@ -55671,8 +55714,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
       "lines": [
         "650",
         "804",
-        "861",
-        "861B"
+        "861"
       ]
     }
   },
@@ -55868,7 +55910,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Opp Blk 333C (Yishun St 31)",
     "category": "bus",
     "lat": 1.43139,
-    "lng": 103.8457,
+    "lng": 103.84571,
     "details": {
       "stationCode": "59649",
       "lines": [
@@ -55978,8 +56020,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "807C",
         "860",
         "860T",
-        "861",
-        "861B"
+        "861"
       ]
     }
   },
@@ -56356,7 +56397,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "107M",
         "175",
         "961",
-        "961M"
+        "961M",
+        "S42"
       ]
     }
   },
@@ -56374,7 +56416,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "107M",
         "175",
         "961",
-        "961M"
+        "961M",
+        "S42"
       ]
     }
   },
@@ -56529,7 +56572,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Kolam Ayer Ind Est (Jln Kolam Ayer)",
     "category": "bus",
     "lat": 1.32706,
-    "lng": 103.87032,
+    "lng": 103.87033,
     "details": {
       "stationCode": "60071",
       "lines": [
@@ -56985,7 +57028,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "107M",
         "140",
         "853",
-        "853M"
+        "853M",
+        "S42"
       ]
     }
   },
@@ -57004,7 +57048,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "107M",
         "140",
         "853",
-        "853M"
+        "853M",
+        "S42"
       ]
     }
   },
@@ -57170,7 +57215,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-61029",
     "name": "Opp Woodleigh Pk (Upp S'goon Rd)",
     "category": "bus",
-    "lat": 1.33617,
+    "lat": 1.33618,
     "lng": 103.87056,
     "details": {
       "stationCode": "61029",
@@ -57371,7 +57416,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Blk 114B (Bidadari Pk Dr)",
     "category": "bus",
     "lat": 1.3355,
-    "lng": 103.87203,
+    "lng": 103.87204,
     "details": {
       "stationCode": "61111",
       "lines": [
@@ -57434,7 +57479,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-61131",
     "name": "Opp Woodleigh Mall (Bidadari Pk Dr)",
     "category": "bus",
-    "lat": 1.33889,
+    "lat": 1.3389,
     "lng": 103.8727,
     "details": {
       "stationCode": "61131",
@@ -57648,8 +57693,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-62051",
     "name": "Aft Jln Chermat (Upp Paya Lebar Rd)",
     "category": "bus",
-    "lat": 1.3517,
-    "lng": 103.87775,
+    "lat": 1.35178,
+    "lng": 103.87778,
     "details": {
       "stationCode": "62051",
       "lines": [
@@ -58297,7 +58342,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Bef Blk 471B (Upp S'goon Cres)",
     "category": "bus",
     "lat": 1.37746,
-    "lng": 103.90069,
+    "lng": 103.9007,
     "details": {
       "stationCode": "62251",
       "lines": [
@@ -58309,7 +58354,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-62261",
     "name": "Opp S'goon Sec Sch (Upp Serangoon View)",
     "category": "bus",
-    "lat": 1.37458,
+    "lat": 1.37459,
     "lng": 103.90292,
     "details": {
       "stationCode": "62261",
@@ -60060,8 +60105,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-64051",
     "name": "Blk 465A (Upp S'goon Rd)",
     "category": "bus",
-    "lat": 1.3724,
-    "lng": 103.89777,
+    "lat": 1.37238,
+    "lng": 103.89778,
     "details": {
       "stationCode": "64051",
       "lines": [
@@ -60713,8 +60758,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-64249",
     "name": "Blk 327 (Hougang Ave 5)",
     "category": "bus",
-    "lat": 1.36809,
-    "lng": 103.89589,
+    "lat": 1.36808,
+    "lng": 103.89581,
     "details": {
       "stationCode": "64249",
       "lines": [
@@ -60790,7 +60835,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-64311",
     "name": "Riverfront Residences (Hougang Ave 7)",
     "category": "bus",
-    "lat": 1.37027,
+    "lat": 1.37028,
     "lng": 103.90036,
     "details": {
       "stationCode": "64311",
@@ -61076,8 +61121,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-64391",
     "name": "Blk 831 (Hougang Ave 10)",
     "category": "bus",
-    "lat": 1.37145,
-    "lng": 103.88977,
+    "lat": 1.37161,
+    "lng": 103.88983,
     "details": {
       "stationCode": "64391",
       "lines": [
@@ -61535,7 +61580,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-64541",
     "name": "Hougang Ctrl Int (Hougang Ctrl)",
     "category": "bus",
-    "lat": 1.37123,
+    "lat": 1.37124,
     "lng": 103.89281,
     "details": {
       "stationCode": "64541",
@@ -61849,8 +61894,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-65021",
     "name": "Opp Blk 110 (Punggol Rd)",
     "category": "bus",
-    "lat": 1.38403,
-    "lng": 103.89961,
+    "lat": 1.38396,
+    "lng": 103.89962,
     "details": {
       "stationCode": "65021",
       "lines": [
@@ -61888,7 +61933,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Blk 227D (Punggol Rd)",
     "category": "bus",
     "lat": 1.38714,
-    "lng": 103.90162,
+    "lng": 103.90168,
     "details": {
       "stationCode": "65031",
       "lines": [
@@ -61904,8 +61949,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-65039",
     "name": "Blk 124 (Punggol Rd)",
     "category": "bus",
-    "lat": 1.38732,
-    "lng": 103.90186,
+    "lat": 1.38705,
+    "lng": 103.90183,
     "details": {
       "stationCode": "65039",
       "lines": [
@@ -62117,7 +62162,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Opp My First Skool PCC10 (New Punggol Rd)",
     "category": "bus",
     "lat": 1.40789,
-    "lng": 103.90873,
+    "lng": 103.90874,
     "details": {
       "stationCode": "65101",
       "lines": [
@@ -62198,8 +62243,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-65159",
     "name": "Cove Stn Exit A (Punggol Field)",
     "category": "bus",
-    "lat": 1.39857,
-    "lng": 103.90665,
+    "lat": 1.3991,
+    "lng": 103.90608,
     "details": {
       "stationCode": "65159",
       "lines": [
@@ -62380,8 +62425,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-65201",
     "name": "Opp Blk 201A (Punggol Field)",
     "category": "bus",
-    "lat": 1.40083,
-    "lng": 103.90358,
+    "lat": 1.40108,
+    "lng": 103.90295,
     "details": {
       "stationCode": "65201",
       "lines": [
@@ -62786,8 +62831,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-65319",
     "name": "Oasis Stn Exit A (Punggol Dr)",
     "category": "bus",
-    "lat": 1.40258,
-    "lng": 103.91245,
+    "lat": 1.40281,
+    "lng": 103.91218,
     "details": {
       "stationCode": "65319",
       "lines": [
@@ -62945,8 +62990,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-65371",
     "name": "Blk 682A (Edgedale Plains)",
     "category": "bus",
-    "lat": 1.40289,
-    "lng": 103.91627,
+    "lat": 1.40301,
+    "lng": 103.91632,
     "details": {
       "stationCode": "65371",
       "lines": [
@@ -62959,8 +63004,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-65379",
     "name": "Blk 661A (Edgedale Plains)",
     "category": "bus",
-    "lat": 1.40281,
-    "lng": 103.91634,
+    "lat": 1.40289,
+    "lng": 103.91643,
     "details": {
       "stationCode": "65379",
       "lines": [
@@ -63016,8 +63061,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-65399",
     "name": "Blk 670A (Edgefield Plains)",
     "category": "bus",
-    "lat": 1.4058,
-    "lng": 103.9126,
+    "lat": 1.40569,
+    "lng": 103.91252,
     "details": {
       "stationCode": "65399",
       "lines": [
@@ -63410,8 +63455,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-65549",
     "name": "Opp Blk 228B (Sumang Crescent)",
     "category": "bus",
-    "lat": 1.40352,
-    "lng": 103.8912,
+    "lat": 1.4035,
+    "lng": 103.89105,
     "details": {
       "stationCode": "65549",
       "lines": [
@@ -63443,8 +63488,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-65559",
     "name": "Opp Blk 227A (Punggol Field)",
     "category": "bus",
-    "lat": 1.40405,
-    "lng": 103.8925,
+    "lat": 1.40412,
+    "lng": 103.89252,
     "details": {
       "stationCode": "65559",
       "lines": [
@@ -63490,7 +63535,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Blk 218 (Punggol Field)",
     "category": "bus",
     "lat": 1.40348,
-    "lng": 103.89553,
+    "lng": 103.89554,
     "details": {
       "stationCode": "65571",
       "lines": [
@@ -63638,7 +63683,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-65621",
     "name": "Samudera Stn Exit B (Punggol Way)",
     "category": "bus",
-    "lat": 1.41616,
+    "lat": 1.41617,
     "lng": 103.90256,
     "details": {
       "stationCode": "65621",
@@ -63821,7 +63866,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-65691",
     "name": "Opp Blk 437B (New Punggol Rd)",
     "category": "bus",
-    "lat": 1.42015,
+    "lat": 1.42018,
     "lng": 103.91196,
     "details": {
       "stationCode": "65691",
@@ -63850,7 +63895,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Opp SIT Punggol (New Punggol Rd)",
     "category": "bus",
     "lat": 1.41169,
-    "lng": 103.91107,
+    "lng": 103.91108,
     "details": {
       "stationCode": "65701",
       "lines": [
@@ -63890,7 +63935,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Blk 432B (New Punggol Rd)",
     "category": "bus",
     "lat": 1.417,
-    "lng": 103.91157,
+    "lng": 103.91158,
     "details": {
       "stationCode": "65719",
       "lines": [
@@ -63916,7 +63961,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-65729",
     "name": "Punggol Coast Stn (New Punggol Rd)",
     "category": "bus",
-    "lat": 1.41467,
+    "lat": 1.41468,
     "lng": 103.91128,
     "details": {
       "stationCode": "65729",
@@ -64041,8 +64086,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-66011",
     "name": "Aft Braddell Rd (Lor Chuan)",
     "category": "bus",
-    "lat": 1.34717,
-    "lng": 103.85998,
+    "lat": 1.34723,
+    "lng": 103.86,
     "details": {
       "stationCode": "66011",
       "lines": [
@@ -64056,8 +64101,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-66019",
     "name": "Bef Braddell Rd (Lor Chuan)",
     "category": "bus",
-    "lat": 1.34603,
-    "lng": 103.8604,
+    "lat": 1.34602,
+    "lng": 103.86035,
     "details": {
       "stationCode": "66019",
       "lines": [
@@ -64801,8 +64846,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-66329",
     "name": "Blk 126 (S'goon Nth Ave 1)",
     "category": "bus",
-    "lat": 1.36602,
-    "lng": 103.87229,
+    "lat": 1.36614,
+    "lng": 103.87241,
     "details": {
       "stationCode": "66329",
       "lines": [
@@ -65079,8 +65124,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-66399",
     "name": "Opp Lor Chuan Stn Exit B (S'goon Ave 3)",
     "category": "bus",
-    "lat": 1.35154,
-    "lng": 103.86313,
+    "lat": 1.35152,
+    "lng": 103.86324,
     "details": {
       "stationCode": "66399",
       "lines": [
@@ -65149,8 +65194,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-66421",
     "name": "Blk 537 (S'goon Nth Ave 4)",
     "category": "bus",
-    "lat": 1.37366,
-    "lng": 103.87341,
+    "lat": 1.37356,
+    "lng": 103.87357,
     "details": {
       "stationCode": "66421",
       "lines": [
@@ -65451,8 +65496,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-66539",
     "name": "Blk 531 (S'goon Nth Ave 5)",
     "category": "bus",
-    "lat": 1.375,
-    "lng": 103.87502,
+    "lat": 1.3751,
+    "lng": 103.87491,
     "details": {
       "stationCode": "66539",
       "lines": [
@@ -66342,7 +66387,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Blk 223D (Compassvale Rd)",
     "category": "bus",
     "lat": 1.38913,
-    "lng": 103.89709,
+    "lng": 103.8971,
     "details": {
       "stationCode": "67191",
       "lines": [
@@ -67974,7 +68019,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Aft Blk 467B (Fernvale St)",
     "category": "bus",
     "lat": 1.39849,
-    "lng": 103.87744,
+    "lng": 103.87745,
     "details": {
       "stationCode": "67701",
       "lines": [
@@ -68217,7 +68262,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Blk 409A (Buangkok Dr)",
     "category": "bus",
     "lat": 1.38863,
-    "lng": 103.87723,
+    "lng": 103.87724,
     "details": {
       "stationCode": "67789",
       "lines": [
@@ -68243,7 +68288,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-67799",
     "name": "Blk 415A (Buangkok Dr)",
     "category": "bus",
-    "lat": 1.38861,
+    "lat": 1.38862,
     "lng": 103.8798,
     "details": {
       "stationCode": "67799",
@@ -68274,7 +68319,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Blk 461B (Sengkang West Way)",
     "category": "bus",
     "lat": 1.39506,
-    "lng": 103.87149,
+    "lng": 103.8715,
     "details": {
       "stationCode": "67999",
       "lines": [
@@ -69428,8 +69473,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-70151",
     "name": "Aft Jln Anggerek (Merpati Rd)",
     "category": "bus",
-    "lat": 1.32768,
-    "lng": 103.88096,
+    "lat": 1.32767,
+    "lng": 103.88125,
     "details": {
       "stationCode": "70151",
       "lines": [
@@ -69460,7 +69505,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "135",
         "154",
         "155",
-        "158"
+        "158",
+        "S42"
       ]
     }
   },
@@ -69511,7 +69557,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Opp Blk 66 (Circuit Rd)",
     "category": "bus",
     "lat": 1.32733,
-    "lng": 103.88787,
+    "lng": 103.88788,
     "details": {
       "stationCode": "70191",
       "lines": [
@@ -69606,7 +69652,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "135",
         "154",
         "155",
-        "158"
+        "158",
+        "S42"
       ]
     }
   },
@@ -70063,7 +70110,21 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "65",
         "135",
         "154",
-        "158"
+        "158",
+        "S42"
+      ]
+    }
+  },
+  {
+    "id": "bus-70372",
+    "name": "MacPherson S41 Boarding (Circuit Rd)",
+    "category": "bus",
+    "lat": 1.32622,
+    "lng": 103.88844,
+    "details": {
+      "stationCode": "70372",
+      "lines": [
+        "S41"
       ]
     }
   },
@@ -70082,7 +70143,9 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "65",
         "135",
         "154",
-        "158"
+        "158",
+        "S41",
+        "S42"
       ]
     }
   },
@@ -70506,7 +70569,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "22",
         "61",
         "65",
-        "137"
+        "137",
+        "S41"
       ]
     }
   },
@@ -70523,7 +70587,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "22",
         "61",
         "65",
-        "137"
+        "137",
+        "S41"
       ]
     }
   },
@@ -71017,7 +71082,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "58",
         "58A",
         "59",
-        "87"
+        "87",
+        "S41"
       ]
     }
   },
@@ -71036,7 +71102,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "58",
         "58B",
         "59",
-        "87"
+        "87",
+        "S41"
       ]
     }
   },
@@ -71181,7 +71248,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Tech View (Kaki Bt Ave 3)",
     "category": "bus",
     "lat": 1.33728,
-    "lng": 103.90914,
+    "lng": 103.90915,
     "details": {
       "stationCode": "72139",
       "lines": [
@@ -72452,8 +72519,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-75269",
     "name": "Blk 522 CP (Tampines Ave 6)",
     "category": "bus",
-    "lat": 1.35917,
-    "lng": 103.93814,
+    "lat": 1.3586,
+    "lng": 103.93815,
     "details": {
       "stationCode": "75269",
       "lines": [
@@ -72538,7 +72605,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-75291",
     "name": "Aft Tampines Ave 9 (Tampines Ave 10)",
     "category": "bus",
-    "lat": 1.36401,
+    "lat": 1.36402,
     "lng": 103.93075,
     "details": {
       "stationCode": "75291",
@@ -72559,7 +72626,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-75299",
     "name": "Bef Tampines Ave 9 (Tampines Ave 10)",
     "category": "bus",
-    "lat": 1.36411,
+    "lat": 1.36412,
     "lng": 103.93112,
     "details": {
       "stationCode": "75299",
@@ -73122,7 +73189,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Opp Blk 660 CP (Tampines Nth Dr 1)",
     "category": "bus",
     "lat": 1.36712,
-    "lng": 103.93376,
+    "lng": 103.93377,
     "details": {
       "stationCode": "75529",
       "lines": [
@@ -73470,8 +73537,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-76049",
     "name": "Opp Blk 842C (Tampines St 82)",
     "category": "bus",
-    "lat": 1.35118,
-    "lng": 103.93633,
+    "lat": 1.35145,
+    "lng": 103.93644,
     "details": {
       "stationCode": "76049",
       "lines": [
@@ -74187,7 +74254,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "37",
         "38",
         "81",
-        "293"
+        "293",
+        "S41"
       ]
     }
   },
@@ -74206,7 +74274,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "21",
         "37",
         "38",
-        "81"
+        "81",
+        "S41"
       ]
     }
   },
@@ -74430,7 +74499,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "46",
         "65",
         "129",
-        "299"
+        "299",
+        "S41"
       ]
     }
   },
@@ -74446,7 +74516,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "46",
         "65",
         "129",
-        "299"
+        "299",
+        "S41"
       ]
     }
   },
@@ -75034,7 +75105,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "129",
         "298",
         "299",
-        "454"
+        "454",
+        "S41"
       ]
     }
   },
@@ -75050,7 +75122,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "129",
         "298",
         "299",
-        "454"
+        "454",
+        "S41"
       ]
     }
   },
@@ -76214,7 +76287,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Opp Blk 525B (Pasir Ris Dr 8)",
     "category": "bus",
     "lat": 1.3696,
-    "lng": 103.94671,
+    "lng": 103.94672,
     "details": {
       "stationCode": "77389",
       "lines": [
@@ -77403,8 +77476,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-80149",
     "name": "S.A. Deaf (Mountbatten Rd)",
     "category": "bus",
-    "lat": 1.3075,
-    "lng": 103.87981,
+    "lat": 1.30755,
+    "lng": 103.87966,
     "details": {
       "stationCode": "80149",
       "lines": [
@@ -79210,8 +79283,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-82249",
     "name": "Tg Katong Sec Sch (Haig Rd)",
     "category": "bus",
-    "lat": 1.30737,
-    "lng": 103.89863,
+    "lat": 1.30738,
+    "lng": 103.89864,
     "details": {
       "stationCode": "82249",
       "lines": [
@@ -80496,8 +80569,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-84061",
     "name": "The Tanamera Condo (New Upp Changi Rd)",
     "category": "bus",
-    "lat": 1.32585,
-    "lng": 103.94223,
+    "lat": 1.32577,
+    "lng": 103.94194,
     "details": {
       "stationCode": "84061",
       "lines": [
@@ -80743,7 +80816,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-84139",
     "name": "Panasonic (Bedok Sth Rd)",
     "category": "bus",
-    "lat": 1.32174,
+    "lat": 1.32175,
     "lng": 103.92772,
     "details": {
       "stationCode": "84139",
@@ -80916,7 +80989,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "67",
         "69",
         "168",
-        "228"
+        "228",
+        "S41"
       ]
     }
   },
@@ -80936,7 +81010,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "67",
         "69",
         "168",
-        "228"
+        "228",
+        "S41"
       ]
     }
   },
@@ -81643,7 +81718,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Bedok Nth Stn Exit A (Bedok Nth Rd)",
     "category": "bus",
     "lat": 1.33564,
-    "lng": 103.91805,
+    "lng": 103.91806,
     "details": {
       "stationCode": "84451",
       "lines": [
@@ -81652,7 +81727,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "87",
         "137",
         "137A",
-        "518"
+        "518",
+        "S41"
       ]
     }
   },
@@ -81911,7 +81987,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "60T",
         "87",
         "137",
-        "518"
+        "518",
+        "S41"
       ]
     }
   },
@@ -83924,7 +84001,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "name": "Opp CHIJ Katong Convent (Marine Terr)",
     "category": "bus",
     "lat": 1.30652,
-    "lng": 103.91667,
+    "lng": 103.91668,
     "details": {
       "stationCode": "92219",
       "lines": [
@@ -85042,8 +85119,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-94049",
     "name": "Aft Bedok Sth Ave 3 (Upp East Coast Rd)",
     "category": "bus",
-    "lat": 1.31616,
-    "lng": 103.94482,
+    "lat": 1.31623,
+    "lng": 103.94483,
     "details": {
       "stationCode": "94049",
       "lines": [
@@ -85322,7 +85399,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-95049",
     "name": "SATS Cargo Ter (Airport Cargo Rd)",
     "category": "bus",
-    "lat": 1.37357,
+    "lat": 1.37358,
     "lng": 103.99441,
     "details": {
       "stationCode": "95049",
@@ -85439,7 +85516,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-95089",
     "name": "Opp Changi Beach CP 5 (Nicoll Dr)",
     "category": "bus",
-    "lat": 1.38966,
+    "lat": 1.38967,
     "lng": 103.9959,
     "details": {
       "stationCode": "95089",
@@ -85891,7 +85968,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "2",
         "5",
         "5B",
-        "24"
+        "24",
+        "S41"
       ]
     }
   },
@@ -85908,7 +85986,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
         "2B",
         "5",
         "5A",
-        "24"
+        "24",
+        "S41"
       ]
     }
   },
@@ -86403,8 +86482,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-96209",
     "name": "Opp Simei Green Condo (Simei Rd)",
     "category": "bus",
-    "lat": 1.34061,
-    "lng": 103.95969,
+    "lat": 1.34021,
+    "lng": 103.95943,
     "details": {
       "stationCode": "96209",
       "lines": [
@@ -86510,8 +86589,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-96249",
     "name": "Builders Ctr (Xilin Ave)",
     "category": "bus",
-    "lat": 1.32824,
-    "lng": 103.96653,
+    "lat": 1.32796,
+    "lng": 103.96683,
     "details": {
       "stationCode": "96249",
       "lines": [
@@ -86674,7 +86753,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
       "lines": [
         "20",
         "20A",
-        "118"
+        "118",
+        "S41"
       ]
     }
   },
@@ -86689,7 +86769,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
       "lines": [
         "20",
         "20A",
-        "118"
+        "118",
+        "S41"
       ]
     }
   },
@@ -86767,7 +86848,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-96341",
     "name": "Aft Sunny Metal & Engrg (Changi Sth Ave 2)",
     "category": "bus",
-    "lat": 1.33293,
+    "lat": 1.33294,
     "lng": 103.97039,
     "details": {
       "stationCode": "96341",
@@ -86989,7 +87070,7 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-96461",
     "name": "Bef Aviation Pk Rd (Tanah Merah Coast Rd)",
     "category": "bus",
-    "lat": 1.35248,
+    "lat": 1.35249,
     "lng": 104.03001,
     "details": {
       "stationCode": "96461",
@@ -87694,8 +87775,8 @@ export const SINGAPORE_BUS_STOPS: Amenity[] = [
     "id": "bus-98061",
     "name": "Opp Engine Test Facility (Loyang Ave)",
     "category": "bus",
-    "lat": 1.37653,
-    "lng": 103.97717,
+    "lat": 1.37641,
+    "lng": 103.97679,
     "details": {
       "stationCode": "98061",
       "lines": [
